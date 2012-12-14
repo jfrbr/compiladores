@@ -2,13 +2,23 @@
 	#include <stdio.h>
 %}
 
-pr auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while
+PALAVRA_RESERVADA auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while
+
+
+OPERADOR_ARITMETICO "+"|"-"|"/"|"*"|"%"|"+""+"|"-""-"
+ATRIBUICAO "="
+
+
 
 %%
 
-{pr} {printf("%s -> PALAVRARESERVADA\n",yytext);}
+{PALAVRA_RESERVADA} {printf("%s -> PALAVRARESERVADA",yytext);}
+{ATRIBUICAO} {printf("%s -> ATRIBUICAO",yytext);}
+{OPERADOR_ARITMETICO} {printf("%s -> OPERADORARITMETICO",yytext);}
 
-. {printf("DESCONHECIDO");}
+
+[ \t\n]
+. {printf("DESCONHECIDO\n");}
 
 %%
 
