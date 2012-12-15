@@ -2,19 +2,82 @@
 	#include <stdio.h>
 %}
 
-PALAVRA_RESERVADA auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while
 
-
-OPERADOR_ARITMETICO "+"|"-"|"/"|"*"|"%"|"+""+"|"-""-"
-ATRIBUICAO "="
-
-
+digito [0-9] 
+inteiro {digito}+
+float {inteiro}"."{inteiro}
 
 %%
 
-{PALAVRA_RESERVADA} {printf("%s -> PALAVRARESERVADA",yytext);}
-{ATRIBUICAO} {printf("%s -> ATRIBUICAO",yytext);}
-{OPERADOR_ARITMETICO} {printf("%s -> OPERADORARITMETICO",yytext);}
+auto {printf("%s -> PALAVRARESERVADA\n",yytext);}
+break {printf("%s -> PALAVRARESERVADA\n",yytext);}
+case {printf("%s -> PALAVRARESERVADA\n",yytext);}
+char {printf("%s -> PALAVRARESERVADA\n",yytext);}
+const {printf("%s -> PALAVRARESERVADA\n",yytext);}
+continue {printf("%s -> PALAVRARESERVADA\n",yytext);}
+default {printf("%s -> PALAVRARESERVADA\n",yytext);}
+do {printf("%s -> PALAVRARESERVADA\n",yytext);}
+double {printf("%s -> PALAVRARESERVADA\n",yytext);}
+else {printf("%s -> PALAVRARESERVADA\n",yytext);}
+enum {printf("%s -> PALAVRARESERVADA\n",yytext);}
+extern {printf("%s -> PALAVRARESERVADA\n",yytext);}
+float {printf("%s -> PALAVRARESERVADA\n",yytext);}
+for {printf("%s -> PALAVRARESERVADA\n",yytext);}
+goto {printf("%s -> PALAVRARESERVADA\n",yytext);}
+if {printf("%s -> PALAVRARESERVADA\n",yytext);}
+int {printf("%s -> PALAVRARESERVADA\n",yytext);}
+long {printf("%s -> PALAVRARESERVADA\n",yytext);}
+register {printf("%s -> PALAVRARESERVADA\n",yytext);}
+return {printf("%s -> PALAVRARESERVADA\n",yytext);}
+short {printf("%s -> PALAVRARESERVADA\n",yytext);}
+signed {printf("%s -> PALAVRARESERVADA\n",yytext);}
+sizeof {printf("%s -> PALAVRARESERVADA\n",yytext);}
+static {printf("%s -> PALAVRARESERVADA\n",yytext);}
+struct {printf("%s -> PALAVRARESERVADA\n",yytext);}
+switch {printf("%s -> PALAVRARESERVADA\n",yytext);}
+typedef {printf("%s -> PALAVRARESERVADA\n",yytext);}
+union {printf("%s -> PALAVRARESERVADA\n",yytext);}
+unsigned {printf("%s -> PALAVRARESERVADA\n",yytext);}
+void {printf("%s -> PALAVRARESERVADA\n",yytext);}
+volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
+while {printf("%s -> PALAVRARESERVADA\n",yytext);}
+
+{inteiro} {printf("%s -> INTEIRO\n",yytext);}
+{float} {printf("%s -> FLOAT\n",yytext);}
+
+"+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"*" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"/" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"%" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"+""+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"-""-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+
+
+">" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"<" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+">""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"<""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"=""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"!""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+
+"=" {printf("%s -> ATRIBUICAO\n",yytext);}
+
+"(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+")" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"," {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+";" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+":" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"{" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"}" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"#" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+
+"&""&" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"|""|" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"!" {printf("%s -> OPERADORLOGICO\n",yytext);}
+
+[_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}
 
 
 [ \t\n]
