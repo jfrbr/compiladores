@@ -1,0 +1,91 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8x]{inputenc}
+
+%opening
+\title{1º Trabalho de Compiladores - Analisador Léxico}
+\author{André Siviero e Juan França}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Documentação referente à primeira parte do trabalho de compiladores, que consiste em um analisador léxico
+\end{abstract}
+
+\section{Introdução}
+O objetivo deste trabalho é estabelecer um analisador léxico para a linguagem C. O analisador léxico é a primeira parte de um compilador,
+e sua função é classificar elementos contidos num arquivo de entrada (fonte). Assim, nesta primeira etapa, busca-se encontrar palavras
+reservadas de linguagem, operadores, identificadores, número e símbolos especiais da linguagem, como delimitadores de bloco e comentários.
+
+Utilizando a ferramenta Flex e expressões regulares, a tarefa foi facilitada. Nesta documentação, são descritas as expressões regulares que
+deram origem ao arquivo .l.
+\section{Classificação das entradas}
+  \subsection{Palavras Reservadas}
+  A linguagem C define as seguintes palavras reservadas:
+  \begin{verbatim}
+   auto, break, case, char, const, continue, default, do, double, 
+   else, enum, extern, float, for, goto, if, int, long, register, 
+   return, short, signed, sizeof, static, struct, switch, typedef, 
+   union, unsigned, void, volatile, while
+  \end{verbatim} 
+  
+  O trecho de código correspondente a elas é:
+  \begin{verbatim}
+auto {printf("%s -> PALAVRARESERVADA\n",yytext);}
+break {printf("%s -> PALAVRARESERVADA\n",yytext);}
+case {printf("%s -> PALAVRARESERVADA\n",yytext);}
+char {printf("%s -> PALAVRARESERVADA\n",yytext);}
+const {printf("%s -> PALAVRARESERVADA\n",yytext);}
+continue {printf("%s -> PALAVRARESERVADA\n",yytext);}
+default {printf("%s -> PALAVRARESERVADA\n",yytext);}
+do {printf("%s -> PALAVRARESERVADA\n",yytext);}
+double {printf("%s -> PALAVRARESERVADA\n",yytext);}
+else {printf("%s -> PALAVRARESERVADA\n",yytext);}
+enum {printf("%s -> PALAVRARESERVADA\n",yytext);}
+extern {printf("%s -> PALAVRARESERVADA\n",yytext);}
+float {printf("%s -> PALAVRARESERVADA\n",yytext);}
+for {printf("%s -> PALAVRARESERVADA\n",yytext);}
+goto {printf("%s -> PALAVRARESERVADA\n",yytext);}
+if {printf("%s -> PALAVRARESERVADA\n",yytext);}
+int {printf("%s -> PALAVRARESERVADA\n",yytext);}
+long {printf("%s -> PALAVRARESERVADA\n",yytext);}
+register {printf("%s -> PALAVRARESERVADA\n",yytext);}
+return {printf("%s -> PALAVRARESERVADA\n",yytext);}
+short {printf("%s -> PALAVRARESERVADA\n",yytext);}
+signed {printf("%s -> PALAVRARESERVADA\n",yytext);}
+sizeof {printf("%s -> PALAVRARESERVADA\n",yytext);}
+static {printf("%s -> PALAVRARESERVADA\n",yytext);}
+struct {printf("%s -> PALAVRARESERVADA\n",yytext);}
+switch {printf("%s -> PALAVRARESERVADA\n",yytext);}
+typedef {printf("%s -> PALAVRARESERVADA\n",yytext);}
+union {printf("%s -> PALAVRARESERVADA\n",yytext);}
+unsigned {printf("%s -> PALAVRARESERVADA\n",yytext);}
+void {printf("%s -> PALAVRARESERVADA\n",yytext);}
+volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
+while {printf("%s -> PALAVRARESERVADA\n",yytext);}
+
+  \end{verbatim} 
+
+  \subsection{Identificadores}
+  Em C, identificadores são definidos como uma letra (maiúscula ou minúscula) ou um underscore (\_) seguido de letras, underscores ou
+  números. A expressão regular que define um identificador em C é dada por:
+  \begin{verbatim}
+[_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}
+  \end{verbatim}
+  
+
+  \subsection{Operadores aritméticos}
+  Os operadores aritméticos são (+  -  *  /  ++  -- \%). O trecho de código correspondente a eles é:
+  \begin{verbatim}
+"+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"*" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"/" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"%" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"++" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"--" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+  \end{verbatim}
+
+\section{Exemplos}
+\end{document}

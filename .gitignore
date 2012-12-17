@@ -1,7 +1,7 @@
 *.pdf
 *~
 trab1.c
-trab1
+trab1/trab1
 doc.aux
 doc.dvi
 doc.log
