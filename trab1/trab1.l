@@ -5,7 +5,9 @@
 
 digito [0-9] 
 inteiro {digito}+
-float {inteiro}"."{inteiro}
+fracao "."{inteiro}
+expoente [eE]-?{inteiro}
+float {inteiro}{fracao}?{expoente}?
 
 %%
 

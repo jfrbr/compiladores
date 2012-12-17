@@ -5,7 +5,8 @@ int main(){
 	int b;
 	a = 10;
 	b = 5;
-	
+	float c;
+	c = 1e-9;	
 	if ( a > b){
 		a = a + b;
 	}
