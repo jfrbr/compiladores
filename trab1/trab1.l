@@ -3,11 +3,13 @@
 %}
 
 
-digito [0-9] 
-inteiro {digito}+
-fracao "."{inteiro}
-expoente [eE]-?{inteiro}
-float {inteiro}{fracao}?{expoente}?
+digitos [0-9]+ 
+expoente [eE]-?{digitos}
+expoente_positivo [eE]{digitos}
+
+inteiro {digitos}+{expoente_positivo}?
+fracao "."{digitos}
+float {digitos}{fracao}?{expoente}?
 comentario_linha "//"[^\n]*
 comentario_bloco "/*"([^"*/"]*\n?)*"*/"
 

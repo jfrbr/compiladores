@@ -9,7 +9,9 @@ int main(){
 	b = 5;
 	a++;
 	float c;
-	c = 1e-9;	
+	c = 1.0e-9;	
+	int d;
+	d = 50e2;
 	if ( a > b){
 		a = a + b;
 	}
@@ -23,7 +25,7 @@ int main(){
 	
 	
 	return 0;
-}
+} 
 
-" "
-\\ \\ 
+1.e-9
+50.2e98
