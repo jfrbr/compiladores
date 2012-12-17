@@ -1,10 +1,13 @@
 #include<stdio.h>
+// Testando comentario
 
+/* Teste pegadinha */
 int main(){
 	int a;
 	int b;
 	a = 10;
 	b = 5;
+	a++;
 	float c;
 	c = 1e-9;	
 	if ( a > b){
@@ -21,3 +24,6 @@ int main(){
 	
 	return 0;
 }
+
+" "
+\\ \\ 

@@ -8,6 +8,9 @@ inteiro {digito}+
 fracao "."{inteiro}
 expoente [eE]-?{inteiro}
 float {inteiro}{fracao}?{expoente}?
+comentario_linha "//"[^\n]*
+comentario_bloco "/*"([^"*/"]*\n?)*"*/"
+
 
 %%
 
@@ -44,6 +47,9 @@ void {printf("%s -> PALAVRARESERVADA\n",yytext);}
 volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
 while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 
+{comentario_linha} 
+{comentario_bloco} 
+
 {inteiro} {printf("%s -> INTEIRO\n",yytext);}
 {float} {printf("%s -> FLOAT\n",yytext);}
 
@@ -52,16 +58,16 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 "*" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "/" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "%" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"+""+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"-""-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"++" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"--" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 
 
 ">" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
 "<" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-">""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"<""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"=""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"!""=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+">=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"<=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"==" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"!=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
 
 "=" {printf("%s -> ATRIBUICAO\n",yytext);}
 
@@ -73,17 +79,20 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 "{" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "}" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "#" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"'" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"\"" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"\\" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 
-"&""&" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"|""|" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"||" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "!" {printf("%s -> OPERADORLOGICO\n",yytext);}
 
 [_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}
 
 
-[ \t\n]
-. {printf("DESCONHECIDO\n");}
+[ \t\n] 
+. {printf("%s -> DESCONHECIDO\n",yytext);}
 
 %%
 
