@@ -107,7 +107,7 @@ float {digitos}{fracao}?{expoente}?
 
 
   \subsection{Operadores Relacionais}
-  Os operadores relacionais são (>, >=, <, <=, ==, !=). O trecho de código correspondente a eles é:
+  Os operadores relacionais são ($>$, $>=$, $<$, $<=$, $==$, $!=$). O trecho de código correspondente a eles é:
   \begin{verbatim}
 ">" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
 "<" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
@@ -118,7 +118,7 @@ float {digitos}{fracao}?{expoente}?
   \end{verbatim}
 
   \subsection{Operadores Lógicos}
-  Os operadores lógicos são (&& || !). O trecho de código correspondente a eles é:
+  Os operadores lógicos são (\&\& $||$ !). O trecho de código correspondente a eles é:
   \begin{verbatim}
 "&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "||" {printf("%s -> OPERADORLOGICO\n",yytext);}
@@ -126,7 +126,7 @@ float {digitos}{fracao}?{expoente}?
   \end{verbatim}
 
   \subsection{Símbolos Especiais e Operadores de Atribuição}
-  Os símbolos especiais são ( ( ) , ; : { } # ' \\ \" .). O trecho de código correspondente a eles e ao operador de atribuição é:
+  Os símbolos especiais são ( ( ) , ; : \{ \} \# ' $\backslash$ \textquotedblleft . ). O trecho de código correspondente a eles e ao operador de atribuição é:
   \begin{verbatim}
 "(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 ")" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
@@ -140,8 +140,26 @@ float {digitos}{fracao}?{expoente}?
 "\"" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "\\" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"=" {printf("%s -> ATRIBUICAO\n",yytext);}
   \end{verbatim}
 
+\subsection{Comentários}
+  Comentários devem ser ignorados pelo analisador léxico. Comentário de uma única linha são simples, porém os comentários em bloco
+  são um pouco mais complexos. O código utilizado para reconhecê-los foi:
+  \begin{verbatim}
+comentario_linha "//"[^\n]*
+comentario_bloco "/""*"+([^*/][^*]*"*"+)*"/"
+\end{verbatim}
+Além disso, quando encontra-se um bloco de comentário, é feita uma pequena correção na variável lines, que conta o número de linhas
+do arquivo, para incluir as quebras de linha que estejam dentro do bloco de comentário:
+\begin{verbatim}
+{comentario_bloco} {
+  strcpy(comment,yytext);	
+  for(i=0; i<strlen(comment); i++) {
+    if(comment[i] == '\n') lines++;
+  }
+}
+\end{verbatim}
 
 \section{Exemplos}
 \end{document}

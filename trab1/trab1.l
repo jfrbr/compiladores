@@ -38,6 +38,7 @@ for {printf("%s -> PALAVRARESERVADA\n",yytext);}
 goto {printf("%s -> PALAVRARESERVADA\n",yytext);}
 if {printf("%s -> PALAVRARESERVADA\n",yytext);}
 int {printf("%s -> PALAVRARESERVADA\n",yytext);}
+include {printf("%s -> PALAVRARESERVADA\n",yytext);}
 long {printf("%s -> PALAVRARESERVADA\n",yytext);}
 register {printf("%s -> PALAVRARESERVADA\n",yytext);}
 return {printf("%s -> PALAVRARESERVADA\n",yytext);}
@@ -54,7 +55,7 @@ void {printf("%s -> PALAVRARESERVADA\n",yytext);}
 volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
 while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 
-{comentario_linha} {printf("EITA PORRA\n");}
+{comentario_linha} 
 {comentario_bloco} {
 	strcpy(comment,yytext);	
 	for(i=0; i<strlen(comment); i++) {
@@ -110,5 +111,6 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 
 main()
 {
+	
 	yylex();
 }
