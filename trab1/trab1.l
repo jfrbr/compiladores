@@ -1,5 +1,9 @@
 %{
 	#include <stdio.h>
+	#include <string.h>
+	int lines=0;
+	char comment[1000];
+	int i=0;
 %}
 
 
@@ -11,7 +15,8 @@ inteiro {digitos}+{expoente_positivo}?
 fracao "."{digitos}
 float {digitos}{fracao}?{expoente}?
 comentario_linha "//"[^\n]*
-comentario_bloco "/*"([^"*/"]*\n?)*"*/"
+comentario_bloco "/""*"+([^*/][^*]*"*"+)*"/"
+
 
 
 %%
@@ -49,8 +54,13 @@ void {printf("%s -> PALAVRARESERVADA\n",yytext);}
 volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
 while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 
-{comentario_linha} 
-{comentario_bloco} 
+{comentario_linha} {printf("EITA PORRA\n");}
+{comentario_bloco} {
+	strcpy(comment,yytext);	
+	for(i=0; i<strlen(comment); i++) {
+		if(comment[i] == '\n') lines++;
+	}
+}
 
 {inteiro} {printf("%s -> INTEIRO\n",yytext);}
 {float} {printf("%s -> FLOAT\n",yytext);}
@@ -92,15 +102,13 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 
 [_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}
 
-
-[ \t\n] 
+\n {lines++;}
+[ \t] 
 . {printf("%s -> DESCONHECIDO\n",yytext);}
 
 %%
 
 main()
 {
-
 	yylex();
-	
 }

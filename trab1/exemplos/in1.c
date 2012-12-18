@@ -1,7 +1,7 @@
 #include<stdio.h>
 // Testando comentario
 
-/* Teste pegadinha */
+
 int main(){
 	int a;
 	int b;
@@ -25,7 +25,6 @@ int main(){
 	
 	
 	return 0;
-} 
+}
 
-1.e-9
-50.2e98
+//* COMENTARIO*/*/*/*/*/*/*/*/*/*/*/*/**/

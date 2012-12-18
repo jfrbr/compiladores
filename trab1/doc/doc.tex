@@ -75,6 +75,24 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
   \end{verbatim}
   
 
+\subsection{Inteiros e Floats}
+  Números inteiros são definidos como uma sequência de dígitos seguidos, opcionalmente, de um expoente positivo. Para reconhecê-los,
+  definimos:
+  \begin{verbatim}
+digitos [0-9]+ 
+expoente_positivo [eE]{digitos}
+inteiro {digitos}+{expoente_positivo}?
+\end{verbatim}
+
+Floats são definidos como uma sequência de dígitos, seguidos de um ponto, outra sequência de dígitos e um expoente. Floats foram
+reconhecidos como:
+\begin{verbatim}
+expoente [eE]-?{digitos} 
+fracao "."{digitos}
+float {digitos}{fracao}?{expoente}?
+\end{verbatim}  
+
+
   \subsection{Operadores aritméticos}
   Os operadores aritméticos são (+  -  *  /  ++  -- \%). O trecho de código correspondente a eles é:
   \begin{verbatim}
@@ -86,6 +104,44 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 "++" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "--" {printf("%s -> OPERADORARITMETICO\n",yytext);}
   \end{verbatim}
+
+
+  \subsection{Operadores Relacionais}
+  Os operadores relacionais são (>, >=, <, <=, ==, !=). O trecho de código correspondente a eles é:
+  \begin{verbatim}
+">" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"<" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+">=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"<=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"==" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+"!=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+  \end{verbatim}
+
+  \subsection{Operadores Lógicos}
+  Os operadores lógicos são (&& || !). O trecho de código correspondente a eles é:
+  \begin{verbatim}
+"&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"||" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"!" {printf("%s -> OPERADORLOGICO\n",yytext);}
+  \end{verbatim}
+
+  \subsection{Símbolos Especiais e Operadores de Atribuição}
+  Os símbolos especiais são ( ( ) , ; : { } # ' \\ \" .). O trecho de código correspondente a eles e ao operador de atribuição é:
+  \begin{verbatim}
+"(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+")" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"," {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+";" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+":" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"{" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"}" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"#" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"'" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"\"" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"\\" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+"." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
+  \end{verbatim}
+
 
 \section{Exemplos}
 \end{document}
