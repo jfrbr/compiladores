@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2011.4.4)  20 DEC 2012 11:50
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2011.4.4)  20 DEC 2012 12:13
 entering extended mode
  %&-line parsing enabled.
-**doc_trab1.tex
-(./doc_trab1.tex
+**doc/doc_trab1.tex
+(./doc/doc_trab1.tex
 LaTeX2e <2009/09/24>
 Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
 yphenation, loaded.
@@ -42,7 +42,7 @@ File: uni-global.def 2004/10/17 UCS: Unicode global data
 \uc@combtoksb=\toks17
 \uc@temptokena=\toks18
 )
-No file doc_trab1.aux.
+(doc//doc_trab1.aux)
 \openout1 = `doc_trab1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
@@ -57,7 +57,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
-(/usr/share/texmf-texlive/tex/latex/ucs/ucsencs.def
+ (/usr/share/texmf-texlive/tex/latex/ucs/ucsencs.def
 File: ucsencs.def 2003/11/29 Fixes to fontencodings LGR, T3
 )
 (/usr/share/texmf-texlive/tex/latex/ucs/data/uni-0.def
@@ -79,27 +79,28 @@ pedef,[]
 
 [1
 
-] [2]
+]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 110.
+(Font)              <7> on input line 97.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 110.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 131.
+(Font)              <5> on input line 97.
+ [2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 135.
 
  (/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 131.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 135.
  [3] [4]
-(./doc_trab1.aux) ) 
+(doc//doc_trab1.aux) ) 
 Here is how much of TeX's memory you used:
- 1022 strings out of 495062
- 13084 string characters out of 1182645
+ 1027 strings out of 495062
+ 13163 string characters out of 1182645
  67224 words of memory out of 3000000
- 4251 multiletter control sequences out of 15000+50000
+ 4252 multiletter control sequences out of 15000+50000
  8977 words of font info for 32 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 29i,7n,25p,309b,587s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 29i,7n,25p,313b,587s stack positions out of 5000i,500n,10000p,200000b,50000s
 
-Output written on doc_trab1.dvi (4 pages, 9712 bytes).
+Output written on doc//doc_trab1.dvi (4 pages, 10468 bytes).

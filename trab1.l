@@ -88,6 +88,11 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 "-=" {printf("%s -> ATRIBUICAO\n",yytext);}
 "*=" {printf("%s -> ATRIBUICAO\n",yytext);}
 "/=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"&=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"^=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"|=" {printf("%s -> ATRIBUICAO\n",yytext);}
+">>=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"<<=" {printf("%s -> ATRIBUICAO\n",yytext);}
 
 
 "(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
@@ -107,6 +112,7 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 "&" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "||" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "|" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"^" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "!" {printf("%s -> OPERADORLOGICO\n",yytext);}
 
 [_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}

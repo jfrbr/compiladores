@@ -94,7 +94,7 @@ float {digitos}{fracao}?{expoente}?
 
 
   \subsection{Operadores aritméticos}
-  Os operadores aritméticos são (+  -  *  /  ++  -- \%). O trecho de código correspondente a eles é:
+  Os operadores aritméticos são (+  -  *  /  ++  -- \% $\ll$ $\gg$). O trecho de código correspondente a eles é:
   \begin{verbatim}
 "+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
@@ -103,6 +103,9 @@ float {digitos}{fracao}?{expoente}?
 "%" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "++" {printf("%s -> OPERADORARITMETICO\n",yytext);}
 "--" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+">>" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"<<" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+  
   \end{verbatim}
 
 
@@ -118,12 +121,13 @@ float {digitos}{fracao}?{expoente}?
   \end{verbatim}
 
   \subsection{Operadores Lógicos}
-  Os operadores lógicos são (\&\& $||$ !). O trecho de código correspondente a eles é:
+  Os operadores lógicos são (\&\& $||$ ! \^). O trecho de código correspondente a eles é:
   \begin{verbatim}
 "&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "||" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "&" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "|" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"^" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "!" {printf("%s -> OPERADORLOGICO\n",yytext);}
   \end{verbatim}
 
@@ -147,6 +151,12 @@ float {digitos}{fracao}?{expoente}?
 "-=" {printf("%s -> ATRIBUICAO\n",yytext);}
 "*=" {printf("%s -> ATRIBUICAO\n",yytext);}
 "/=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"&=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"^=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"|=" {printf("%s -> ATRIBUICAO\n",yytext);}
+">>=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"<<=" {printf("%s -> ATRIBUICAO\n",yytext);}
+
   \end{verbatim}
 
 \subsection{Comentários}
@@ -168,4 +178,6 @@ do arquivo, para incluir as quebras de linha que estejam dentro do bloco de come
 \end{verbatim}
 
 \section{Exemplos}
+Nos exemplos, buscamos identificar os diversos operadores, identificadores e demais características do input. Também prestamos atenção
+aos blocos de comentários que foram problemáticos. 
 \end{document}
