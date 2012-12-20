@@ -122,11 +122,13 @@ float {digitos}{fracao}?{expoente}?
   \begin{verbatim}
 "&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "||" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"&" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"|" {printf("%s -> OPERADORLOGICO\n",yytext);}
 "!" {printf("%s -> OPERADORLOGICO\n",yytext);}
   \end{verbatim}
 
   \subsection{Símbolos Especiais e Operadores de Atribuição}
-  Os símbolos especiais são ( ( ) , ; : \{ \} \# ' $\backslash$ \textquotedblleft . ). O trecho de código correspondente a eles e ao operador de atribuição é:
+  Os símbolos especiais são ( ( ) , ; : \{ \} \# ' $\backslash$ \textquotedblleft . ). O trecho de código correspondente a eles e aos operadores de atribuição é:
   \begin{verbatim}
 "(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 ")" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
@@ -141,6 +143,10 @@ float {digitos}{fracao}?{expoente}?
 "\\" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 "=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"+=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"-=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"*=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"/=" {printf("%s -> ATRIBUICAO\n",yytext);}
   \end{verbatim}
 
 \subsection{Comentários}

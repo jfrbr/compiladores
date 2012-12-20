@@ -14,4 +14,4 @@ int main( void )
 printf("Ola Mundo"); 
 return  1; 
 }
-
+/* Cuidado com a pegadinha! */
