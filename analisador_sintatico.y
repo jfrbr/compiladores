@@ -231,7 +231,7 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_menosmenos
 ;
 
-TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP;
+TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
 		  | token_ident token_abrep token_fechap
