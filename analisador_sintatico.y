@@ -104,20 +104,46 @@ int Nlinha=1;
 %token token_abrecol
 %token token_fechacol
 %token token_letra
+%token token_string
+
 
 %start PROG
 
 %%
 
-PROG:	token_int_main token_abrep token_fechap token_abrec BLOCO token_return EXP token_ptevirgula token_fechac
-      //| token_int_main token_abrep token_fechap token_abrec BLOCO token_return EXP token_ptevirgula token_fechac
-      //| token_int_main token_abrep token_fechap token_abrec BLOCO token_return VAR token_ptevirgula token_fechac
+BLOCO_GLOBAL: DECFUNC //BLOCO_GLOBAL2
+	      //| DEC_VAR_GLOBAL BLOCO_GLOBAL2
+	      //| DEC_STRUCT BLOCO_GLOBAL2
+;	  
+
+//BLOCO_GLOBAL2: | DECFUNC BLOCO_GLOBAL2
+		
+//;
+
+PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
+      | token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
 ;
 /* Lembrar de permutar decfunc varglob e struct */
+
+DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac DECFUNC2
+	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac DECFUNC2
+;
+
+DECFUNC2: | TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac DECFUNC2
+	  | TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac DECFUNC2;
+
+PARAMETROS_TIPO: TIPO token_ident PARAMETROS_TIPO2;
+
+PARAMETROS_TIPO2: | token_virgula TIPO token_ident PARAMETROS_TIPO2;
+	  
 BLOCO:	/**/
 	| DEC_VAR BLOCO2
 	| U_EXP BLOCO2
 	| ATRIBUICAO BLOCO2
+	| CHAMADA_FUNCAO BLOCO2
+	| token_string BLOCO2
+	| token_return EXP token_ptevirgula
+	| token_return token_ptevirgula
 /*	| COMANDO
 	| COMANDO_SELECAO
 	| CHAMADA_FUNCAO	*/
@@ -128,6 +154,10 @@ BLOCO2: /**/
       | token_ptevirgula DEC_VAR BLOCO2
       | token_ptevirgula U_EXP BLOCO2
       | token_ptevirgula ATRIBUICAO BLOCO2
+      | token_ptevirgula CHAMADA_FUNCAO BLOCO2
+      | token_ptevirgula token_string BLOCO2
+      | token_ptevirgula token_return EXP token_ptevirgula
+      | token_ptevirgula token_return token_ptevirgula
 ;
 
 /* Declaração de Variáveis */
@@ -181,14 +211,37 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep EXP token_fechap;
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep EXP token_fechap | token_letra;
 
 
 /* ATRIBUICAO */
 ATRIBUICAO: VAR token_igual TO_ATRIB
+	  | VAR token_maisigual TO_ATRIB
+	  | VAR token_menosigual TO_ATRIB
+	  | VAR token_vezesigual TO_ATRIB
+	  | VAR token_divisaoigual TO_ATRIB
+	  | VAR token_ecomigual TO_ATRIB
+	  | VAR token_xnorigual TO_ATRIB
+	  | VAR token_ouigual TO_ATRIB
+	  | VAR token_shiftdireitaigual TO_ATRIB
+	  | VAR token_shiftesquerdaigual TO_ATRIB
+	  | VAR token_maismais
+	  | token_maismais VAR
+	  | token_menosmenos VAR
+	  | VAR token_menosmenos
 ;
 
-TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP | token_letra;
+TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP;
+
+CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
+		  | token_ident token_abrep token_fechap
+;
+
+PARAMETROS: EXP PAR2 | token_string PAR2;
+
+PAR2: | token_virgula EXP PAR2 | token_virgula token_string PAR2;
+
+
 
 
 %%
