@@ -132,4 +132,30 @@ while {return token_while;}
 	
 	yylex();
 }*/
+BLOCO:	/**/
+	| DEC_VAR
+/*	| EXP
+	| ATRIBUICAO
+	| COMANDO
+	| COMANDO_SELECAO
+	| CHAMADA_FUNCAO	*/
+;
 
+/* Declaração de Variáveis */
+DEC_VAR: TIPO VAR DEC_VAR2
+;
+
+VAR: token_asterisco token_ident
+	| token_ident
+;
+
+DEC_VAR2: /**/ 
+	| token_virgula VAR DEC_VAR2
+;
+TIPO: token_int | token_char | token_double | token_float | token_void
+;
+/* Atribuição */
+/*ATRIBUICAO: token_ident token_atribuicao EXP
+	    | token_ident token_maismais token_ptevirgula
+    	    | token_ident token_menosmenos token_ptevirgula
+;*/
