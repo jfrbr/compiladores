@@ -103,35 +103,55 @@ int Nlinha=1;
 %token token_int_main
 %token token_abrecol
 %token token_fechacol
+%token token_letra
 
 %start PROG
 
 %%
 
-PROG:	token_int_main token_abrep token_fechap token_abrec BLOCO token_return token_num_inteiro token_ptevirgula token_fechac
+PROG:	token_int_main token_abrep token_fechap token_abrec BLOCO token_return EXP token_ptevirgula token_fechac
+      //| token_int_main token_abrep token_fechap token_abrec BLOCO token_return EXP token_ptevirgula token_fechac
+      //| token_int_main token_abrep token_fechap token_abrec BLOCO token_return VAR token_ptevirgula token_fechac
 ;
 /* Lembrar de permutar decfunc varglob e struct */
 BLOCO:	/**/
-	| DEC_VAR
-	| EXP
-/*	| ATRIBUICAO
+	| DEC_VAR BLOCO2
+	| U_EXP BLOCO2
+	| ATRIBUICAO BLOCO2
 /*	| COMANDO
 	| COMANDO_SELECAO
 	| CHAMADA_FUNCAO	*/
 ;
 
-/* Declaração de Variáveis */
-DEC_VAR: TIPO VAR DEC_VAR2 REDO_DECVAR
+BLOCO2: /**/
+      | token_ptevirgula BLOCO2
+      | token_ptevirgula DEC_VAR BLOCO2
+      | token_ptevirgula U_EXP BLOCO2
+      | token_ptevirgula ATRIBUICAO BLOCO2
 ;
 
-REDO_DECVAR: /**/ token_ptevirgula
+/* Declaração de Variáveis */
+DEC_VAR: TIPO VAR DEC_VAR2
+;
+
+/*REDO_DECVAR: token_ptevirgula
 	| token_ptevirgula TIPO VAR DEC_VAR2 REDO_DECVAR
-;
+;*/
 VAR: token_vezes token_ident
+	| token_ecom token_ident
 	| token_ident
-	| token_vezes token_ident token_abrecol token_num_inteiro token_fechacol
-	| token_ident token_abrecol token_num_inteiro token_fechacol
+	| token_ecom token_ident COLCHETE
+	| token_ident COLCHETE
+	| token_vezes token_ident COLCHETE
 ;
+
+COLCHETE : token_abrecol EXP token_fechacol COLCHETE2
+;
+
+COLCHETE2: /**/
+      | token_abrecol EXP token_fechacol COLCHETE2
+      ;
+
 
 DEC_VAR2: /**/ 
 	| token_virgula VAR DEC_VAR2
@@ -140,7 +160,17 @@ TIPO: token_int | token_char | token_double | token_float | token_void
 ;
 
 
-/* ATRIBUICAO */
+/* EXPRESSAO */
+U_EXP: EXP token_igualigual EXP
+      | EXP token_maior EXP
+      | EXP token_menor EXP
+      | EXP token_maiorigual EXP
+      | EXP token_menorigual EXP
+      | EXP token_diferente EXP
+      | EXP
+
+;
+
 EXP: EXP token_mais TERMO
     | EXP token_menos TERMO
     | TERMO
@@ -151,7 +181,15 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | token_ident ;
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep EXP token_fechap;
+
+
+/* ATRIBUICAO */
+ATRIBUICAO: VAR token_igual TO_ATRIB
+;
+
+TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP | token_letra;
+
 
 %%
 
