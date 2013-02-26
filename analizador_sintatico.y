@@ -101,6 +101,8 @@ int Nlinha=1;
 %token token_chapeuzinho
 %token token_exclamacao
 %token token_int_main
+%token token_abrecol
+%token token_fechacol
 
 %start PROG
 
@@ -111,9 +113,9 @@ PROG:	token_int_main token_abrep token_fechap token_abrec BLOCO token_return tok
 /* Lembrar de permutar decfunc varglob e struct */
 BLOCO:	/**/
 	| DEC_VAR
-/*	| EXP
-	| ATRIBUICAO
-	| COMANDO
+	| EXP
+/*	| ATRIBUICAO
+/*	| COMANDO
 	| COMANDO_SELECAO
 	| CHAMADA_FUNCAO	*/
 ;
@@ -124,9 +126,11 @@ DEC_VAR: TIPO VAR DEC_VAR2 REDO_DECVAR
 
 REDO_DECVAR: /**/ token_ptevirgula
 	| token_ptevirgula TIPO VAR DEC_VAR2 REDO_DECVAR
-
+;
 VAR: token_vezes token_ident
 	| token_ident
+	| token_vezes token_ident token_abrecol token_num_inteiro token_fechacol
+	| token_ident token_abrecol token_num_inteiro token_fechacol
 ;
 
 DEC_VAR2: /**/ 
@@ -134,6 +138,20 @@ DEC_VAR2: /**/
 ;
 TIPO: token_int | token_char | token_double | token_float | token_void
 ;
+
+
+/* ATRIBUICAO */
+EXP: EXP token_mais TERMO
+    | EXP token_menos TERMO
+    | TERMO
+;
+
+TERMO: TERMO token_vezes FATOR
+      | TERMO token_divisao FATOR
+      | FATOR
+;
+
+FATOR: token_num_float | token_num_inteiro | token_ident ;
 
 %%
 

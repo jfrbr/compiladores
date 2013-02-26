@@ -99,6 +99,8 @@ while {return token_while;}
 
 "(" {return token_abrep;}
 ")" {return token_fechap;}
+"[" {return token_abrecol;}
+"]" {return token_fechacol;}
 "," {return token_virgula;}
 ";" {return token_ptevirgula;}
 ":" {return token_doispontos;}
