@@ -1,7 +1,7 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
-	int lines=0;
+	int lines=1;
 	char comment[1000];
 	int i=0;
 %}
@@ -21,39 +21,41 @@ comentario_bloco "/""*"+([^*/][^*]*"*"+)*"/"
 
 %%
 
-auto {printf("%s -> PALAVRARESERVADA\n",yytext);}
-break {printf("%s -> PALAVRARESERVADA\n",yytext);}
-case {printf("%s -> PALAVRARESERVADA\n",yytext);}
-char {printf("%s -> PALAVRARESERVADA\n",yytext);}
-const {printf("%s -> PALAVRARESERVADA\n",yytext);}
-continue {printf("%s -> PALAVRARESERVADA\n",yytext);}
-default {printf("%s -> PALAVRARESERVADA\n",yytext);}
-do {printf("%s -> PALAVRARESERVADA\n",yytext);}
-double {printf("%s -> PALAVRARESERVADA\n",yytext);}
-else {printf("%s -> PALAVRARESERVADA\n",yytext);}
-enum {printf("%s -> PALAVRARESERVADA\n",yytext);}
-extern {printf("%s -> PALAVRARESERVADA\n",yytext);}
-float {printf("%s -> PALAVRARESERVADA\n",yytext);}
-for {printf("%s -> PALAVRARESERVADA\n",yytext);}
-goto {printf("%s -> PALAVRARESERVADA\n",yytext);}
-if {printf("%s -> PALAVRARESERVADA\n",yytext);}
-int {printf("%s -> PALAVRARESERVADA\n",yytext);}
-include {printf("%s -> PALAVRARESERVADA\n",yytext);}
-long {printf("%s -> PALAVRARESERVADA\n",yytext);}
-register {printf("%s -> PALAVRARESERVADA\n",yytext);}
-return {printf("%s -> PALAVRARESERVADA\n",yytext);}
-short {printf("%s -> PALAVRARESERVADA\n",yytext);}
-signed {printf("%s -> PALAVRARESERVADA\n",yytext);}
-sizeof {printf("%s -> PALAVRARESERVADA\n",yytext);}
-static {printf("%s -> PALAVRARESERVADA\n",yytext);}
-struct {printf("%s -> PALAVRARESERVADA\n",yytext);}
-switch {printf("%s -> PALAVRARESERVADA\n",yytext);}
-typedef {printf("%s -> PALAVRARESERVADA\n",yytext);}
-union {printf("%s -> PALAVRARESERVADA\n",yytext);}
-unsigned {printf("%s -> PALAVRARESERVADA\n",yytext);}
-void {printf("%s -> PALAVRARESERVADA\n",yytext);}
-volatile {printf("%s -> PALAVRARESERVADA\n",yytext);}
-while {printf("%s -> PALAVRARESERVADA\n",yytext);}
+auto {return token_auto;}
+break {return token_break;}
+case {return token_case;}
+char {return token_char;}
+const {return token_const;}
+continue {return token_continue;}
+default {return token_default;}
+do {return token_do;}
+double {return token_double;}
+else {return token_else;}
+enum {return token_enum;}
+extern {return token_extern;}
+float {return token_float;}
+for {return token_for;}
+goto {return token_goto;}
+if {return token_if;}
+int {return token_int;}
+include {return token_include;}
+long {return token_long;}
+register {return token_register;}
+return {return token_return;}
+short {return token_short;}
+signed {return token_signed;}
+sizeof {return token_sizeof;}
+static {return token_static;}
+struct {return token_struct;}
+switch {return token_switch;}
+typedef {return token_typedef;}
+union {return token_union;}
+unsigned {return token_unsigned;}
+void {return token_void;}
+volatile {return token_volatile;}
+while {return token_while;}
+
+"int main" {return token_int_main;}
 
 {comentario_linha} 
 {comentario_bloco} {
@@ -63,68 +65,68 @@ while {printf("%s -> PALAVRARESERVADA\n",yytext);}
 	}
 }
 
-{inteiro} {printf("%s -> INTEIRO\n",yytext);}
-{float} {printf("%s -> FLOAT\n",yytext);}
+{inteiro} {return token_num_inteiro;}
+{float} {return token_num_float;}
 
-"+" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"-" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"*" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"/" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"%" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"++" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"--" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-">>" {printf("%s -> OPERADORARITMETICO\n",yytext);}
-"<<" {printf("%s -> OPERADORARITMETICO\n",yytext);}
+"+" {return token_mais;}
+"-" {return token_menos;}
+"*" {return token_vezes;}
+"/" {return token_divisao;}
+"%" {return token_mod;}
+"++" {return token_maismais;}
+"--" {return token_menosmenos;}
+">>" {return token_shiftdireita;}
+"<<" {return token_shiftesquerda;}
 
-">" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"<" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-">=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"<=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"==" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
-"!=" {printf("%s -> OPERADORRELACIONAL\n",yytext);}
+">" {return token_maior;}
+"<" {return token_menor;}
+">=" {return token_maiorigual;}
+"<=" {return token_menorigual;}
+"==" {return token_igualigual;}
+"!=" {return token_diferente;}
 
-"=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"+=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"-=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"*=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"/=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"&=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"^=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"|=" {printf("%s -> ATRIBUICAO\n",yytext);}
-">>=" {printf("%s -> ATRIBUICAO\n",yytext);}
-"<<=" {printf("%s -> ATRIBUICAO\n",yytext);}
+"=" {return token_igual;}
+"+=" {return token_maisigual;}
+"-=" {return token_menosigual;}
+"*=" {return token_vezesigual;}
+"/=" {return token_divisaoigual;}
+"&=" {return token_ecomigual;}
+"^=" {return token_xnorigual;}
+"|=" {return token_ouigual;}
+">>=" {return token_shiftesquerdaigual;}
+"<<=" {return token_shiftdireitaigual;}
 
 
-"(" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-")" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"," {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-";" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-":" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"{" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"}" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"#" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"'" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"\"" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"\\" {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
-"." {printf("%s -> SIMBOLOESPECIAL\n",yytext);}
 
-"&&" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"&" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"||" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"|" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"^" {printf("%s -> OPERADORLOGICO\n",yytext);}
-"!" {printf("%s -> OPERADORLOGICO\n",yytext);}
+"(" {return token_abrep;}
+")" {return token_fechap;}
+"[" {return token_abrecol;}
+"]" {return token_fechacol;}
+"," {return token_virgula;}
+";" {return token_ptevirgula;}
+":" {return token_doispontos;}
+"{" {return token_abrec;}
+"}" {return token_fechac;}
+"#" {return token_tralha;}
+"'" {return token_aspa_simples;}
+"\"" {return token_aspas;}
+"\\" {return token_contra_barra;}
+"." {return token_ponto;}
 
-[_a-zA-Z][_a-zA-Z0-9]*	{ printf("%s -> IDENTIFICADOR\n",yytext);}
+"&&" {return token_ecomecom;}
+"&" {return token_ecom;}
+"||" {return token_ou;}
+"|" {return token_ou_bitbit;}
+"^" {return token_chapeuzinho;}
+"!" {return token_exclamacao;}
+
+'[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {return token_letra;}
+\"[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]*\" {return token_string;}
+[_a-zA-Z][_a-zA-Z0-9]*	{return token_ident;}
+
 
 \n {lines++;}
 [ \t] 
-. {printf("%s -> DESCONHECIDO\n",yytext);}
+. {}
 
 %%
-
-main()
-{
-	
-	yylex();
-}
