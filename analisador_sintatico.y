@@ -132,10 +132,13 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec 
 	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac
 ;
 
-DEC_VAR_GLOBAL: TIPO VAR token_ptevirgula
-
+DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
 ;
 
+DEC_VAR_GLOBAL2: | token_virgula VAR DEC_VAR_GLOBAL2
+;
+
+//DEC_STRUCT: token_struct 
 //DECFUNC2: | TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac DECFUNC2
 //	  | TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac DECFUNC2;
 
@@ -143,28 +146,56 @@ PARAMETROS_TIPO: TIPO token_ident PARAMETROS_TIPO2;
 
 PARAMETROS_TIPO2: | token_virgula TIPO token_ident PARAMETROS_TIPO2;
 	  
-BLOCO:	/**/
-	| DEC_VAR BLOCO2
-	| U_EXP BLOCO2
-	| ATRIBUICAO BLOCO2
-	| CHAMADA_FUNCAO BLOCO2
-	| token_string BLOCO2
-	| token_return EXP token_ptevirgula
+COMANDAO:   DEC_VAR token_ptevirgula
+	| U_EXP token_ptevirgula
+	| ATRIBUICAO token_ptevirgula
+	//| CHAMADA_FUNCAO token_ptevirgula
+	| token_string token_ptevirgula
+	| token_return U_EXP token_ptevirgula
 	| token_return token_ptevirgula
-/*	| COMANDO
-	| COMANDO_SELECAO
-	| CHAMADA_FUNCAO	*/
+	
+	| token_if token_abrep U_EXP token_fechap COMANDAO token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
+	
+	
 ;
 
-BLOCO2: /**/
-      | token_ptevirgula BLOCO2
+/*COMANDAO_SEMPT:   DEC_VAR 
+	| U_EXP 
+	| ATRIBUICAO 
+	//| CHAMADA_FUNCAO token_ptevirgula
+	| token_string
+	| token_return U_EXP 
+	| token_return 
+;*/
+
+
+BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
+
+/*	| DEC_VAR BLOCO2
+	| U_EXP BLOCO2
+	| ATRIBUICAO BLOCO2
+	//| CHAMADA_FUNCAO BLOCO2
+	| token_string BLOCO2
+	| token_return U_EXP token_ptevirgula
+	| token_return token_ptevirgula
+	| COMANDO BLOCO2
+/*	| COMANDO_SELECAO
+*/
+;
+
+BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO BLOCO2
+      /*| token_ptevirgula BLOCO2
       | token_ptevirgula DEC_VAR BLOCO2
       | token_ptevirgula U_EXP BLOCO2
       | token_ptevirgula ATRIBUICAO BLOCO2
-      | token_ptevirgula CHAMADA_FUNCAO BLOCO2
+      //| token_ptevirgula CHAMADA_FUNCAO BLOCO2
       | token_ptevirgula token_string BLOCO2
-      | token_ptevirgula token_return EXP token_ptevirgula
+      | token_ptevirgula token_return U_EXP token_ptevirgula
       | token_ptevirgula token_return token_ptevirgula
+      | token_ptevirgula COMANDO BLOCO2*/
 ;
 
 /* Declaração de Variáveis */
@@ -193,11 +224,11 @@ VAR: PONTEIRO token_ident
 	| PONTEIRO token_ident COLCHETE
 ;
 
-COLCHETE : token_abrecol EXP token_fechacol COLCHETE2
+COLCHETE : token_abrecol U_EXP token_fechacol COLCHETE2
 ;
 
 COLCHETE2: /**/
-      | token_abrecol EXP token_fechacol COLCHETE2
+      | token_abrecol U_EXP token_fechacol COLCHETE2
       ;
 
 
@@ -224,10 +255,11 @@ EXP: EXP token_mais TERMO
 
 TERMO: TERMO token_vezes FATOR
       | TERMO token_divisao FATOR
+      | TERMO token_mod FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep EXP token_fechap | token_letra;
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO;
 
 
 /* ATRIBUICAO */
@@ -247,18 +279,38 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_menosmenos
 ;
 
-TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | EXP | token_string;
+TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | U_EXP | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
 		  | token_ident token_abrep token_fechap
 ;
 
-PARAMETROS: EXP PAR2 | token_string PAR2;
+PARAMETROS: U_EXP PAR2 | token_string PAR2;
 
-PAR2: | token_virgula EXP PAR2 | token_virgula token_string PAR2;
+PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2;
 
 
 
+//TODO Combinar comandos com chave e sem chave
+COMANDO: /*CMD_ASSOC *|*/ CMD_NAO_ASSOC | /*CMD_ASSOC_CHAVE |*/ CMD_NAO_ASSOC_CHAVE
+;
+
+/*CMD_ASSOC_CHAVE : token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
+		  | token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
+		  | token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
+
+;*/
+
+CMD_NAO_ASSOC_CHAVE : token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+;
+
+/*CMD_ASSOC : token_if token_abrep U_EXP token_fechap CMD_ASSOC token_else CMD_ASSOC
+	    | COMANDAO token_ptevirgula
+;*/
+
+CMD_NAO_ASSOC : token_if token_abrep U_EXP token_fechap COMANDAO
+		| token_if token_abrep U_EXP token_fechap COMANDAO token_else CMD_NAO_ASSOC
+;
 
 %%
 
