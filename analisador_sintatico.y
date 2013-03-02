@@ -160,8 +160,7 @@ COMANDAO:   DEC_VAR token_ptevirgula
 	| SWITCH
 	| token_break token_ptevirgula
 	| token_continue token_ptevirgula
-	| LOOP
-	
+	| LOOP	
 ;
 
 BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
@@ -214,8 +213,7 @@ U_EXP: EXP token_igualigual EXP
       | EXP token_menorigual EXP
       | EXP token_diferente EXP
       | EXP
-      //| token_abrep U_EXP token_fechap
-
+  
 ;
 
 IF_EXP :
@@ -223,7 +221,6 @@ IF_EXP :
 ;
 
 U_EXP_LIST : U_EXP U_EXP_LIST2
-//	    | token_abrep U_EXP U_EXP_LIST2 token_fechap
 ;
 
 U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
@@ -323,8 +320,6 @@ ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
 
 ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
 ;
-
-//U_EXP2 : | U_EXP;
 
 COMMAND_LIST : | ATRIBUICAO COMMAND_LIST2 | EXP COMMAND_LIST2
 ;
