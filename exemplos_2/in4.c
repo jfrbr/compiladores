@@ -31,9 +31,12 @@ int main(){
 			printf("Eh o pokemon que evolui!");
 			break;
 		case 3:
-			d++;--d;
+			d++;
+			--d;
+			break;
+		default:
+			printf("eh nois novinha!");
 			break;
 	}
-
-	return -2;
+	return 0;
 }
