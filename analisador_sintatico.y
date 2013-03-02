@@ -153,49 +153,24 @@ COMANDAO:   DEC_VAR token_ptevirgula
 	| token_string token_ptevirgula
 	| token_return U_EXP token_ptevirgula
 	| token_return token_ptevirgula
-	
+	| token_ptevirgula
 	| token_if token_abrep U_EXP token_fechap COMANDAO token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap token_else COMANDAO
 	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
 	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
 	| token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
-	
+	| token_if token_abrep U_EXP token_fechap token_else token_abrec BLOCO token_fechac
+	| SWITCH
+	| token_break token_ptevirgula
+	| token_continue token_ptevirgula
+	| LOOP
 	
 ;
 
-/*COMANDAO_SEMPT:   DEC_VAR 
-	| U_EXP 
-	| ATRIBUICAO 
-	//| CHAMADA_FUNCAO token_ptevirgula
-	| token_string
-	| token_return U_EXP 
-	| token_return 
-;*/
-
-
 BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
-
-/*	| DEC_VAR BLOCO2
-	| U_EXP BLOCO2
-	| ATRIBUICAO BLOCO2
-	//| CHAMADA_FUNCAO BLOCO2
-	| token_string BLOCO2
-	| token_return U_EXP token_ptevirgula
-	| token_return token_ptevirgula
-	| COMANDO BLOCO2
-/*	| COMANDO_SELECAO
-*/
 ;
 
 BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO BLOCO2
-      /*| token_ptevirgula BLOCO2
-      | token_ptevirgula DEC_VAR BLOCO2
-      | token_ptevirgula U_EXP BLOCO2
-      | token_ptevirgula ATRIBUICAO BLOCO2
-      //| token_ptevirgula CHAMADA_FUNCAO BLOCO2
-      | token_ptevirgula token_string BLOCO2
-      | token_ptevirgula token_return U_EXP token_ptevirgula
-      | token_ptevirgula token_return token_ptevirgula
-      | token_ptevirgula COMANDO BLOCO2*/
 ;
 
 /* Declaração de Variáveis */
@@ -206,9 +181,6 @@ DEC_VAR: TIPO VAR DEC_VAR2
 DEC_VAR2: /**/ 
 	| token_virgula VAR DEC_VAR2
 ;
-/*REDO_DECVAR: token_ptevirgula
-	| token_ptevirgula TIPO VAR DEC_VAR2 REDO_DECVAR
-;*/
 
 PONTEIRO: token_vezes PONTEIRO2
 ;
@@ -259,7 +231,12 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO;
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO
+      	  | VAR token_maismais
+	  | token_maismais VAR
+	  | token_menosmenos VAR
+	  | VAR token_menosmenos
+;
 
 
 /* ATRIBUICAO */
@@ -273,10 +250,6 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_ouigual TO_ATRIB
 	  | VAR token_shiftdireitaigual TO_ATRIB
 	  | VAR token_shiftesquerdaigual TO_ATRIB
-	  | VAR token_maismais
-	  | token_maismais VAR
-	  | token_menosmenos VAR
-	  | VAR token_menosmenos
 ;
 
 TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | U_EXP | token_string;
@@ -291,27 +264,58 @@ PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2;
 
 
 
-//TODO Combinar comandos com chave e sem chave
-COMANDO: /*CMD_ASSOC *|*/ CMD_NAO_ASSOC | /*CMD_ASSOC_CHAVE |*/ CMD_NAO_ASSOC_CHAVE
+COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
 ;
-
-/*CMD_ASSOC_CHAVE : token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
-		  | token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
-		  | token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
-
-;*/
 
 CMD_NAO_ASSOC_CHAVE : token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
 ;
-
-/*CMD_ASSOC : token_if token_abrep U_EXP token_fechap CMD_ASSOC token_else CMD_ASSOC
-	    | COMANDAO token_ptevirgula
-;*/
 
 CMD_NAO_ASSOC : token_if token_abrep U_EXP token_fechap COMANDAO
 		| token_if token_abrep U_EXP token_fechap COMANDAO token_else CMD_NAO_ASSOC
 ;
 
+/* SWITCH */
+
+SWITCH: token_switch token_abrep VAR token_fechap token_abrec SWITCH_BLOCK token_fechac;
+
+SWITCH_BLOCK : token_default token_doispontos BLOCO 
+		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2 token_default token_doispontos BLOCO
+;
+SWITCH_BLOCK2 : 
+		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2
+;
+
+/* LOOP */
+
+LOOP : FOR_LOOP | DO_WHILE_LOOP | WHILE_LOOP ;
+
+WHILE_LOOP: token_while token_abrep U_EXP token_fechap COMANDAO
+	    | token_while token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+;
+
+DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP token_fechap token_ptevirgula
+		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP token_fechap token_ptevirgula
+;
+
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+;
+
+ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
+;
+
+ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
+;
+
+//U_EXP2 : | U_EXP;
+
+COMMAND_LIST : | EXP COMMAND_LIST2
+;
+
+COMMAND_LIST2 : | token_virgula  EXP COMMAND_LIST2
+;
 %%
 
 #include "lex.yy.c"
