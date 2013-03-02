@@ -101,6 +101,7 @@ int main() {
 	    cocota();
 	    "string";
 	  }
+	if ( (a < 2 && a > 3) || a>10){}
 	
 
   }

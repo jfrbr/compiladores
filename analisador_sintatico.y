@@ -149,12 +149,12 @@ COMANDAO:   DEC_VAR token_ptevirgula
 	| token_return U_EXP token_ptevirgula
 	| token_return token_ptevirgula
 	| token_ptevirgula
-	| token_if token_abrep U_EXP token_fechap COMANDAO token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep U_EXP token_fechap token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
+	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac
 	| SWITCH
 	| token_break token_ptevirgula
 	| token_continue token_ptevirgula
@@ -212,8 +212,21 @@ U_EXP: EXP token_igualigual EXP
       | EXP token_menorigual EXP
       | EXP token_diferente EXP
       | EXP
+      //| token_abrep U_EXP token_fechap
 
 ;
+
+IF_EXP :
+      U_EXP_LIST
+;
+
+U_EXP_LIST : U_EXP U_EXP_LIST2
+//	    | token_abrep U_EXP U_EXP_LIST2 token_fechap
+;
+
+U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
+;
+
 
 EXP: EXP token_mais TERMO
     | EXP token_menos TERMO
@@ -226,7 +239,7 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP_LIST token_fechap | token_letra | CHAMADA_FUNCAO
       	  | VAR token_maismais
 	  | token_maismais VAR
 	  | token_menosmenos VAR
@@ -265,11 +278,11 @@ PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2;
 COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
 ;
 
-CMD_NAO_ASSOC_CHAVE : token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac
 ;
 
-CMD_NAO_ASSOC : token_if token_abrep U_EXP token_fechap COMANDAO
-		| token_if token_abrep U_EXP token_fechap COMANDAO token_else CMD_NAO_ASSOC
+CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO
+		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else CMD_NAO_ASSOC
 ;
 
 /* SWITCH */
