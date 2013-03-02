@@ -95,23 +95,26 @@ Bloco é a regra onde está contido tudo o que pode fazer dentro de uma função
 
 \begin{verbatim}
  COMANDAO:   DEC_VAR token_ptevirgula
-	| U_EXP token_ptevirgula
+	| U_EXP_LIST token_ptevirgula
 	| ATRIBUICAO token_ptevirgula
 	| token_string token_ptevirgula
-	| token_return U_EXP token_ptevirgula
+	| token_return U_EXP_LIST token_ptevirgula
 	| token_return token_ptevirgula
 	| token_ptevirgula
-	| token_if token_abrep U_EXP token_fechap COMANDAO token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
-	| token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep U_EXP token_fechap token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
+	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else 
+                   token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else
+                   COMANDAO
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else 
+                   token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap token_else 
+                   token_abrec BLOCO token_fechac
 	| SWITCH
 	| token_break token_ptevirgula
 	| token_continue token_ptevirgula
-	| LOOP
-	
+	| LOOP	
 ;
 
 BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
@@ -153,7 +156,7 @@ Nesta seção serão definidos os comandos de atribuição:
  = , +=, -=, *=, /=, &=, ^=, |=, >>=, <<=
 \end{verbatim}
 
-Na PC, os comandos ++ e -- não são considerados uma atribuição e sim está definido como expressão. A seguir segue como está no .y:
+Na PC, os comandos ++ e -- não são considerados uma atribuição e sim está definido como expressão. Não é permitido atribuição múltipla, por exemplo, a = b = 1. A seguir segue como está no .y:
 
 \begin{verbatim}
 
@@ -169,7 +172,7 @@ Na PC, os comandos ++ e -- não são considerados uma atribuição e sim está d
 	  | VAR token_shiftesquerdaigual TO_ATRIB
 ;
 
-TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | U_EXP | token_string;
+TO_ATRIB:  U_EXP_LIST | token_string;
 
 \end{verbatim}
 
@@ -178,7 +181,6 @@ Outra observação importante é que como no léxico o número (inteiro ou float
 
 \subsection{Expressão}
 \begin{verbatim}
-
 U_EXP: EXP token_igualigual EXP
       | EXP token_maior EXP
       | EXP token_menor EXP
@@ -186,6 +188,16 @@ U_EXP: EXP token_igualigual EXP
       | EXP token_menorigual EXP
       | EXP token_diferente EXP
       | EXP
+;
+
+IF_EXP :
+      U_EXP_LIST
+;
+
+U_EXP_LIST : U_EXP U_EXP_LIST2
+;
+
+U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
 ;
 
 EXP: EXP token_mais TERMO
@@ -199,30 +211,38 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO
-      	  | VAR token_maismais
+FATOR: token_num_float 
+	  | token_num_inteiro 
+	  | VAR | token_abrep U_EXP_LIST token_fechap 
+	  | token_letra 
+	  | CHAMADA_FUNCAO
+	  | VAR token_maismais
 	  | token_maismais VAR
 	  | token_menosmenos VAR
 	  | VAR token_menosmenos
+	  | token_menos token_num_float
+	  | token_menos VAR
+	  | token_menos token_num_inteiro
 ;
+
 \end{verbatim}
 
 U\underline{ }EXP são todas as expressões (tanto booleanas quanto numéricas). A precedência de operadores foi resolvida utilizando regras auxiliares (TERMO E FATOR).
+O caso de condicionais múltiplas é permitido, por exemplo, if (a $>$ 3 \&\& a $<$ 10) ou pra um comando de repetição.
 
 \subsection{Chamada de função}
 
 As chamadas de função são simples. Implementadas do seguinte modo:
 
 \begin{verbatim}
+
 CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
 		  | token_ident token_abrep token_fechap
 ;
 
-PARAMETROS: U_EXP PAR2 | token_string PAR2
-;
+PARAMETROS: U_EXP_LIST PAR2 | token_string PAR2;
 
-PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2
-;
+PAR2: | token_virgula U_EXP_LIST PAR2 | token_virgula token_string PAR2;
 
 \end{verbatim}
 
@@ -236,9 +256,10 @@ Estes são bem complicados e foram a parte mais complicada do trabalho por conta
 
 \subsubsection{switch}
 
-O parâmetro de teste do switch pode ser um char ou um número inteiro. A definição segue a seguir:
+O parâmetro de teste do switch pode ser um char ou um número inteiro. É obrigatório ter uma cláusula default. A definição segue a seguir:
 
 \begin{verbatim}
+
 SWITCH: token_switch token_abrep VAR token_fechap token_abrec SWITCH_BLOCK token_fechac
 ;
 
@@ -253,7 +274,11 @@ SWITCH_BLOCK2 :
 \end{verbatim}
 
 \subsection{Comandos de repetição}
-A seguir definiremos os comandos de repetição: FOR, WHILE e DO WHILE assim como na linguagem C.
+A seguir definiremos os comandos de repetição: FOR, WHILE e DO WHILE assim como na linguagem C. A regra abrange todos:
+\begin{verbatim}
+ LOOP : FOR_LOOP | DO_WHILE_LOOP | WHILE_LOOP ;
+\end{verbatim}
+
 \subsubsection{for}
 
 O comando FOR é formado da seguinte forma: for (lista de atribuicoes; condicao; lista de comandos). Pode-se ter várias atribuições dentro dos parenteses do for,
@@ -261,8 +286,8 @@ a condição pode ser qualquer expressão (numérica ou booleana) e pode ser ins
 
 \begin{verbatim}
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap COMANDAO
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
 ;
@@ -273,11 +298,12 @@ ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
 ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
 ;
 
-COMMAND_LIST : | EXP COMMAND_LIST2
+COMMAND_LIST : | ATRIBUICAO COMMAND_LIST2 | EXP COMMAND_LIST2
 ;
 
-COMMAND_LIST2 : | token_virgula  EXP COMMAND_LIST2
+COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP COMMAND_LIST2
 ;
+
 \end{verbatim}
 
 \subsubsection{while}
@@ -285,24 +311,26 @@ COMMAND_LIST2 : | token_virgula  EXP COMMAND_LIST2
 O comando while é parecido com o de C: while (condição). Enquanto esta condição resultar em um valor diferente de zero. A condição pode ser qualquer expressão.
 
 \begin{verbatim}
- WHILE_LOOP: token_while token_abrep U_EXP token_fechap COMANDAO
-	    | token_while token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+ WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap COMANDAO
+	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec BLOCO token_fechac
 ;
 \end{verbatim}
-
-
 
 \subsubsection{do while}
 
 Parecido com while e sob mesmas condições.
 
 \begin{verbatim}
- DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP token_fechap token_ptevirgula
-		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP token_fechap token_ptevirgula
+DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
+		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
 ;
 
 \end{verbatim}
 
+\section{Exclusões}
+Na PC (fazendo jus ao nome), não tem structs, nem DEFINEs, não tem typedef e também não pode incluir bibliotecas.
+
 \section{Exemplos}
-Nos exemplos, exploramos diversas situações para os diversos tipos de usuários.
+Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situação corretas e 5 
+situações erradas.
 \end{document}
