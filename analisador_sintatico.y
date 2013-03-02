@@ -232,6 +232,7 @@ FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fecha
 	  | token_menosmenos VAR
 	  | VAR token_menosmenos
 	  | token_menos token_num_float
+	  | token_menos VAR
 	  | token_menos token_num_inteiro
 ;
 
