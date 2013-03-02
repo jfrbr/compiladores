@@ -41,7 +41,7 @@ int main() {
   pp++;
   
   _expressaoBolada = matrizona[*ind[funcao(par1,par2)+vuash]] + ailelek*4e3%6.3e12 + &pote;
-  for(a = 0,b=-2,c=2e3; a<3; a++,b++,c+1);
+  for(a = 0,b=-2,c=2e3; a<3; a++,b++,c+=1);
   creuza();
   creuza2(a1,teste[&ota],q[4][2][6][teste[i[*r]]][*aiai],-denovo[1] + 45 - -1e2 / *teste[4]);
   int a;
