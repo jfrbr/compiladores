@@ -121,7 +121,7 @@ while {return token_while;}
 "!" {return token_exclamacao;}
 
 '[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {return token_letra;}
-\"[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]*\" {return token_string;}
+\"[^\n]*\" {return token_string;}
 [_a-zA-Z][_a-zA-Z0-9]*	{return token_ident;}
 
 

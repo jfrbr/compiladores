@@ -145,10 +145,10 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula
-	| U_EXP token_ptevirgula
+	| U_EXP_LIST token_ptevirgula
 	| ATRIBUICAO token_ptevirgula
 	| token_string token_ptevirgula
-	| token_return U_EXP token_ptevirgula
+	| token_return U_EXP_LIST token_ptevirgula
 	| token_return token_ptevirgula
 	| token_ptevirgula
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
@@ -193,11 +193,11 @@ VAR: PONTEIRO token_ident
 	| PONTEIRO token_ident COLCHETE
 ;
 
-COLCHETE : token_abrecol U_EXP token_fechacol COLCHETE2
+COLCHETE : token_abrecol U_EXP_LIST token_fechacol COLCHETE2
 ;
 
 COLCHETE2: /**/
-      | token_abrecol U_EXP token_fechacol COLCHETE2
+      | token_abrecol U_EXP_LIST token_fechacol COLCHETE2
       ;
 
 
@@ -265,15 +265,15 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_shiftesquerdaigual TO_ATRIB
 ;
 
-TO_ATRIB:  U_EXP | token_string;
+TO_ATRIB:  U_EXP_LIST | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
 		  | token_ident token_abrep token_fechap
 ;
 
-PARAMETROS: U_EXP PAR2 | token_string PAR2;
+PARAMETROS: U_EXP_LIST PAR2 | token_string PAR2;
 
-PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2;
+PAR2: | token_virgula U_EXP_LIST PAR2 | token_virgula token_string PAR2;
 
 
 
@@ -304,16 +304,16 @@ SWITCH_BLOCK2 :
 
 LOOP : FOR_LOOP | DO_WHILE_LOOP | WHILE_LOOP ;
 
-WHILE_LOOP: token_while token_abrep U_EXP token_fechap COMANDAO
-	    | token_while token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap COMANDAO
+	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec BLOCO token_fechac
 ;
 
-DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP token_fechap token_ptevirgula
-		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP token_fechap token_ptevirgula
+DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
+		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap COMANDAO
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
 ;

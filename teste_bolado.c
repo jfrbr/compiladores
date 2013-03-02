@@ -64,6 +64,9 @@ int main() {
     
     pp <<= (a + denovo[*i[denovo[i]]]);
     
+do{
+  printf("nois que ta\n");
+}while (a<10);
       if(milagre)
 	do {
 	  pp <<= (a + denovo[*i[denovo[i]]]);
@@ -71,7 +74,7 @@ int main() {
 	  *buda[21] *= 1.7e-4;
 	  pp++;
 	}
-	while(q[4][2][6][teste[i[*r]]][*aiai] < 0);
+	while(q[4][2][6][teste[i[*r]]][*aiai] < 0 && 21 && (42+28 > 5 || printf("string bolada(*&^^&%#$#ççç~~~^")));
       else {
 	debug();
 	
