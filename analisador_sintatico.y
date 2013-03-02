@@ -111,6 +111,7 @@ int Nlinha=1;
 
 %%
 
+
 BLOCO_GLOBAL: DECFUNC BLOCO_GLOBAL2
 	      | DEC_VAR_GLOBAL BLOCO_GLOBAL2
 	      //| DEC_STRUCT BLOCO_GLOBAL2
@@ -126,7 +127,6 @@ BLOCO_GLOBAL2: /**/
 PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
       | token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
 ;
-/* Lembrar de permutar decfunc varglob e struct */
 
 DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac
 	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac
@@ -138,10 +138,6 @@ DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
 DEC_VAR_GLOBAL2: | token_virgula VAR DEC_VAR_GLOBAL2
 ;
 
-//DEC_STRUCT: token_struct 
-//DECFUNC2: | TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac DECFUNC2
-//	  | TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac DECFUNC2;
-
 PARAMETROS_TIPO: TIPO token_ident PARAMETROS_TIPO2;
 
 PARAMETROS_TIPO2: | token_virgula TIPO token_ident PARAMETROS_TIPO2;
@@ -149,7 +145,6 @@ PARAMETROS_TIPO2: | token_virgula TIPO token_ident PARAMETROS_TIPO2;
 COMANDAO:   DEC_VAR token_ptevirgula
 	| U_EXP token_ptevirgula
 	| ATRIBUICAO token_ptevirgula
-	//| CHAMADA_FUNCAO token_ptevirgula
 	| token_string token_ptevirgula
 	| token_return U_EXP token_ptevirgula
 	| token_return token_ptevirgula
@@ -280,9 +275,11 @@ SWITCH: token_switch token_abrep VAR token_fechap token_abrec SWITCH_BLOCK token
 
 SWITCH_BLOCK : token_default token_doispontos BLOCO 
 		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2 token_default token_doispontos BLOCO
+		| token_case token_letra token_doispontos BLOCO SWITCH_BLOCK2 token_default token_doispontos BLOCO
 ;
 SWITCH_BLOCK2 : 
 		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2
+		| token_case token_letra token_doispontos BLOCO SWITCH_BLOCK2 
 ;
 
 /* LOOP */
