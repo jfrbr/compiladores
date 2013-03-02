@@ -21,8 +21,288 @@ está dentro dos padrões da linguagem Poor C, que será definida mais abaixo.
 Utilizando a ferramenta Bison para gerar um analisador sintático a tarefa foi facilitada. Nesta documentação, são descritas as regras da linguagem e as dificuldades encontradas pela dupla.
 \section{Linguagem Poor C}
 
+Nesta seção iremos definir o que é a linguagem: algumas restrições e algumas vantagens de uso em comparação ao C.
+
+\subsection{main}
+
+Assim como em C, a linguagem PC também é executada a partir de uma main. A sintaxe é definida a seguir:
+
+\begin{verbatim}
+  int main{
+    return 0; // return nao obrigatorio
+  }
+\end{verbatim}
+
+Outras definições de main não irá funcionar (Por exemplo: void main() ).
+
+\begin{verbatim}
+ PROG: token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
+;
+\end{verbatim}
+
+\subsection{Variáveis globais e funções}
+
+Assim como na linguagem C, a linguagem PC também permite o uso de variavéis globais e outras funções. Porém, estas devem ser definidas
+antes da main. Não existem declarações de funções. A seguir uma estrutura:
+
+\begin{verbatim}
+ [DECLARACAO DE FUNCOES]
+ [DECLARAO DE VARIAVEIS]// a ordem nao importa (Variaveis depois funcoes tambem da certo)
+ 
+ [PROG]
+\end{verbatim}
+
+A sintaxe para declarar é exatamente igual ao C. Nesse caso, mudamos o PROG acima definido:
+
+\begin{verbatim}
+ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
+      | token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
+;
+\end{verbatim}
+Onde,
+\begin{verbatim}
+BLOCO_GLOBAL: DECFUNC BLOCO_GLOBAL2
+	      | DEC_VAR_GLOBAL BLOCO_GLOBAL2
+;
+BLOCO_GLOBAL2: /**/
+	      | DECFUNC BLOCO_GLOBAL2
+	      | DEC_VAR_GLOBAL BLOCO_GLOBAL2
+		
+;
+DECFUNC: TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO 
+         token_fechac
+         | TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac
+;
+
+DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
+;
+
+DEC_VAR_GLOBAL2: | token_virgula VAR DEC_VAR_GLOBAL2
+;
+
+TIPO: token_int | token_char | token_double | token_float | token_void
+;
+\end{verbatim}
+
+A regra TIPO contém os tipos aceitos pela linguagem PC que são int, void, float, double e char. Pode-se ter funções com parâmetros e funções sem parâmetros.
+Em ambas é necessário definir o tipo de retorno.\\
+
+Em todos os casos do analisador sintático em que o nome da regra aparecer com um "2" após significa que aquele é a recursão da regra original.
+
+Agora vamos definir o que pode ser feito dentro de cada função.
+\subsection{BLOCO}
+Bloco é a regra onde está contido tudo o que pode fazer dentro de uma função ou comando: atribuições, declarações, chamadas de funções etc.
+
+\begin{verbatim}
+ COMANDAO:   DEC_VAR token_ptevirgula
+	| U_EXP token_ptevirgula
+	| ATRIBUICAO token_ptevirgula
+	| token_string token_ptevirgula
+	| token_return U_EXP token_ptevirgula
+	| token_return token_ptevirgula
+	| token_ptevirgula
+	| token_if token_abrep U_EXP token_fechap COMANDAO token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
+	| token_if token_abrep U_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep U_EXP token_fechap token_else token_abrec BLOCO token_fechac
+	| SWITCH
+	| token_break token_ptevirgula
+	| token_continue token_ptevirgula
+	| LOOP
+	
+;
+
+BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
+;
+
+BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO BLOCO2
+;
+\end{verbatim}
+
+Comandão é o comando maior, definição de tudo o que pode ser feito na linguagem. Bloco é usado para chamar na main e, como já dito, Bloco2 é a recursão do bloco.
+
+\subsection{Declaração de variáveis}
+
+Em cada função pode ser declarada variavéis internas (pertencentes ao escopo da função) em qualquer lugar da função. Ou seja,
+tem-se a liberdade de declarar uma variável,após usar um comando de selação e depois declarar outra variável. Vetores e matrizes também são permitidos. 
+Para definir o tamanho do vetor/matriz pode-se usar chamada de função, variáveis, etc. É permitido declação múltipla. Por outro lado,
+não é permitido declararação junto com atribuição assim como no exemplo abaixo:
+
+\begin{verbatim}
+ int a = 3;
+\end{verbatim}
+
+Regras definidas no .y:
+
+\begin{verbatim}
+ DEC_VAR: TIPO VAR DEC_VAR2
+;
+
+DEC_VAR2: /**/ 
+	| token_virgula VAR DEC_VAR2
+;
+\end{verbatim}
+
+\subsection{Atribuição}
+
+Nesta seção serão definidos os comandos de atribuição:
+
+\begin{verbatim}
+ = , +=, -=, *=, /=, &=, ^=, |=, >>=, <<=
+\end{verbatim}
+
+Na PC, os comandos ++ e -- não são considerados uma atribuição e sim está definido como expressão. A seguir segue como está no .y:
+
+\begin{verbatim}
+
+ ATRIBUICAO: VAR token_igual TO_ATRIB
+	  | VAR token_maisigual TO_ATRIB
+	  | VAR token_menosigual TO_ATRIB
+	  | VAR token_vezesigual TO_ATRIB
+	  | VAR token_divisaoigual TO_ATRIB
+	  | VAR token_ecomigual TO_ATRIB
+	  | VAR token_xnorigual TO_ATRIB
+	  | VAR token_ouigual TO_ATRIB
+	  | VAR token_shiftdireitaigual TO_ATRIB
+	  | VAR token_shiftesquerdaigual TO_ATRIB
+;
+
+TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | U_EXP | token_string;
+
+\end{verbatim}
+
+A regra TOATRIB é a parte direita da atribuição. Observe que podemos atribuir uma expressão a uma variável. Na próxima seção definiremos o que é uma expressão na PC.
+Outra observação importante é que como no léxico o número (inteiro ou float) não pode ser negativo, inserimos o caso em que ele pode ser negativo no sintático.
+
+\subsection{Expressão}
+\begin{verbatim}
+
+U_EXP: EXP token_igualigual EXP
+      | EXP token_maior EXP
+      | EXP token_menor EXP
+      | EXP token_maiorigual EXP
+      | EXP token_menorigual EXP
+      | EXP token_diferente EXP
+      | EXP
+;
+
+EXP: EXP token_mais TERMO
+    | EXP token_menos TERMO
+    | TERMO
+;
+
+TERMO: TERMO token_vezes FATOR
+      | TERMO token_divisao FATOR
+      | TERMO token_mod FATOR
+      | FATOR
+;
+
+FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fechap | token_letra | CHAMADA_FUNCAO
+      	  | VAR token_maismais
+	  | token_maismais VAR
+	  | token_menosmenos VAR
+	  | VAR token_menosmenos
+;
+\end{verbatim}
+
+U\underline{ }EXP são todas as expressões (tanto booleanas quanto numéricas). A precedência de operadores foi resolvida utilizando regras auxiliares (TERMO E FATOR).
+
+\subsection{Chamada de função}
+
+As chamadas de função são simples. Implementadas do seguinte modo:
+
+\begin{verbatim}
+CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
+		  | token_ident token_abrep token_fechap
+;
+
+PARAMETROS: U_EXP PAR2 | token_string PAR2
+;
+
+PAR2: | token_virgula U_EXP PAR2 | token_virgula token_string PAR2
+;
+
+\end{verbatim}
+
+\subsection{Comandos de seleção}
+
+Definiremos agora os comandos de seleção da linguagem PC.
+
+\subsubsection{if-else}
+
+Estes são bem complicados e foram a parte mais complicada do trabalho por conta das diversas configurações e problemas com precedência.
+
+\subsubsection{switch}
+
+O parâmetro de teste do switch pode ser um char ou um número inteiro. A definição segue a seguir:
+
+\begin{verbatim}
+SWITCH: token_switch token_abrep VAR token_fechap token_abrec SWITCH_BLOCK token_fechac
+;
+
+SWITCH_BLOCK : token_default token_doispontos BLOCO 
+		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2 token_default token_doispontos BLOCO
+		| token_case token_letra token_doispontos BLOCO SWITCH_BLOCK2 token_default token_doispontos BLOCO
+;
+SWITCH_BLOCK2 : 
+		| token_case token_num_inteiro token_doispontos BLOCO SWITCH_BLOCK2
+		| token_case token_letra token_doispontos BLOCO SWITCH_BLOCK2 
+;
+\end{verbatim}
+
+\subsection{Comandos de repetição}
+A seguir definiremos os comandos de repetição: FOR, WHILE e DO WHILE assim como na linguagem C.
+\subsubsection{for}
+
+O comando FOR é formado da seguinte forma: for (lista de atribuicoes; condicao; lista de comandos). Pode-se ter várias atribuições dentro dos parenteses do for,
+a condição pode ser qualquer expressão (numérica ou booleana) e pode ser inserido qualquer comando a ser executado em cada iteração.
+
+\begin{verbatim}
+
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+;
+
+ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
+;
+
+ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
+;
+
+COMMAND_LIST : | EXP COMMAND_LIST2
+;
+
+COMMAND_LIST2 : | token_virgula  EXP COMMAND_LIST2
+;
+\end{verbatim}
+
+\subsubsection{while}
+
+O comando while é parecido com o de C: while (condição). Enquanto esta condição resultar em um valor diferente de zero. A condição pode ser qualquer expressão.
+
+\begin{verbatim}
+ WHILE_LOOP: token_while token_abrep U_EXP token_fechap COMANDAO
+	    | token_while token_abrep U_EXP token_fechap token_abrec BLOCO token_fechac
+;
+\end{verbatim}
+
+
+
+\subsubsection{do while}
+
+Parecido com while e sob mesmas condições.
+
+\begin{verbatim}
+ DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP token_fechap token_ptevirgula
+		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP token_fechap token_ptevirgula
+;
+
+\end{verbatim}
 
 \section{Exemplos}
-Nos exemplos, buscamos identificar os diversos operadores, identificadores e demais características do input. Também prestamos atenção
-aos blocos de comentários que foram problemáticos. 
+Nos exemplos, exploramos diversas situações para os diversos tipos de usuários.
 \end{document}
