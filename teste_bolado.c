@@ -4,7 +4,7 @@ float creuza(int p1, int p2, int p3) {
   whoa = 123;
   char e,f,g;
   vuash();
-  return 3;  
+  return -3;  
 }
 
 float aiaia;

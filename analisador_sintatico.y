@@ -231,6 +231,8 @@ FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP token_fecha
 	  | token_maismais VAR
 	  | token_menosmenos VAR
 	  | VAR token_menosmenos
+	  | token_menos token_num_float
+	  | token_menos token_num_inteiro
 ;
 
 
@@ -247,7 +249,7 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_shiftesquerdaigual TO_ATRIB
 ;
 
-TO_ATRIB:  token_menos token_num_inteiro | token_menos token_num_float | U_EXP | token_string;
+TO_ATRIB:  U_EXP | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
 		  | token_ident token_abrep token_fechap
