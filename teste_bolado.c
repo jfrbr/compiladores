@@ -21,7 +21,7 @@ void cao;
 int main() {
   // Var Declarations
   
-  if(condicao) {
+  if(condicao) 
     if(condicao) {
       if(condicao)
 	debug();
@@ -33,7 +33,7 @@ int main() {
     else 
       if(condicao)
 	teste();
-  }    
+      
     
       
   
