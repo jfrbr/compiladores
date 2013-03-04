@@ -163,6 +163,8 @@ COMANDAO:   DEC_VAR token_ptevirgula
 	| LOOP	
 ;
 
+
+
 BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
 ;
 
@@ -278,10 +280,13 @@ COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
 ;
 
 CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac
+		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO
 ;
 
 CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO
-		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else CMD_NAO_ASSOC
+		| token_if token_abrep IF_EXP token_fechap COMANDO
+		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDO
+		| token_if token_abrep IF_EXP token_fechap token_else COMANDO
 ;
 
 /* SWITCH */

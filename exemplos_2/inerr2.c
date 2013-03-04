@@ -13,7 +13,7 @@ int main(){
 	}
 	for (a = 0; a < b; a++) func1();
 
-	int d,;
+	int d--; // Erro
 
 
 

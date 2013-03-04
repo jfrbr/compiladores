@@ -7,7 +7,7 @@ int main(){
 
 	return 0;
 }
-
+// Erro
 void func1(){
 
 	int b=2;

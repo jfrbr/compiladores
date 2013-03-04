@@ -21,7 +21,7 @@ int main(){
 		func();
 	}
 
-	char c,d,;
+	char c,d,; // Erro
 
 
 }

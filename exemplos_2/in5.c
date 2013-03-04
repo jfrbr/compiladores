@@ -16,5 +16,16 @@ int main(){
 		printf("Ou um 8\n");
 	}
 
-
+	if(condicao) 
+    if(condicao) {
+      if(condicao)
+	debug();
+      else {
+	teste();
+      }
+    }    
+  
+    else 
+      if(condicao)
+	teste();
 }

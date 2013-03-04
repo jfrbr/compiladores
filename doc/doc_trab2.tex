@@ -1,5 +1,5 @@
 \documentclass[a4paper,10pt]{article}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 
 %opening
 \title{2º Trabalho de Compiladores - Analisador Sintático}
@@ -18,7 +18,7 @@ O objetivo deste trabalho é estabelecer um analisador sintático para a linguag
 e sua função é analisar a sintaxe dos elementos contidos em um arquivo de entrada (código fonte). Assim, nesta segunda etapa, busca-se verificar se o arquivo de entrada
 está dentro dos padrões da linguagem Poor C, que será definida mais abaixo.
 
-Utilizando a ferramenta Bison para gerar um analisador sintático a tarefa foi facilitada. Nesta documentação, são descritas as regras da linguagem e as dificuldades encontradas pela dupla.
+Utilizando a ferramenta Bison para gerar um analisador sintático, a tarefa foi facilitada. Nesta documentação, são descritas as regras da linguagem e as dificuldades encontradas pela dupla.
 \section{Linguagem Poor C}
 
 Nesta seção iremos definir o que é a linguagem: algumas restrições e algumas vantagens de uso em comparação ao C.
@@ -33,7 +33,7 @@ Assim como em C, a linguagem PC também é executada a partir de uma main. A sin
   }
 \end{verbatim}
 
-Outras definições de main não irá funcionar (Por exemplo: void main() ).
+Outras definições de main não irão funcionar (Por exemplo: void main() ).
 
 \begin{verbatim}
  PROG: token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
@@ -43,14 +43,7 @@ Outras definições de main não irá funcionar (Por exemplo: void main() ).
 \subsection{Variáveis globais e funções}
 
 Assim como na linguagem C, a linguagem PC também permite o uso de variavéis globais e outras funções. Porém, estas devem ser definidas
-antes da main. Não existem declarações de funções. A seguir uma estrutura:
-
-\begin{verbatim}
- [DECLARACAO DE FUNCOES]
- [DECLARAO DE VARIAVEIS]// a ordem nao importa (Variaveis depois funcoes tambem da certo)
- 
- [PROG]
-\end{verbatim}
+antes da main. Não existem declarações de funções.
 
 A sintaxe para declarar é exatamente igual ao C. Nesse caso, mudamos o PROG acima definido:
 
@@ -88,10 +81,12 @@ A regra TIPO contém os tipos aceitos pela linguagem PC que são int, void, floa
 Em ambas é necessário definir o tipo de retorno.\\
 
 Em todos os casos do analisador sintático em que o nome da regra aparecer com um "2" após significa que aquele é a recursão da regra original.
+Pode-se perceber que a declaração de funções e variáveis globais pode ser intercalada com este recurso, não limitando o programador
+a declarar todas as funções utilizadas no programa para depois declarar todas as variáveis globais.
 
 Agora vamos definir o que pode ser feito dentro de cada função.
 \subsection{BLOCO}
-Bloco é a regra onde está contido tudo o que pode fazer dentro de uma função ou comando: atribuições, declarações, chamadas de funções etc.
+Bloco é a regra onde está contido tudo o que pode ser feito dentro de uma função ou comando: atribuições, declarações, chamadas de funções etc.
 
 \begin{verbatim}
  COMANDAO:   DEC_VAR token_ptevirgula
@@ -122,15 +117,29 @@ BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
 
 BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO BLOCO2
 ;
+\end{verbatim}	
+
+Comandão é o comando maior, definição de tudo o que pode ser feito na linguagem, com exceção dos comandos de seleção não-associados. 
+Em Comandão também são definidos quais comandos necessitam de um ponto-e-vírgula ao final de sua chamada. Notadamente, comandos SWITCH,
+LOOP e de seleção podem ter casos em que o ponto-e-vírgula não é necessário:
+
+\begin{verbatim}
+ if(condicao) {
+  comandos...
+ } 
+ else 
+  funcao;
+ // ponto-e-virgula desnecessario 
 \end{verbatim}
 
-Comandão é o comando maior, definição de tudo o que pode ser feito na linguagem. Bloco é usado para chamar na main e, como já dito, Bloco2 é a recursão do bloco.
+
+Bloco é usado para chamar na main e, como já dito, Bloco2 é a recursão do bloco.
 
 \subsection{Declaração de variáveis}
 
-Em cada função pode ser declarada variavéis internas (pertencentes ao escopo da função) em qualquer lugar da função. Ou seja,
-tem-se a liberdade de declarar uma variável,após usar um comando de selação e depois declarar outra variável. Vetores e matrizes também são permitidos. 
-Para definir o tamanho do vetor/matriz pode-se usar chamada de função, variáveis, etc. É permitido declação múltipla. Por outro lado,
+Em cada função podem ser declaradas variavéis internas (pertencentes ao escopo da função), em qualquer lugar da função. Ou seja,
+tem-se a liberdade de declarar uma variável, após usar um comando de seleção e depois declarar outra variável. Vetores e matrizes n-dimensionais
+também são permitidos. Para definir o tamanho do vetor/matriz pode-se usar chamada de função, variáveis, etc. É permitido declação múltipla. Por outro lado,
 não é permitido declararação junto com atribuição assim como no exemplo abaixo:
 
 \begin{verbatim}
@@ -146,8 +155,30 @@ Regras definidas no .y:
 DEC_VAR2: /**/ 
 	| token_virgula VAR DEC_VAR2
 ;
+PONTEIRO: token_vezes PONTEIRO2
+;
+
+PONTEIRO2: | token_vezes PONTEIRO2
+;
+
+VAR: PONTEIRO token_ident
+	| token_ecom token_ident
+	| token_ident
+	| token_ecom token_ident COLCHETE
+	| token_ident COLCHETE
+	| PONTEIRO token_ident COLCHETE
+;
+
+COLCHETE : token_abrecol U_EXP_LIST token_fechacol COLCHETE2
+;
+
+COLCHETE2: /**/
+      | token_abrecol U_EXP_LIST token_fechacol COLCHETE2
+      ;
+
 \end{verbatim}
 
+A regra U\underline{ }EXP\underline{ }LIST será definida mais abaixo, e corresponde às expressões válidas.
 \subsection{Atribuição}
 
 Nesta seção serão definidos os comandos de atribuição:
@@ -156,7 +187,7 @@ Nesta seção serão definidos os comandos de atribuição:
  = , +=, -=, *=, /=, &=, ^=, |=, >>=, <<=
 \end{verbatim}
 
-Na PC, os comandos ++ e -- não são considerados uma atribuição e sim está definido como expressão. Não é permitido atribuição múltipla, por exemplo, a = b = 1. A seguir segue como está no .y:
+Na PC, os comandos ++ e -- não são considerados uma atribuição, estando definidos como expressão. Não é permitida atribuição múltipla, por exemplo, a = b = 1. A seguir, segue como está no .y:
 
 \begin{verbatim}
 
@@ -177,7 +208,7 @@ TO_ATRIB:  U_EXP_LIST | token_string;
 \end{verbatim}
 
 A regra TOATRIB é a parte direita da atribuição. Observe que podemos atribuir uma expressão a uma variável. Na próxima seção definiremos o que é uma expressão na PC.
-Outra observação importante é que como no léxico o número (inteiro ou float) não pode ser negativo, inserimos o caso em que ele pode ser negativo no sintático.
+Outra observação importante: no léxico, o número (inteiro ou float) não pode ser negativo, portanto inserimos o caso em que ele pode ser negativo no sintático.
 
 \subsection{Expressão}
 \begin{verbatim}
@@ -228,7 +259,7 @@ FATOR: token_num_float
 \end{verbatim}
 
 U\underline{ }EXP são todas as expressões (tanto booleanas quanto numéricas). A precedência de operadores foi resolvida utilizando regras auxiliares (TERMO E FATOR).
-O caso de condicionais múltiplas é permitido, por exemplo, if (a $>$ 3 \&\& a $<$ 10) ou pra um comando de repetição.
+O caso de condicionais múltiplas é permitido, por exemplo, if (a $>$ 3 \&\& a $<$ 10).
 
 \subsection{Chamada de função}
 
@@ -253,7 +284,28 @@ Definiremos agora os comandos de seleção da linguagem PC.
 \subsubsection{if-else}
 
 Estes são bem complicados e foram a parte mais complicada do trabalho por conta das diversas configurações e problemas com precedência.
+Comandos associados (possuindo else) foram definidos no próprio bloco, com as diversas configurações de possibilidade de chaves. Para
+evitar problemas com shift/reduce, os comandos nao associados (sem else) são definidos em separado pelas seguintes regras:
 
+
+
+\begin{verbatim}
+
+COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
+;
+
+CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac
+		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO
+;
+
+CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO
+		| token_if token_abrep IF_EXP token_fechap COMANDO
+		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDO
+;
+
+\end{verbatim}
+
+Estas regras seguem o que foi definido nos slides em sala de aula.
 \subsubsection{switch}
 
 O parâmetro de teste do switch pode ser um char ou um número inteiro. É obrigatório ter uma cláusula default. A definição segue a seguir:
@@ -284,6 +336,8 @@ A seguir definiremos os comandos de repetição: FOR, WHILE e DO WHILE assim com
 O comando FOR é formado da seguinte forma: for (lista de atribuicoes; condicao; lista de comandos). Pode-se ter várias atribuições dentro dos parenteses do for,
 a condição pode ser qualquer expressão (numérica ou booleana) e pode ser inserido qualquer comando a ser executado em cada iteração.
 
+As diferentes atribuições e comandos são separados por vírgulas.
+
 \begin{verbatim}
 
 FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO
@@ -309,6 +363,7 @@ COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP CO
 \subsubsection{while}
 
 O comando while é parecido com o de C: while (condição). Enquanto esta condição resultar em um valor diferente de zero. A condição pode ser qualquer expressão.
+Para executar em loop pode haver comandos na forma de um bloco englobado por chaves ou um comando único como definido em Comandão.
 
 \begin{verbatim}
  WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap COMANDAO
@@ -318,7 +373,7 @@ O comando while é parecido com o de C: while (condição). Enquanto esta condi�
 
 \subsubsection{do while}
 
-Parecido com while e sob mesmas condições.
+Parecido com while e sob mesmas condições, porém o que deve ser executado vem antes da condição.
 
 \begin{verbatim}
 DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
@@ -328,9 +383,10 @@ DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fecha
 \end{verbatim}
 
 \section{Exclusões}
-Na PC (fazendo jus ao nome), não tem structs, nem DEFINEs, não tem typedef e também não pode incluir bibliotecas.
+Na PC (fazendo jus ao nome), não tem structs, nem DEFINEs, não tem typedef e também não pode incluir bibliotecas. O acesso a ponteiros
+por $->$ também não é permitido.
 
 \section{Exemplos}
-Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situação corretas e 5 
-situações erradas.
+Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
+situações erradas. Um teste com situações bizarras e mais difíceis também foi incluído.
 \end{document}

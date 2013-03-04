@@ -23,7 +23,15 @@ int main() {
   while(1);
   
   if(condicao) 
-  else 
+    if(condicao) {
+      if(condicao)
+	debug();
+      else {
+	teste();
+      }
+    }    
+  
+    else 
       if(condicao)
 	teste();
       

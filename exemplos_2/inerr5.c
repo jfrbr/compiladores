@@ -49,7 +49,7 @@ int main(){
 		printf("SINIXXXTRO\n");
 	}
 
-	p4 = &(&d[1]);
+	p4 = &(&d[1]); // erro
 	return a;
 
 }

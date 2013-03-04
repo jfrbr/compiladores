@@ -13,7 +13,7 @@ int main(){
 		}
 	}
 
-	char a = 'a';
+	char a = 'a'; // erro
 
 	return 1;
 }
