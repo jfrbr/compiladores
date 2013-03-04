@@ -20,6 +20,24 @@ void cao;
 
 int main() {
   // Var Declarations
+  
+  if(condicao) {
+    if(condicao) {
+      if(condicao)
+	debug();
+      else {
+	teste();
+      }
+    }    
+  
+    else 
+      if(condicao)
+	teste();
+  }    
+    
+      
+  
+  
   int a,b,*c,d;
   char e,f,g;
   int *denovo[3],q[4][2][6][teste[i[*r]]][*aiai];
