@@ -1,6 +1,10 @@
 %{
 #include <stdio.h>
+#include "hash.h"
+extern char ident[256];
 int Nlinha=1;
+
+list HashVar[MAX_HASH_SIZE];
 %}
 
 %token token_numero
