@@ -3,6 +3,8 @@
 	#include <string.h>
 	int lines=1;
 	char comment[1000];
+	char identificador[256];
+	char atrib[100];
 	int i=0;
 %}
 
@@ -37,7 +39,7 @@ float {return token_float;}
 for {return token_for;}
 goto {return token_goto;}
 if {return token_if;}
-int {return token_int;}
+int {strcat(atrib,yytext); strcat(atrib," "); return token_int;}
 include {return token_include;}
 long {return token_long;}
 register {return token_register;}
@@ -102,8 +104,8 @@ while {return token_while;}
 ")" {return token_fechap;}
 "[" {return token_abrecol;}
 "]" {return token_fechacol;}
-"," {return token_virgula;}
-";" {return token_ptevirgula;}
+"," {strcat(atrib,yytext); return token_virgula;}
+";" {strcat(atrib,yytext); return token_ptevirgula;}
 ":" {return token_doispontos;}
 "{" {return token_abrec;}
 "}" {return token_fechac;}
@@ -122,7 +124,7 @@ while {return token_while;}
 
 '[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {return token_letra;}
 \"[^\n]*\" {return token_string;}
-[_a-zA-Z][_a-zA-Z0-9]*	{return token_ident;}
+[_a-zA-Z][_a-zA-Z0-9]*	{strcat(atrib,yytext); return token_ident;}
 
 
 \n {lines++;}

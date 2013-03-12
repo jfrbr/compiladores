@@ -11,6 +11,18 @@
   hash[i] = var;
 }*/
 
+void initHash(list *hash,int hashSize) {
+	for(int i=0; i<hashSize; i++) {
+		hash[i] = initList();
+	}
+}
+
+void destroyHash(list *hash,int hashSize) {
+	for(int i=0; i<hashSize; i++) {
+			destroyList(hash[i]);
+		}
+}
+
 void hashInsertVar(list *hash,s_variavel *var) {
   int i = sum_ascii(var->nome)%MAX_HASH_SIZE;
 

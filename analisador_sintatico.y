@@ -3,8 +3,10 @@
 #include "hash.h"
 extern char ident[256];
 int Nlinha=1;
+extern char atrib[100];
 
 list HashVar[MAX_HASH_SIZE];
+
 %}
 
 %token token_numero
@@ -148,9 +150,41 @@ PARAMETROS_TIPO: TIPO VAR PARAMETROS_TIPO2
 PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
-COMANDAO:   DEC_VAR token_ptevirgula
+COMANDAO:   DEC_VAR token_ptevirgula {
+	  printf("So papai: %s\n",atrib);
+	  char *tipo,*varlist,*var,*_var;
+	  tipo = strtok(atrib," ");
+	  varlist = strtok(NULL," ");	
+	  printf("Tipo: %s\nVars: %s\n",tipo,varlist);
+	  
+	  var = strtok(varlist,",");
+	  int type=0;
+	  
+	  // TODO estender para float, string, char, boolean
+	  switch(tipo[0]) {
+		case 'i':
+			type = T_INT;
+			break;
+		default:
+			break;
+	  }
+	  
+	  
+	  
+	  while(var != NULL) {
+		
+		s_variavel *v = allocateVar();						
+		setVar(v,var,NULL,type,"main");
+		
+		hashInsertVar(HashVar,v);
+		
+		printf ("%s\n",v->nome);
+		var = strtok (NULL, " ,;");
+	  }
+	  
+	}
 	| U_EXP_LIST token_ptevirgula
-	| ATRIBUICAO token_ptevirgula
+	| ATRIBUICAO token_ptevirgula		
 	| token_string token_ptevirgula
 	| token_return U_EXP_LIST token_ptevirgula
 	| token_return token_ptevirgula
@@ -340,7 +374,11 @@ COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP CO
 #include "lex.yy.c"
 
 main(){
+	initHash(HashVar,MAX_HASH_SIZE);
+	strcpy(atrib,"\0");
 	yyparse();
+	s_variavel *tmp = hashSearchVar(HashVar,"sde");
+	printf("tmp->nome: %s\n",tmp->nome);
 }
 
 /* rotina chamada por yyparse quando encontra erro */

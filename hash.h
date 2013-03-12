@@ -12,7 +12,8 @@
 #define MAX_HASH_SIZE 997
 
 
-void initHash(int hashSize);
+void initHash(list *hash,int hashSize);
+void destroyHash(list *hash,int hashSize);
 
 void hashInsertVar(list *hash,s_variavel *var);
 void hashInsertFunction(list *hash,s_funcao *function);

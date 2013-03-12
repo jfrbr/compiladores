@@ -28,4 +28,6 @@ void* getNode(list l,int index);
 NODELISTPTR allocateNode();
 NODELISTPTR copyNode(NODELISTPTR p);
 int nList(list l);
+void destroyList(list l);
+
 #endif /* LIST_H_ */

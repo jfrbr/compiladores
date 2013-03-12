@@ -67,3 +67,17 @@ NODELISTPTR copyNode(NODELISTPTR p) {
 	aux->element = p->element;
 	return aux;
 }
+
+void destroyList(list l) {
+	NODELISTPTR aux,aux2=l->head;
+	for(int i=0; i<l->nElem; i++) {
+		aux = aux2;
+		aux2 = aux2->next;
+		free(aux->element);
+		free(aux);
+		aux->element = NULL;
+		aux = NULL;
+	}
+	free(l);
+	l = NULL;
+}
