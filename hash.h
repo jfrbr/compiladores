@@ -18,6 +18,8 @@ void destroyHash(list *hash,int hashSize);
 void hashInsertVar(list *hash,s_variavel *var);
 void hashInsertFunction(list *hash,s_funcao *function);
 
-s_variavel *hashSearchVar(list *hash,char *nome);
+s_variavel *hashSearchVar(list *hash,char *nome,char *escopo);
 s_funcao *hashSearchFunction(list *hash,char *nome);
 int sum_ascii(char *string);
+
+int varExists(list *hash,char *nome,char *escopo);

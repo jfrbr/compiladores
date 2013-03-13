@@ -31,13 +31,13 @@ void hashInsertVar(list *hash,s_variavel *var) {
   addNode(hash[i],node);
 }
 
-s_variavel *hashSearchVar(list *hash,char *nome) {
+s_variavel *hashSearchVar(list *hash,char *nome,char *escopo) {
 	int index = sum_ascii(nome)%MAX_HASH_SIZE;
 	if(!hash[index]) return NULL;
 	s_variavel *aux;
 	for(int j=0; j < hash[index]->nElem; j++) {
 		aux = ((s_variavel*)(getNode(hash[index],j)));
-		if(strcmp(aux->nome,nome) == 0) return aux;
+		if((strcmp(aux->nome,nome) == 0) && (strcmp(aux->escopo,escopo) == 0)) return aux;
 	}
 	return NULL;
 }
@@ -71,6 +71,11 @@ int sum_ascii(char *string) {
   return ascii;
 }
 
+int varExists(list *hash,char *nome,char *escopo) {
+	s_variavel *aux = hashSearchVar(hash,nome,escopo);
+	if(aux->nome) return 1;
+	else return 0;
+}
 
 
 /*int main() {

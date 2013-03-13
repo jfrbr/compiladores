@@ -21,3 +21,4 @@ void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo) {
 int checkVarType(s_variavel *var,int tipo) {
 	return (var) && var->tipo == tipo;
 }
+

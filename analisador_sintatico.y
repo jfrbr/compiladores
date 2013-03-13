@@ -4,6 +4,7 @@
 extern char ident[256];
 int Nlinha=1;
 extern char atrib[100];
+char currentFunction[50];
 
 list HashVar[MAX_HASH_SIZE];
 
@@ -130,8 +131,8 @@ BLOCO_GLOBAL2: /**/
 ;
 
 
-PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
-      | token_int_main token_abrep token_fechap token_abrec BLOCO token_fechac
+PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
+      | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
 DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac
@@ -151,19 +152,30 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
+	  // TODO verificar se a variavel existe antes de inserir
 	  printf("So papai: %s\n",atrib);
-	  char *tipo,*varlist,*var,*_var;
+	  char *tipo,*varlist,*var;
 	  tipo = strtok(atrib," ");
 	  varlist = strtok(NULL," ");	
-	  printf("Tipo: %s\nVars: %s\n",tipo,varlist);
 	  
-	  var = strtok(varlist,",");
+	  var = strtok(varlist,",;");
 	  int type=0;
 	  
-	  // TODO estender para float, string, char, boolean
 	  switch(tipo[0]) {
 		case 'i':
 			type = T_INT;
+			break;
+		case 'f':
+			type = T_FLOAT;
+			break;
+		case 'c':
+			type = T_CHAR;
+			break;
+		case 's':
+			type = T_STRING;
+			break;
+		case 'b':
+			type = T_BOOLEAN;
 			break;
 		default:
 			break;
@@ -174,14 +186,20 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  while(var != NULL) {
 		
 		s_variavel *v = allocateVar();						
-		setVar(v,var,NULL,type,"main");
+		setVar(v,var,NULL,type,currentFunction);
+		printf("nome: %s\nescopo: %s\n",v->nome,v->escopo);
+		if(!varExists(HashVar,v->nome,v->escopo)) {
+			hashInsertVar(HashVar,v);
+		}
+		else {
+			printf("Erro: Variavel %s sendo redeclarada\n",v->nome);
+		}
 		
-		hashInsertVar(HashVar,v);
 		
-		printf ("%s\n",v->nome);
+		
 		var = strtok (NULL, " ,;");
 	  }
-	  
+	  strcpy(tipo,"\0");
 	}
 	| U_EXP_LIST token_ptevirgula
 	| ATRIBUICAO token_ptevirgula		
@@ -377,8 +395,9 @@ main(){
 	initHash(HashVar,MAX_HASH_SIZE);
 	strcpy(atrib,"\0");
 	yyparse();
-	s_variavel *tmp = hashSearchVar(HashVar,"sde");
-	printf("tmp->nome: %s\n",tmp->nome);
+	s_variavel *tmp = hashSearchVar(HashVar,"cde","main");
+	if(tmp->nome) printf("Variavel Existe com escopo main\n");
+	printf("sde exists: %d\n",varExists(HashVar,"sde",NULL));
 }
 
 /* rotina chamada por yyparse quando encontra erro */
