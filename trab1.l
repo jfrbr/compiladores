@@ -25,23 +25,24 @@ comentario_bloco "/""*"+([^*/][^*]*"*"+)*"/"
 
 auto {return token_auto;}
 break {return token_break;}
+bool {strcat(atrib,yytext); strcat(atrib," ");return token_bool;}
 case {return token_case;}
 char {return token_char;}
 const {return token_const;}
 continue {return token_continue;}
 default {return token_default;}
 do {return token_do;}
-double {return token_double;}
+double {strcat(atrib,yytext); strcat(atrib," ");return token_double;}
 else {return token_else;}
 enum {return token_enum;}
 extern {return token_extern;}
-float {return token_float;}
+float {strcat(atrib,yytext); strcat(atrib," ");return token_float;}
 for {return token_for;}
 goto {return token_goto;}
 if {return token_if;}
 int {strcat(atrib,yytext); strcat(atrib," "); return token_int;}
 include {return token_include;}
-long {return token_long;}
+long {strcat(atrib,yytext); strcat(atrib," "); return token_long;}
 register {return token_register;}
 return {return token_return;}
 short {return token_short;}
@@ -53,7 +54,7 @@ switch {return token_switch;}
 typedef {return token_typedef;}
 union {return token_union;}
 unsigned {return token_unsigned;}
-void {return token_void;}
+void {strcat(atrib,yytext); strcat(atrib," "); return token_void;}
 volatile {return token_volatile;}
 while {return token_while;}
 

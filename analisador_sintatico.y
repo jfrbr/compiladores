@@ -112,7 +112,7 @@ list HashVar[MAX_HASH_SIZE];
 %token token_fechacol
 %token token_letra
 %token token_string
-
+%token token_bool
 
 %start PROG
 
@@ -152,7 +152,7 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
-	  // TODO verificar se a variavel existe antes de inserir
+
 	  printf("So papai: %s\n",atrib);
 	  char *tipo,*varlist,*var;
 	  tipo = strtok(atrib," ");
@@ -180,9 +180,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		default:
 			break;
 	  }
-	  
-	  
-	  
+	  	  
 	  while(var != NULL) {
 		
 		s_variavel *v = allocateVar();						
@@ -194,12 +192,10 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		else {
 			printf("Erro: Variavel %s sendo redeclarada\n",v->nome);
 		}
-		
-		
-		
 		var = strtok (NULL, " ,;");
 	  }
 	  strcpy(tipo,"\0");
+      strcpy(atrib,"\0");
 	}
 	| U_EXP_LIST token_ptevirgula
 	| ATRIBUICAO token_ptevirgula		
@@ -259,7 +255,7 @@ COLCHETE2: /**/
 
 
 
-TIPO: token_int | token_char | token_double | token_float | token_void
+TIPO: token_int | token_char | token_double | token_float | token_void | token_bool
 ;
 
 

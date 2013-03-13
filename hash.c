@@ -73,7 +73,8 @@ int sum_ascii(char *string) {
 
 int varExists(list *hash,char *nome,char *escopo) {
 	s_variavel *aux = hashSearchVar(hash,nome,escopo);
-	if(aux->nome) return 1;
+
+	if(aux) return 1;
 	else return 0;
 }
 
