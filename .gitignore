@@ -1,3 +1,4 @@
+lex.yy.c
 *.pdf
 *~
 trab1.c
@@ -7,4 +8,15 @@ doc.dvi
 doc.log
 doc.tex.backup
 PDF/*
+.cproject
+.project
+a.out
+*.output
+*.tab.c
+doc/*
+*.o
+test.c
+tmp/*
+trab2
+trab3
 

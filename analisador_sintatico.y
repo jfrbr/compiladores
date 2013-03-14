@@ -7,6 +7,7 @@ extern char atrib[100];
 char currentFunction[50];
 
 list HashVar[MAX_HASH_SIZE];
+list HashFunc[MAX_HASH_SIZE];
 
 %}
 
@@ -135,8 +136,50 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(c
       | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
-DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac
-	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac
+DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac {strcpy(currentFunction,ident);}
+	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac {
+	
+		printf("Entrou na funcao sem parametros lelek\nAtrib: %s\n",atrib);
+		char *tipo,*funcname,*var;
+		tipo = strtok(atrib," ");
+		int type;
+		
+		switch(tipo[0]) {
+		case 'i':
+			type = T_INT;
+			break;
+		case 'f':
+			type = T_FLOAT;
+			break;
+		case 'c':
+			type = T_CHAR;
+			break;
+		case 's':
+			type = T_STRING;
+			break;
+		case 'b':
+			type = T_BOOLEAN;
+			break;
+		default:
+			break;
+		}
+		
+		funcname = strtok(NULL,";");	
+		
+		printf("varlist: %s\n",funcname);
+		s_funcao *function = allocateFunction();
+		setFunction(function,funcname,0,type,NULL);
+		
+		if(!funcExists(HashFunc,function->nome)) {
+			hashInsertFunction(HashFunc,function);
+		}
+		else {
+			printf("Erro: Funcao %s sendo redeclarada\n",function->nome);
+		}
+		
+		
+		strcpy(atrib,"\0");
+	}
 ;
 
 DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
@@ -186,6 +229,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		s_variavel *v = allocateVar();						
 		setVar(v,var,NULL,type,currentFunction);
 		printf("nome: %s\nescopo: %s\n",v->nome,v->escopo);
+		
+		
 		if(!varExists(HashVar,v->nome,v->escopo)) {
 			hashInsertVar(HashVar,v);
 		}
@@ -389,6 +434,7 @@ COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP CO
 
 main(){
 	initHash(HashVar,MAX_HASH_SIZE);
+	initHash(HashFunc,MAX_HASH_SIZE);
 	strcpy(atrib,"\0");
 	yyparse();
 	s_variavel *tmp = hashSearchVar(HashVar,"cde","main");

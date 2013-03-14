@@ -3,7 +3,7 @@
 	#include <string.h>
 	int lines=1;
 	char comment[1000];
-	char identificador[256];
+	char ident[256];
 	char atrib[100];
 	int i=0;
 %}
@@ -125,7 +125,7 @@ while {return token_while;}
 
 '[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {return token_letra;}
 \"[^\n]*\" {return token_string;}
-[_a-zA-Z][_a-zA-Z0-9]*	{strcat(atrib,yytext); return token_ident;}
+[_a-zA-Z][_a-zA-Z0-9]*	{strcat(atrib,yytext); strcpy(ident,yytext); return token_ident;}
 
 
 \n {lines++;}

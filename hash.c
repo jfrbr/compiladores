@@ -78,6 +78,13 @@ int varExists(list *hash,char *nome,char *escopo) {
 	else return 0;
 }
 
+int funcExists(list *hash,char *nome,char *escopo) {
+	s_funcao *aux = hashSearchFunction(hash,nome);
+
+	if(aux) return 1;
+	else return 0;
+}
+
 
 /*int main() {
   s_variavel *teste = allocateVar(),*teste2=allocateVar();
