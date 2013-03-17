@@ -1,9 +1,13 @@
 %{
 #include <stdio.h>
 #include "hash.h"
+#include "parser.h"
+
 extern char ident[256];
 int Nlinha=1;
-extern char atrib[100];
+extern char atrib[200];
+extern char num_inteiro[50];
+extern char num_float[50];
 char currentFunction[50];
 
 list HashVar[MAX_HASH_SIZE];
@@ -136,37 +140,63 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(c
       | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
-DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac {strcpy(currentFunction,ident);}
+DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac {
+
+			printf("ATRIB = %s\n",atrib);
+			char *tipo, *funcname,*varlist,*var;
+			tipo = strtok(atrib," ");
+			printf("TIPO = %s\n",tipo);
+			int returnType = converType(tipo);
+			
+			funcname = strtok(NULL,"(");	
+			printf("%s\n",funcname);
+			strcpy(currentFunction,funcname);
+
+			varlist = strtok(NULL,")");
+			printf("VAR LIST = %s\n",varlist);
+
+			list parameters = initList();
+
+			int* tipo_var = (int*) malloc (sizeof(int));			
+
+			var = strtok(varlist,",");
+			
+			while (var){
+
+				int b = converType(var);
+				tipo_var = (int*)b;
+				NODELISTPTR node = allocateNode();
+				node->element = tipo_var;						
+				addNode(parameters,node);
+
+				var = strtok(NULL,",");
+			}
+
+			s_funcao *function = allocateFunction();
+			setFunction(function,funcname,parameters->nElem,returnType,parameters);
+		
+			if(!funcExists(HashFunc,function->nome)) {
+				hashInsertFunction(HashFunc,function);
+			}
+			else {
+				printf("Erro: Funcao %s sendo redeclarada\n",function->nome);
+			}
+			
+			strcpy(atrib,"\0");
+			strcpy(ident,"\0");
+
+
+			}
 	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac {
 	
-		printf("Entrou na funcao sem parametros lelek\nAtrib: %s\n",atrib);
 		char *tipo,*funcname,*var;
 		tipo = strtok(atrib," ");
-		int type;
+		int type = converType(tipo);
 		
-		switch(tipo[0]) {
-		case 'i':
-			type = T_INT;
-			break;
-		case 'f':
-			type = T_FLOAT;
-			break;
-		case 'c':
-			type = T_CHAR;
-			break;
-		case 's':
-			type = T_STRING;
-			break;
-		case 'b':
-			type = T_BOOLEAN;
-			break;
-		default:
-			break;
-		}
-		
-		funcname = strtok(NULL,";");	
-		
-		printf("varlist: %s\n",funcname);
+		funcname = strtok(NULL,"(");
+	
+		strcpy(currentFunction,funcname);
+
 		s_funcao *function = allocateFunction();
 		setFunction(function,funcname,0,type,NULL);
 		
@@ -176,8 +206,7 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec 
 		else {
 			printf("Erro: Funcao %s sendo redeclarada\n",function->nome);
 		}
-		
-		
+			
 		strcpy(atrib,"\0");
 	}
 ;
@@ -196,41 +225,20 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
 
-	  printf("So papai: %s\n",atrib);
 	  char *tipo,*varlist,*var;
+ 	printf("\n%s\n",atrib);
 	  tipo = strtok(atrib," ");
 	  varlist = strtok(NULL," ");	
 	  
 	  var = strtok(varlist,",;");
-	  int type=0;
-	  
-	  switch(tipo[0]) {
-		case 'i':
-			type = T_INT;
-			break;
-		case 'f':
-			type = T_FLOAT;
-			break;
-		case 'c':
-			type = T_CHAR;
-			break;
-		case 's':
-			type = T_STRING;
-			break;
-		case 'b':
-			type = T_BOOLEAN;
-			break;
-		default:
-			break;
-	  }
+	  int type= converType(tipo);
 	  	  
-	  while(var != NULL) {
+	  while(var){
 		
-		s_variavel *v = allocateVar();						
+		s_variavel *v = allocateVar();
+	
 		setVar(v,var,NULL,type,currentFunction);
-		printf("nome: %s\nescopo: %s\n",v->nome,v->escopo);
-		
-		
+			
 		if(!varExists(HashVar,v->nome,v->escopo)) {
 			hashInsertVar(HashVar,v);
 		}
@@ -243,11 +251,39 @@ COMANDAO:   DEC_VAR token_ptevirgula {
       strcpy(atrib,"\0");
 	}
 	| U_EXP_LIST token_ptevirgula
-	| ATRIBUICAO token_ptevirgula		
+	| ATRIBUICAO token_ptevirgula{
+				
+			char *varname = strtok(atrib," ");
+				
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+	
+			char *operador = strtok(NULL," ;");
+				
+			if (!strcmp(operador,"=")){
+				if ( strcmp(num_inteiro,"\0")){
+					hashUpdateVar(HashVar,varname,currentFunction,num_inteiro);
+									
+				}else if ( strcmp(num_float,"\0")){
+					hashUpdateVar(HashVar,varname,currentFunction,num_float);
+
+				}else{
+					printf("Tipo ainda nao definido\n");
+				}
+
+			}
+					
+			strcpy(num_float,"\0");
+			strcpy(num_inteiro,"\0");
+			strcpy(atrib,"\0");
+			
+	}		
 	| token_string token_ptevirgula
 	| token_return U_EXP_LIST token_ptevirgula
 	| token_return token_ptevirgula
-	| token_ptevirgula
+	| token_ptevirgula {
+		strcpy(num_float,"\0");
+		strcpy(num_inteiro,"\0");
+	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
 	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
@@ -433,13 +469,33 @@ COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP CO
 #include "lex.yy.c"
 
 main(){
+
 	initHash(HashVar,MAX_HASH_SIZE);
 	initHash(HashFunc,MAX_HASH_SIZE);
+
 	strcpy(atrib,"\0");
+	strcpy(num_float,"\0");
+	strcpy(num_inteiro,"\0");
+
 	yyparse();
-	s_variavel *tmp = hashSearchVar(HashVar,"cde","main");
-	if(tmp->nome) printf("Variavel Existe com escopo main\n");
-	printf("sde exists: %d\n",varExists(HashVar,"sde",NULL));
+	s_funcao *func = hashSearchFunction(HashFunc,"testando");
+	printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
+	func = hashSearchFunction(HashFunc,"f");
+	printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
+
+	/* Checa se variaveis declaradas nao foram utilizadas */
+
+	checkVariables(HashVar);
+
+	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
+	printf("%s\n",tmp->valor);
+
+	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
+//	printf("%s\n",tmp2->valor);
+
+
+//	if(tmp->nome) printf("Variavel Existe com escopo main\n");
+//	printf("sde exists: %d\n",varExists(HashVar,"sde",NULL));
 }
 
 /* rotina chamada por yyparse quando encontra erro */

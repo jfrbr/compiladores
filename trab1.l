@@ -4,7 +4,9 @@
 	int lines=1;
 	char comment[1000];
 	char ident[256];
-	char atrib[100];
+	char atrib[200];
+	char num_inteiro[50];
+	char num_float[50];
 	int i=0;
 %}
 
@@ -27,7 +29,7 @@ auto {return token_auto;}
 break {return token_break;}
 bool {strcat(atrib,yytext); strcat(atrib," ");return token_bool;}
 case {return token_case;}
-char {return token_char;}
+char {strcat(atrib,yytext); strcat(atrib," ");return token_char;}
 const {return token_const;}
 continue {return token_continue;}
 default {return token_default;}
@@ -68,8 +70,8 @@ while {return token_while;}
 	}
 }
 
-{inteiro} {return token_num_inteiro;}
-{float} {return token_num_float;}
+{inteiro} {strcpy(num_inteiro,yytext); return token_num_inteiro;}
+{float} {strcpy(num_float,yytext);return token_num_float;}
 
 "+" {return token_mais;}
 "-" {return token_menos;}
@@ -88,28 +90,28 @@ while {return token_while;}
 "==" {return token_igualigual;}
 "!=" {return token_diferente;}
 
-"=" {return token_igual;}
-"+=" {return token_maisigual;}
-"-=" {return token_menosigual;}
-"*=" {return token_vezesigual;}
-"/=" {return token_divisaoigual;}
-"&=" {return token_ecomigual;}
-"^=" {return token_xnorigual;}
-"|=" {return token_ouigual;}
-">>=" {return token_shiftesquerdaigual;}
-"<<=" {return token_shiftdireitaigual;}
+"=" {strcat(atrib," "); strcat(atrib,yytext);return token_igual;}
+"+=" {strcat(atrib," ");strcat(atrib,yytext);return token_maisigual;}
+"-=" {strcat(atrib," ");strcat(atrib,yytext);return token_menosigual;}
+"*=" {strcat(atrib," ");strcat(atrib,yytext);return token_vezesigual;}
+"/=" {strcat(atrib," ");strcat(atrib,yytext);return token_divisaoigual;}
+"&=" {strcat(atrib," ");strcat(atrib,yytext);return token_ecomigual;}
+"^=" {strcat(atrib," ");strcat(atrib,yytext);return token_xnorigual;}
+"|=" {strcat(atrib," ");strcat(atrib,yytext);return token_ouigual;}
+">>=" {strcat(atrib," ");strcat(atrib,yytext);return token_shiftesquerdaigual;}
+"<<=" {strcat(atrib," ");strcat(atrib,yytext);return token_shiftdireitaigual;}
 
 
 
-"(" {return token_abrep;}
-")" {return token_fechap;}
+"(" {strcat(atrib,yytext);return token_abrep;}
+")" {strcat(atrib,yytext);return token_fechap;}
 "[" {return token_abrecol;}
 "]" {return token_fechacol;}
 "," {strcat(atrib,yytext); return token_virgula;}
 ";" {strcat(atrib,yytext); return token_ptevirgula;}
 ":" {return token_doispontos;}
-"{" {return token_abrec;}
-"}" {return token_fechac;}
+"{" {strcat(atrib,yytext);return token_abrec;}
+"}" {strcat(atrib,yytext);return token_fechac;}
 "#" {return token_tralha;}
 "'" {return token_aspa_simples;}
 "\"" {return token_aspas;}

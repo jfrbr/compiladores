@@ -42,6 +42,21 @@ s_variavel *hashSearchVar(list *hash,char *nome,char *escopo) {
 	return NULL;
 }
 
+void hashUpdateVar(list *hash,char *nome,char *escopo, void* valor) {
+
+	int index = sum_ascii(nome)%MAX_HASH_SIZE;
+	if(!hash[index]) return;
+	s_variavel *aux;
+	for(int j=0; j < hash[index]->nElem; j++) {
+		aux = ((s_variavel*)(getNode(hash[index],j)));
+		if((strcmp(aux->nome,nome) == 0) && (strcmp(aux->escopo,escopo) == 0)){
+			aux->valor = valor;
+			return;
+		}
+	}
+	return;
+}
+
 void hashInsertFunction(list *hash,s_funcao *function) {
   int i = sum_ascii(function->nome)%MAX_HASH_SIZE;
 
@@ -84,7 +99,23 @@ int funcExists(list *hash,char *nome,char *escopo) {
 	if(aux) return 1;
 	else return 0;
 }
+int checkVariables(list* hash){
 
+	if (!hash) return -1;
+
+	for (int i=0; i < MAX_HASH_SIZE; i++){
+		if (hash[i]->nElem > 0){
+			for (int j=0; j < hash[i]->nElem; j++){
+				list l = hash[i];
+				s_variavel* v = getNode(l,j);
+				if (v->valor == NULL){
+					 printf("A variavel %s nao foi utilizada\n",v->nome);
+				}
+			}
+		}
+	}
+
+}
 
 /*int main() {
   s_variavel *teste = allocateVar(),*teste2=allocateVar();
