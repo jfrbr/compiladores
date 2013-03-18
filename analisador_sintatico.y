@@ -8,6 +8,7 @@ int Nlinha=1;
 extern char atrib[200];
 extern char num_inteiro[50];
 extern char num_float[50];
+extern lines;
 char currentFunction[50];
 
 list HashVar[MAX_HASH_SIZE];
@@ -164,9 +165,9 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 			while (var){
 
 				int b = converType(var);
-				tipo_var = (int*)b;
+				//tipo_var = (int*)b;
 				NODELISTPTR node = allocateNode();
-				node->element = tipo_var;						
+				node->element = b;						
 				addNode(parameters,node);
 
 				var = strtok(NULL,",");
@@ -239,7 +240,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		
 		s_variavel *v = allocateVar();
 	
-		setVar(v,var,NULL,type,currentFunction);
+		setVar(v,var,NULL,type,currentFunction,lines);
 			
 		if(!varExists(HashVar,v->nome,v->escopo)) {
 			hashInsertVar(HashVar,v);
@@ -495,7 +496,7 @@ main(){
 //	printf("%s\n",tmp->valor);
 
 	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
-	printf("%s\n",tmp2->valor);
+	printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
 
 
 //	if(tmp->nome) printf("Variavel Existe com escopo main\n");

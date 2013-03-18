@@ -10,11 +10,12 @@ struct  {
   void *valor;
   int tipo;
   char escopo[30];
+  int lineDeclared;
 } typedef s_variavel;
 
 
 s_variavel* allocateVar();
-void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo);
+void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo,int lineDeclared);
 int checkVarType(s_variavel *var,int tipo);
 
 

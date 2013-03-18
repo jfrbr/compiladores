@@ -7,7 +7,7 @@ s_variavel* allocateVar() {
 	else return NULL;
 }
 
-void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo) {
+void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo,int lineDeclared) {
 	if(!var) {
 		printf("Ponteiro pra Var nulo\n");
 		exit(1);
@@ -15,6 +15,7 @@ void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo) {
 	strcpy(var->nome,nome);
 	var->valor = valor;
 	var->tipo = tipo;
+	var->lineDeclared = lineDeclared;
 	strcpy(var->escopo,escopo);
 }
 
