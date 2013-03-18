@@ -110,8 +110,8 @@ while {return token_while;}
 "," {strcat(atrib,yytext); return token_virgula;}
 ";" {strcat(atrib,yytext); return token_ptevirgula;}
 ":" {return token_doispontos;}
-"{" {strcat(atrib,yytext);return token_abrec;}
-"}" {strcat(atrib,yytext);return token_fechac;}
+"{" {return token_abrec;}
+"}" {return token_fechac;}
 "#" {return token_tralha;}
 "'" {return token_aspa_simples;}
 "\"" {return token_aspas;}

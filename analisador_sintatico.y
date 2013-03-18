@@ -140,20 +140,20 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(c
       | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
-DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec BLOCO token_fechac {
+DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
-			printf("ATRIB = %s\n",atrib);
+		//	printf("ATRIB = %s\n",atrib);
 			char *tipo, *funcname,*varlist,*var;
 			tipo = strtok(atrib," ");
-			printf("TIPO = %s\n",tipo);
+		//	printf("TIPO = %s\n",tipo);
 			int returnType = converType(tipo);
 			
 			funcname = strtok(NULL,"(");	
-			printf("%s\n",funcname);
+		//	printf("%s\n",funcname);
 			strcpy(currentFunction,funcname);
 
 			varlist = strtok(NULL,")");
-			printf("VAR LIST = %s\n",varlist);
+		//	printf("VAR LIST = %s\n",varlist);
 
 			list parameters = initList();
 
@@ -186,8 +186,8 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec 
 			strcpy(ident,"\0");
 
 
-			}
-	| TIPO token_ident token_abrep token_fechap token_abrec BLOCO token_fechac {
+			} token_abrec BLOCO token_fechac 
+	| TIPO token_ident token_abrep token_fechap {
 	
 		char *tipo,*funcname,*var;
 		tipo = strtok(atrib," ");
@@ -208,7 +208,7 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap token_abrec 
 		}
 			
 		strcpy(atrib,"\0");
-	}
+	} token_abrec BLOCO token_fechac 
 ;
 
 DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
@@ -226,9 +226,11 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 COMANDAO:   DEC_VAR token_ptevirgula {
 
 	  char *tipo,*varlist,*var;
- 	printf("\n%s\n",atrib);
+	  printf("ATRIB = %s\n",atrib);
 	  tipo = strtok(atrib," ");
+	  printf("TIPO = %s\n",tipo);
 	  varlist = strtok(NULL," ");	
+	  printf("VAR LIST = %s\n",varlist);
 	  
 	  var = strtok(varlist,",;");
 	  int type= converType(tipo);
@@ -254,13 +256,15 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| ATRIBUICAO token_ptevirgula{
 				
 			char *varname = strtok(atrib," ");
-				
+			printf("%s\n",varname);
 			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
 	
 			char *operador = strtok(NULL," ;");
 				
 			if (!strcmp(operador,"=")){
 				if ( strcmp(num_inteiro,"\0")){
+					printf("NUM INTEIRO = %s\n",num_inteiro);
+					printf("CURRENT FUNCTION = %s\n",currentFunction);
 					hashUpdateVar(HashVar,varname,currentFunction,num_inteiro);
 									
 				}else if ( strcmp(num_float,"\0")){
@@ -481,17 +485,17 @@ main(){
 	s_funcao *func = hashSearchFunction(HashFunc,"testando");
 	printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 	func = hashSearchFunction(HashFunc,"f");
-	printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
+	if (func) printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 
 	/* Checa se variaveis declaradas nao foram utilizadas */
 
 	checkVariables(HashVar);
-
-	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
-	printf("%s\n",tmp->valor);
+	
+//	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
+//	printf("%s\n",tmp->valor);
 
 	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
-//	printf("%s\n",tmp2->valor);
+	printf("%s\n",tmp2->valor);
 
 
 //	if(tmp->nome) printf("Variavel Existe com escopo main\n");
