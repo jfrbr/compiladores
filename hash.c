@@ -93,7 +93,7 @@ int varExists(list *hash,char *nome,char *escopo) {
 	else return 0;
 }
 
-int funcExists(list *hash,char *nome,char *escopo) {
+int funcExists(list *hash,char *nome) {
 	s_funcao *aux = hashSearchFunction(hash,nome);
 
 	if(aux) return 1;

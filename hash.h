@@ -25,6 +25,6 @@ s_funcao *hashSearchFunction(list *hash,char *nome);
 int sum_ascii(char *string);
 
 int varExists(list *hash,char *nome,char *escopo);
-int functionExists(list *hash,char *nome);
+int functionExists(list *hash);
 
 int checkVariables(list* hash);

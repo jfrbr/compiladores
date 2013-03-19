@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <string.h>
 #include "hash.h"
 #include "parser.h"
 
@@ -137,7 +138,7 @@ BLOCO_GLOBAL2: /**/
 ;
 
 
-PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
+PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
       | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
@@ -251,9 +252,14 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		var = strtok (NULL, " ,;");
 	  }
 	  strcpy(tipo,"\0");
-      strcpy(atrib,"\0");
+	  strcpy(atrib,"\0");
 	}
-	| U_EXP_LIST token_ptevirgula
+	
+	
+	| U_EXP_LIST token_ptevirgula {
+	  strcpy(atrib,"\0");
+	}
+	
 	| ATRIBUICAO token_ptevirgula{
 				
 			char *varname = strtok(atrib," ");
@@ -283,11 +289,14 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			
 	}		
 	| token_string token_ptevirgula
+	//TODO verificar se o tipo do return é o mesmo da funçao atual
 	| token_return U_EXP_LIST token_ptevirgula
 	| token_return token_ptevirgula
+	
 	| token_ptevirgula {
 		strcpy(num_float,"\0");
 		strcpy(num_inteiro,"\0");
+		
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
 	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO
@@ -404,8 +413,68 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 
 TO_ATRIB:  U_EXP_LIST | token_string;
 
-CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap
-		  | token_ident token_abrep token_fechap
+CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
+			printf("Chamou funcao com parametros\n");
+			char *funcname,*parlist,*tmpparlist;
+			
+			int nParam=1;
+			funcname = strtok(atrib,"(");
+			printf("funcname: %s\n",funcname);
+			parlist = strtok(NULL,")");
+			printf("parlist: %s\n",parlist);
+			//strcpy(tmpparlist,parlist);
+			//strcat(tmpparlist,"\0");
+			int i=0;
+			//printf("tmpparlist: %s\n",tmpparlist);
+			for(i=0; parlist[i] != '\0'; i++) {
+				//printf("tmpparlist[%d]: %c\n",i,'a');
+				if(parlist[i]==',') nParam++;
+			}
+			printf("Parametros passados: %d\n",nParam);
+			
+			// Verifica existencia e aridade da funcao
+			if(!funcExists(HashFunc,funcname)) {
+				printf("Erro na linha %d: Funcao nao definida\n",lines);
+			}
+			else {
+				s_funcao *aux = hashSearchFunction(HashFunc,funcname);
+				if(checkArity(aux,nParam) != 1) {
+					printf("Erro na linha %d: Funcao sendo chamada com numero incorreto de parametros\n",lines);
+				}
+				// Verifica se a lista de parametros esta com os tipos corretos
+				else {
+					NODELISTPTR pList = aux->parametros->head;
+					int i=0;
+					for(i=0; i<aux->parametros->nElem; i++) {
+						printf("Parametro %d: %d\n",i,(int)(pList->element));
+						// TODO terminar isso aqui
+					}
+				}
+			}
+			
+			//
+			
+			//debug();
+		}
+		
+
+
+		  | token_ident token_abrep token_fechap {
+			printf("Chamou uma funcao sem parametro: %s\n",atrib);
+			char *funcname;
+			funcname = strtok(atrib,"(");
+			printf("funcname: %s\n",funcname);
+			if(!funcExists(HashFunc,funcname)) {
+				printf("Erro na linha %d: Funcao nao definida\n",lines);
+			}
+			else {
+				s_funcao *aux = hashSearchFunction(HashFunc,funcname);
+				if(checkArity(aux,0) != 1) {
+					printf("Erro na linha %d: Funcao com parametros sendo chamada sem parametros\n",lines);
+				}
+			}
+			strcpy(atrib,"\0");
+		  }
 ;
 
 PARAMETROS: U_EXP_LIST PAR2 | token_string PAR2;
