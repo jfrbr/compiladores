@@ -406,7 +406,25 @@ U_EXP_LIST : U_EXP {
 	    } U_EXP_LIST2
 ;
 
-U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
+U_EXP_LIST2 : {
+		printf("Acabou a lista de expressoes!\n");
+	      }
+	      | token_ecomecom U_EXP {	      
+		  // Append current expression on expression list and reset testList
+		  NODELISTPTR apList = allocateNode();
+		  apList->element = testList;
+		  addNode(exprList,apList);
+		  testList = initList();	      
+	      }	      
+	      U_EXP_LIST2 
+	      | token_ou U_EXP {
+		  // Append current expression on expression list and reset testList
+		  NODELISTPTR apList = allocateNode();
+		  apList->element = testList;
+		  addNode(exprList,apList);
+		  testList = initList();
+	      }
+	    U_EXP_LIST2
 ;
 
 
