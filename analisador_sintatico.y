@@ -439,7 +439,7 @@ FATOR: token_num_float {
 		printf("Achei um char\n");
 		NODELISTPTR charNode = allocateNode();
 		int *tipo = malloc(sizeof(int));
-		*tipo = T_INT;
+		*tipo = T_CHAR;
 		charNode->element = tipo;		
 		addNode(testList,charNode);
 	  
@@ -462,13 +462,122 @@ FATOR: token_num_float {
 	  
 	  
 	  
-      	  | VAR token_maismais
-	  | token_maismais VAR
-	  | token_menosmenos VAR
-	  | VAR token_menosmenos
-	  | token_menos token_num_float
-	  | token_menos VAR
-	  | token_menos token_num_inteiro
+      	  | VAR token_maismais {
+		// Check if var exists
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);
+		
+		strcpy(atrib,"\0");
+      	  }
+	  | token_maismais VAR {
+		// Check if var exists
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);
+		
+		strcpy(atrib,"\0");	  
+	  }
+	  
+	  | token_menosmenos VAR {
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);
+		
+		strcpy(atrib,"\0");
+	  }
+	  | VAR token_menosmenos {
+		
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}		
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);		
+		strcpy(atrib,"\0");	  
+	  }
+	  | token_menos token_num_float {
+		printf("Achei um float\n");
+		NODELISTPTR floatNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_FLOAT;
+		floatNode->element = tipo;		
+		addNode(testList,floatNode);		
+	  }
+	  | token_menos VAR {
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}		
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);		
+		strcpy(atrib,"\0");	  
+	  }
+	  | token_menos token_num_inteiro {
+		printf("Achei um int\n");
+		NODELISTPTR intNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_INT;
+		intNode->element = tipo;		
+		addNode(testList,intNode);
+	  }
 ;
 
 
