@@ -11,6 +11,7 @@ struct  {
   int tipo;
   char escopo[30];
   int lineDeclared;
+  // TODO adicionar atributo para tratar vetores e matrizes
 } typedef s_variavel;
 
 

@@ -81,3 +81,9 @@ void destroyList(list l) {
 	free(l);
 	l = NULL;
 }
+
+void _toList(list l, void *var) {	
+		NODELISTPTR op = allocateNode();
+		op->element = var;		
+		addNode(l,op);
+}

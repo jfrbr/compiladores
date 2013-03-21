@@ -29,5 +29,6 @@ NODELISTPTR allocateNode();
 NODELISTPTR copyNode(NODELISTPTR p);
 int nList(list l);
 void destroyList(list l);
+void _toList(list l,void *var);
 
 #endif /* LIST_H_ */
