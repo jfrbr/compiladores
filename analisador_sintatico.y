@@ -15,6 +15,9 @@ char currentFunction[50];
 list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
 
+list exprList;
+list testList;
+
 %}
 
 %token token_numero
@@ -97,7 +100,7 @@ list HashFunc[MAX_HASH_SIZE];
 %token token_maisigual
 %token token_menosigual
 %token token_vezesigual
-%token token_divisaoigual
+    %token token_divisaoigual
 %token token_ecomigual
 %token token_xnorigual
 %token token_ouigual
@@ -138,8 +141,8 @@ BLOCO_GLOBAL2: /**/
 ;
 
 
-PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
-      | token_int_main token_abrep token_fechap token_abrec {strcpy(currentFunction,"main");} BLOCO token_fechac
+PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {printf("Wololo\n\n\n"); strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
+      | token_int_main token_abrep token_fechap token_abrec {strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
 DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
@@ -165,7 +168,8 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 			
 			while (var){
 
-				int b = converType(var);
+				int *b = malloc(sizeof(int));
+				*b = converType(var);
 				//tipo_var = (int*)b;
 				NODELISTPTR node = allocateNode();
 				node->element = b;						
@@ -369,7 +373,13 @@ IF_EXP :
       U_EXP_LIST
 ;
 
-U_EXP_LIST : U_EXP U_EXP_LIST2
+U_EXP_LIST : U_EXP {
+	    // Append current expression on expression list and reset testList
+	    NODELISTPTR apList = allocateNode();
+	    apList->element = testList;
+	    addNode(exprList,apList);
+	    testList = initList();
+	    } U_EXP_LIST2
 ;
 
 U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
@@ -387,7 +397,71 @@ TERMO: TERMO token_vezes FATOR
       | FATOR
 ;
 
-FATOR: token_num_float | token_num_inteiro | VAR | token_abrep U_EXP_LIST token_fechap | token_letra | CHAMADA_FUNCAO
+FATOR: token_num_float {
+		
+		printf("Achei um float\n");
+		NODELISTPTR floatNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_FLOAT;
+		floatNode->element = tipo;		
+		addNode(testList,floatNode);
+		
+	  }
+	  
+	  | token_num_inteiro {
+		printf("Achei um int\n");
+		NODELISTPTR intNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_INT;
+		intNode->element = tipo;		
+		addNode(testList,intNode);
+	  }	  
+
+	  | VAR {
+		// Check if var exists
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		NODELISTPTR varNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		printf("Tipo da variavel: %d\n",*tipo);
+		varNode->element = tipo;		
+		addNode(testList,varNode);
+		
+		strcpy(atrib,"\0");
+	  }
+	  
+	  | token_abrep U_EXP_LIST token_fechap 
+	  | token_letra {
+		printf("Achei um char\n");
+		NODELISTPTR charNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_INT;
+		charNode->element = tipo;		
+		addNode(testList,charNode);
+	  
+	  }
+	  | CHAMADA_FUNCAO {
+		// Check if var exists
+		printf("Achei uma funcao: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!funcExists(HashFunc,ident)) {
+		  printf("Erro na linha %d: Funcao %s nao declarada\n",lines,ident);
+		}
+		NODELISTPTR funcNode = allocateNode();
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,ident)))->tipo_retorno;
+		printf("Tipo da variavel: %d\n",*tipo);
+		funcNode->element = tipo;		
+		addNode(testList,funcNode);
+	  
+	  }
+	  
+	  
+	  
       	  | VAR token_maismais
 	  | token_maismais VAR
 	  | token_menosmenos VAR
@@ -446,7 +520,7 @@ CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
 					NODELISTPTR pList = aux->parametros->head;
 					int i=0;
 					for(i=0; i<aux->parametros->nElem; i++) {
-						printf("Parametro %d: %d\n",i,(int)(pList->element));
+						printf("Parametro %d: %d\n",i,*(int*)(pList->element));
 						// TODO terminar isso aqui
 					}
 				}
@@ -546,6 +620,9 @@ main(){
 
 	initHash(HashVar,MAX_HASH_SIZE);
 	initHash(HashFunc,MAX_HASH_SIZE);
+	
+	exprList = initList();
+	testList = initList();
 
 	strcpy(atrib,"\0");
 	strcpy(num_float,"\0");
@@ -553,22 +630,31 @@ main(){
 
 	yyparse();
 	s_funcao *func = hashSearchFunction(HashFunc,"testando");
-	printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
+	//printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 	func = hashSearchFunction(HashFunc,"f");
-	if (func) printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
+	//if (func) printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 
 	/* Checa se variaveis declaradas nao foram utilizadas */
 
 	checkVariables(HashVar);
 	
-//	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
+	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
 //	printf("%s\n",tmp->valor);
 
 	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
-	printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
+	//printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
+	
+	testList = (list)(getNode(exprList,2));
+	
+	printf("Expr types: %d\n",testList->nElem);
+	int i=0;
+	for(i=0; i < testList->nElem; i++) {
+		printf("Type %d from expr: %d\n",i,*(int*)(getNode(testList,i)));
+	}
+	
 
 
-//	if(tmp->nome) printf("Variavel Existe com escopo main\n");
+	if(tmp->nome) printf("Variavel Existe com escopo %s\n",tmp->escopo);
 //	printf("sde exists: %d\n",varExists(HashVar,"sde",NULL));
 }
 
