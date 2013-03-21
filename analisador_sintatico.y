@@ -419,12 +419,36 @@ TIPO: token_int | token_char | token_double | token_float | token_void | token_b
 
 
 /* EXPRESSAO */
-U_EXP: EXP token_igualigual EXP
-      | EXP token_maior EXP
-      | EXP token_menor EXP
-      | EXP token_maiorigual EXP
-      | EXP token_menorigual EXP
-      | EXP token_diferente EXP
+U_EXP: EXP token_igualigual {
+		char *op = malloc(2*sizeof(char));
+		strcpy(op,"==");
+		_toList(testList,op);
+      } EXP
+      | EXP token_maior {
+		char *op = malloc(sizeof(char));
+		strcpy(op,">");
+		_toList(testList,op);
+      } EXP
+      | EXP token_menor {
+		char *op = malloc(sizeof(char));
+		strcpy(op,"<");
+		_toList(testList,op);
+      } EXP
+      | EXP token_maiorigual {
+		char *op = malloc(2*sizeof(char));
+		strcpy(op,">=");
+		_toList(testList,op);
+      } EXP
+      | EXP token_menorigual {
+		char *op = malloc(2*sizeof(char));
+		strcpy(op,"<=");
+		_toList(testList,op);
+      } EXP
+      | EXP token_diferente {
+		char *op = malloc(2*sizeof(char));
+		strcpy(op,"!=");
+		_toList(testList,op);
+      } EXP
       | EXP
   
 ;
@@ -446,35 +470,53 @@ U_EXP_LIST2 : | token_ecomecom U_EXP U_EXP_LIST2 | token_ou U_EXP U_EXP_LIST2
 ;
 
 
-EXP: EXP token_mais TERMO
-    | EXP token_menos TERMO
+EXP: EXP token_mais {
+		printf("Achei um +\n");
+		char *op = malloc(sizeof(char));
+		*op = '+';
+		_toList(testList,op);
+      } TERMO
+    | EXP token_menos {
+		printf("Achei um -\n");
+		char *op = malloc(sizeof(char));
+		*op = '-';		
+		_toList(testList,op);
+      } TERMO
     | TERMO
 ;
 
-TERMO: TERMO token_vezes FATOR
-      | TERMO token_divisao FATOR
-      | TERMO token_mod FATOR
+TERMO: TERMO token_vezes {
+		char *op = malloc(sizeof(char));
+		*op = '*';		
+		_toList(testList,op);
+      } FATOR 
+      | TERMO token_divisao {
+		char *op = malloc(sizeof(char));
+		*op = '/';		
+		_toList(testList,op);
+      } FATOR
+      | TERMO token_mod {		
+		char *op = malloc(sizeof(char));
+		*op = '%';		
+		_toList(testList,op);
+      } FATOR
       | FATOR
 ;
 
 FATOR: token_num_float {
 		
-		printf("Achei um float\n");
-		NODELISTPTR floatNode = allocateNode();
+		printf("Achei um float\n");		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_FLOAT;
-		floatNode->element = tipo;		
-		addNode(testList,floatNode);
+		_toList(testList,tipo);
 		
 	  }
 	  
 	  | token_num_inteiro {
 		printf("Achei um int\n");
-		NODELISTPTR intNode = allocateNode();
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_INT;
-		intNode->element = tipo;		
-		addNode(testList,intNode);
+		_toList(testList,tipo);
 	  }	  
 
 	  | VAR {
@@ -484,12 +526,12 @@ FATOR: token_num_float {
 		if(!varExists(HashVar,ident,currentFunction)) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
 		}
-		NODELISTPTR varNode = allocateNode();
+		
 		int *tipo = malloc(sizeof(int));
 		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
 		printf("Tipo da variavel: %d\n",*tipo);
-		varNode->element = tipo;		
-		addNode(testList,varNode);
+		
+		_toList(testList,tipo);
 		
 		strcpy(atrib,"\0");
 	  }
@@ -497,12 +539,11 @@ FATOR: token_num_float {
 	  | token_abrep U_EXP_LIST token_fechap 
 	  | token_letra {
 		printf("Achei um char\n");
-		NODELISTPTR charNode = allocateNode();
+		
 		int *tipo = malloc(sizeof(int));
-		*tipo = T_INT;
-		charNode->element = tipo;		
-		addNode(testList,charNode);
-	  
+		*tipo = T_CHAR;
+		
+		_toList(testList,tipo);
 	  }
 	  | CHAMADA_FUNCAO {
 		// Check if var exists
@@ -511,24 +552,132 @@ FATOR: token_num_float {
 		if(!funcExists(HashFunc,ident)) {
 		  printf("Erro na linha %d: Funcao %s nao declarada\n",lines,ident);
 		}
-		NODELISTPTR funcNode = allocateNode();
+		
 		int *tipo = malloc(sizeof(int));
 		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,ident)))->tipo_retorno;
 		printf("Tipo da variavel: %d\n",*tipo);
-		funcNode->element = tipo;		
-		addNode(testList,funcNode);
+		
+		_toList(testList,tipo);
 	  
 	  }
 	  
 	  
 	  
-      	  | VAR token_maismais
-	  | token_maismais VAR
-	  | token_menosmenos VAR
-	  | VAR token_menosmenos
-	  | token_menos token_num_float
-	  | token_menos VAR
-	  | token_menos token_num_inteiro
+      	  | VAR token_maismais {
+		// Check if var exists
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		}
+		
+		printf("Tipo da variavel: %d\n",*tipo);
+		_toList(testList,tipo);
+		
+		strcpy(atrib,"\0");
+      	  }
+	  | token_maismais VAR {
+		// Check if var exists
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		
+		_toList(testList,tipo);
+		
+		strcpy(atrib,"\0");	  
+	  }
+	  
+	  | token_menosmenos VAR {
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}
+		
+		
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		
+		_toList(testList,tipo);
+		
+		strcpy(atrib,"\0");
+	  }
+	  | VAR token_menosmenos {
+		
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}		
+
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+
+		_toList(testList,tipo);
+		strcpy(atrib,"\0");	  
+	  }
+	  | token_menos token_num_float {
+		printf("Achei um float\n");
+
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_FLOAT;
+		_toList(testList,tipo);	  
+	  }
+	  | token_menos VAR {
+		printf("Achei uma variavel: %s\n",ident);
+		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
+		if(!varExists(HashVar,ident,currentFunction)) {
+		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		}		
+
+		int *tipo = malloc(sizeof(int));
+		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
+		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		}
+		printf("Tipo da variavel: %d\n",*tipo);
+		_toList(testList,tipo);
+		
+		strcpy(atrib,"\0");	  
+	  }
+	  | token_menos token_num_inteiro {
+		printf("Achei um int\n");
+		
+		int *tipo = malloc(sizeof(int));
+		*tipo = T_INT;
+		
+		_toList(testList,tipo);
+	  }
 ;
 
 
@@ -710,8 +859,9 @@ main(){
 	
 	printf("Expr types: %d\n",testList->nElem);
 	int i=0;
-	for(i=0; i < testList->nElem; i++) {
+	for(i=0; i < testList->nElem-1; i++) {
 		printf("Type %d from expr: %d\n",i,*(int*)(getNode(testList,i)));
+<<<<<<< HEAD
 	}*/
 	
 

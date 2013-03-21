@@ -23,4 +23,3 @@ int converType(char* type){
 	}
 	return 0;
 }
-
