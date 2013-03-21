@@ -10,11 +10,11 @@ int converType(char* type){
 			return 1;
 		case 'f':
 			return 2;
-		case 'c':
-			return 3;
-		case 's':
-			return 4;
 		case 'b':
+			return 3;
+		case 'c':
+			return 4;
+		case 's':
 			return 5;
 		case 'v':
 			return 6;

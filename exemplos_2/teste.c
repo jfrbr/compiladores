@@ -1,6 +1,8 @@
 int f() {
-  int c;
-  c=2;
+  float c;
+  c=2.5;
+  char a;
+  a = 'b';
   return 1;
 }
 
@@ -11,8 +13,25 @@ int f() {
 }
 */
 int main() {
+	bool c;
+
     float a;
-    4.56 + 2.0 - 3 + a + 'a' + f();
+	a += 1;
+	a += 'a';
+	a += 1.0;
+	a -= 1;
+	a -= 1.1;
+	a -= "pra dar pau";
+
+	int b;
+	b += 1;
+	b += 1.1;
+	b += 'a';
+
+	a *= 1;
+	a *= 1.1;
+	
+  //  4.56 + 2.0 - 3 + a + 'a' + f();
     /*int a,b;
     a=1;
     f();

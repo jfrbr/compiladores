@@ -9,6 +9,9 @@ int Nlinha=1;
 extern char atrib[200];
 extern char num_inteiro[50];
 extern char num_float[50];
+extern char num_char[50];
+extern char num_string[300];
+extern char num_boolean[10];
 extern lines;
 char currentFunction[50];
 
@@ -100,7 +103,7 @@ list testList;
 %token token_maisigual
 %token token_menosigual
 %token token_vezesigual
-    %token token_divisaoigual
+%token token_divisaoigual
 %token token_ecomigual
 %token token_xnorigual
 %token token_ouigual
@@ -123,6 +126,8 @@ list testList;
 %token token_letra
 %token token_string
 %token token_bool
+%token token_true
+%token token_false
 
 %start PROG
 
@@ -266,31 +271,86 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	
 	| ATRIBUICAO token_ptevirgula{
 				
+			printf("ATRIBUICAO = %s\n",atrib);
 			char *varname = strtok(atrib," ");
 			printf("%s\n",varname);
 			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-	
+			printf("CURRENT FUNCTION = %s\n",currentFunction);
+			int tipo_var = v->tipo;
+
+			printf("TIPO VAR = %d\n",tipo_var);
 			char *operador = strtok(NULL," ;");
+			printf("OPERADOR = %s\n",operador);
 				
 			if (!strcmp(operador,"=")){
-				if ( strcmp(num_inteiro,"\0")){
-					printf("NUM INTEIRO = %s\n",num_inteiro);
-					printf("CURRENT FUNCTION = %s\n",currentFunction);
-					hashUpdateVar(HashVar,varname,currentFunction,num_inteiro);
-									
-				}else if ( strcmp(num_float,"\0")){
-					hashUpdateVar(HashVar,varname,currentFunction,num_float);
-
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && strcmp(num_float,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && strcmp(num_char,"\0")) {
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
+					printf("Ok! Tipo permitido!\n");
 				}else{
-					printf("Tipo ainda nao definido\n");
+					printf("ATRIBUICAO NAO PERMITIDA\n");
 				}
-
-			}
-					
+			}else if (!strcmp(operador,"+=")){
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_FLOAT || tipo_var == T_INT || tipo_var == T_CHAR )&& strcmp(num_float,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_CHAR || tipo_var == T_INT || tipo_var == T_FLOAT) && strcmp(num_char,"\0")) {
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("ATRIBUICAO NAO PERMITIDA\n");
+				}
+			}else if (!strcmp(operador,"-=")){
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_FLOAT || tipo_var == T_INT || tipo_var == T_CHAR )&& strcmp(num_float,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_CHAR || tipo_var == T_INT) && strcmp(num_char,"\0")) {
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("ATRIBUICAO NAO PERMITIDA\n");
+				}
+			}else if (!strcmp(operador,"*=")){
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_FLOAT || tipo_var == T_INT || tipo_var == T_CHAR )&& strcmp(num_float,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_CHAR || tipo_var == T_INT) && strcmp(num_char,"\0")) {
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("ATRIBUICAO NAO PERMITIDA\n");
+				}
+			}else if (!strcmp(operador,"/=")){
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_FLOAT || tipo_var == T_INT || tipo_var == T_CHAR )&& strcmp(num_float,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else if ( (tipo_var == T_CHAR || tipo_var == T_INT) && strcmp(num_char,"\0")) {
+					printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
+					printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("ATRIBUICAO NAO PERMITIDA\n");
+				}
+			}else {
+					printf("OPERADOR NÃO TRATADO!\n");
+			}					
 			strcpy(num_float,"\0");
 			strcpy(num_inteiro,"\0");
+			strcpy(num_boolean,"\0");
+			strcpy(num_char,"\0");
+			strcpy(num_string,"\0");
 			strcpy(atrib,"\0");
-			
 	}		
 	| token_string token_ptevirgula
 	//TODO verificar se o tipo do return é o mesmo da funçao atual
@@ -627,6 +687,7 @@ main(){
 	strcpy(atrib,"\0");
 	strcpy(num_float,"\0");
 	strcpy(num_inteiro,"\0");
+	strcpy(num_char,"\0");
 
 	yyparse();
 	s_funcao *func = hashSearchFunction(HashFunc,"testando");
@@ -643,18 +704,19 @@ main(){
 
 	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
 	//printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
-	
+
+/*	
 	testList = (list)(getNode(exprList,2));
 	
 	printf("Expr types: %d\n",testList->nElem);
 	int i=0;
 	for(i=0; i < testList->nElem; i++) {
 		printf("Type %d from expr: %d\n",i,*(int*)(getNode(testList,i)));
-	}
+	}*/
 	
 
 
-	if(tmp->nome) printf("Variavel Existe com escopo %s\n",tmp->escopo);
+//	if(tmp->nome) printf("Variavel Existe com escopo %s\n",tmp->escopo);
 //	printf("sde exists: %d\n",varExists(HashVar,"sde",NULL));
 }
 

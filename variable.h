@@ -11,6 +11,7 @@ struct  {
   int tipo;
   char escopo[30];
   int lineDeclared;
+  int used;
 } typedef s_variavel;
 
 
