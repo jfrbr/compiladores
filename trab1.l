@@ -7,6 +7,9 @@
 	char atrib[200];
 	char num_inteiro[50];
 	char num_float[50];
+	char num_char[50];
+	char num_string[300];
+	char num_boolean[10];
 	int i=0;
 %}
 
@@ -61,6 +64,9 @@ volatile {return token_volatile;}
 while {return token_while;}
 
 "int main" {return token_int_main;}
+
+true {strcpy(num_boolean,yytext); return token_true;}
+false {strcpy(num_boolean,yytext); return token_false;}
 
 {comentario_linha} 
 {comentario_bloco} {
@@ -125,8 +131,8 @@ while {return token_while;}
 "^" {return token_chapeuzinho;}
 "!" {return token_exclamacao;}
 
-'[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {return token_letra;}
-\"[^\n]*\" {return token_string;}
+'[a-zA-Z0-9 !.,@;/\[\]()#$%^&*_\-+=\\'\"\?~<>:|{}]' {strcpy(num_char,yytext); return token_letra;}
+\"[^\n]*\" {strcpy(num_string,yytext);return token_string;}
 [_a-zA-Z][_a-zA-Z0-9]*	{strcat(atrib,yytext); strcpy(ident,yytext); return token_ident;}
 
 

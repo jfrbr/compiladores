@@ -17,6 +17,7 @@ void setVar(s_variavel *var,char *nome,void *valor,int tipo,char *escopo,int lin
 	var->tipo = tipo;
 	var->lineDeclared = lineDeclared;
 	strcpy(var->escopo,escopo);
+    var->used = 0;
 }
 
 int checkVarType(s_variavel *var,int tipo) {
