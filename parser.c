@@ -52,6 +52,111 @@ void cleanExprList(list l) {
 	
 	
 }
+/*
+#define T_INT 1
+#define T_FLOAT 2
+#define T_BOOLEAN 3
+#define T_CHAR 4
+#define T_STRING 5
+#define T_VOID 6
+*/
+int changeType(int t1, int t2, char* c){
+
+	if (!c) return -2;
+
+	if ( !strcmp(c,">") )
+		if (t1 != 3 && t1 != 3 && t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	if ( !strcmp(c,"<") )
+		if( t1 != 3 && t1 != 3 && t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	if ( !strcmp(c,">=") )
+		if ( t1 != 3 && t1 != 3 && t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	if ( !strcmp(c,"<="))
+		if(t1 != 3 && t1 != 3 && t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	if ( !strcmp(c,"==") )
+		if (t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	if ( !strcmp(c,"!=")) 
+		if (t1 != 5 && t2 != 5) return 3;
+		else return -1;
+
+	
+	if (t1 == 1){
+
+		if ( t2 == 1 ) return 1;
+		if ( t2 == 2) return 2;
+		if ( t2 == 3) return -1;
+		if ( t2 == 4 ) return 1;
+		if ( t2 == 5) return -1;
+		if ( t2 == 6) return -1;
+		
+		return -1;
+	}
+
+	if (t1 == 2){
+
+		if ( t2 == 1 ) return 2;
+		if ( t2 == 2) return 2;
+		if ( t2 == 3) return -1;
+		if ( t2 == 4 ) return 2;
+		if ( t2 == 5) return -1;
+		if ( t2 == 6) return -1;
+
+		return -1;
+	}
+
+	if (t1 == 4){
+
+		if ( t2 == 1 ) return 4;
+		if ( t2 == 2) return -1;
+		if ( t2 == 3) return -1;
+		if ( t2 == 4 ) return 4;
+		if ( t2 == 5) return -1;
+		if ( t2 == 6) return -1;
+
+		return -1;
+	}
+	
+	if (t1==5 || t1 ==6) return -1;
+
+}
+
+int returnTypeExprList(list l){
+
+	if(!l || !(l->head)) {
+	  printf("Lista nao iniciada\n");
+	  return -1;
+	}
+
+	int i, len = l->nElem, type;
+	char* op = NULL;
+
+	NODELISTPTR aux = l->head;
+
+	type = *((int*)aux->element);
+	
+	for (i=1;i<len;i++){
+		
+		if (i%2 == 0){
+			type = changeType(type, *(int*)aux->element,op);
+			
+		}else{
+			op = (char*) aux->element;
+		}
+				
+		aux = aux->next;
+	}
+	
+	return type;
+}
 
 int returnAtualVarType(){
 
