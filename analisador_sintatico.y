@@ -280,13 +280,21 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			char *varname = strtok(atrib," ");
 			printf("%s\n",varname);
 			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			printf("CURRENT FUNCTION = %s\n",currentFunction);
 			int tipo_var = v->tipo;
 
 			printf("TIPO VAR = %d\n",tipo_var);
 			char *operador = strtok(NULL," ;");
 			printf("OPERADOR = %s\n",operador);
-				
+
+			int testando = returnAtualVarType();
+			printf("BAGULHO DOIDO = %d\n",testando);			
+	
 			if (!strcmp(operador,"=")){
 				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
 					printf("Ok! Tipo permitido!\n");

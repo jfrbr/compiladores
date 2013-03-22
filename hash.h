@@ -11,6 +11,10 @@
 #define T_STRING 5
 #define T_VOID 6
 
+#define NOT_USING 0
+#define USING 1
+
+
 #define MAX_HASH_SIZE 997
 
 
@@ -19,6 +23,9 @@ void destroyHash(list *hash,int hashSize);
 
 void hashInsertVar(list *hash,s_variavel *var);
 void hashInsertFunction(list *hash,s_funcao *function);
+
+void hashVarUpdateValue(list *hash,char *nome,char *escopo, void* valor);
+void hashVarUpdateUse(list *hash,char *nome,char *escopo, int uso);
 
 s_variavel *hashSearchVar(list *hash,char *nome,char *escopo);
 s_funcao *hashSearchFunction(list *hash,char *nome);
