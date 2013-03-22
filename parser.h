@@ -2,6 +2,7 @@
 #include "list.h"
 
 int converType(char* type);
+int returnTypeExprList(list l);
 void cleanExprList(list l);
 
 
