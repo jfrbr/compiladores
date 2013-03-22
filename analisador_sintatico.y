@@ -790,6 +790,8 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 						//pList = pList->next;
 						
 						list t = getNode(exprList,i);
+						
+						// TODO substituir essa linha pela funcao de avaliacao da expressao
 						piPassado = *(int*)getNode(t,0);
 						
 						printf("Parametro Passdo (%d): %d\n",i,*(int*)getNode(t,0));
@@ -812,7 +814,10 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 									printf("Tipo de parametro incorreto!\n");
 								}
 								break;
-								
+							case T_BOOLEAN:
+								if(piPassado != T_BOOLEAN) {
+									printf("Tipo de parametro incorreto!\n");
+								}
 						}
 						
 					}
