@@ -235,6 +235,7 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
+	  printf("Comecando um novo comando - declaracao\n");
 
 	  char *tipo,*varlist,*var;
 	  printf("ATRIB = %s\n",atrib);
@@ -265,12 +266,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}
 	
 	
-	| U_EXP_LIST token_ptevirgula {
+	| U_EXP_LIST token_ptevirgula 	{
+	  printf("Terminando comando -exp\n");
 	  strcpy(atrib,"\0");
+	  debug();
+	  cleanExprList(exprList);
+	  debug();
 	}
 	
-	| ATRIBUICAO token_ptevirgula{
-				
+	| ATRIBUICAO token_ptevirgula {
+			printf("Comecando um novo comando -atrib \n");
 			printf("ATRIBUICAO = %s\n",atrib);
 			char *varname = strtok(atrib," ");
 			printf("%s\n",varname);
@@ -353,11 +358,23 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			strcpy(atrib,"\0");
 	}		
 	| token_string token_ptevirgula
-	//TODO verificar se o tipo do return é o mesmo da funçao atual
-	| token_return U_EXP_LIST token_ptevirgula
-	| token_return token_ptevirgula
+	// TODO verificar se o tipo do return é o mesmo da funçao atual
+	| token_return {
+	
+		printf("Aqui tem o return com exp\n");	
+		cleanExprList(exprList);
+		
+	} U_EXP_LIST token_ptevirgula
+	
+	| token_return {
+	
+		printf("Aqui tem o return com exp\n");	
+		//cleanExprList(exprList);
+		
+	} token_ptevirgula
 	
 	| token_ptevirgula {
+		printf("Comecando um novo comando\n");
 		strcpy(num_float,"\0");
 		strcpy(num_inteiro,"\0");
 		
@@ -463,6 +480,7 @@ U_EXP_LIST : U_EXP {
 	    apList->element = testList;
 	    addNode(exprList,apList);
 	    testList = initList();
+	    
 	    } U_EXP_LIST2
 ;
 
@@ -474,7 +492,12 @@ U_EXP_LIST2 : {
 		  NODELISTPTR apList = allocateNode();
 		  apList->element = testList;
 		  addNode(exprList,apList);
-		  testList = initList();	      
+		  testList = initList();
+		  
+		  
+		  
+		  
+		  
 	      }	      
 	      U_EXP_LIST2 
 	      | token_ou U_EXP {
@@ -744,11 +767,28 @@ CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
 				}
 				// Verifica se a lista de parametros esta com os tipos corretos
 				else {
-					NODELISTPTR pList = aux->parametros->head;
+					list pList = aux->parametros;
 					int i=0;
 					for(i=0; i<aux->parametros->nElem; i++) {
-						printf("Parametro %d: %d\n",i,*(int*)(pList->element));
-						// TODO terminar isso aqui
+					
+						int piOriginal,piPassado;
+						
+						piOriginal = *(int*)(getNode(pList,i));
+						printf("Parametro %d: %d\n",i,*(int*)(getNode(pList,i)));
+						//pList = pList->next;
+						
+						piPassado = *(int*)getNode(t,0);
+						list t = getNode(exprList,i);
+						printf("Parametro Passdo (%d): %d\n",i,*(int*)getNode(t,0));
+						
+						switch(piOriginal) {
+							case T_INT:
+								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
+									printf("Tipo de parametro incorreto!\n");
+								}
+								break;
+						}
+						
 					}
 				}
 			}
@@ -872,16 +912,15 @@ main(){
 	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
 	//printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
 
-/*	
-	testList = (list)(getNode(exprList,2));
+	
+/*	testList = (list)(getNode(exprList,0));
 	
 	printf("Expr types: %d\n",testList->nElem);
 	int i=0;
-	for(i=0; i < testList->nElem-1; i++) {
+	for(i=0; i < testList->nElem; i++) {
 		printf("Type %d from expr: %d\n",i,*(int*)(getNode(testList,i)));
-<<<<<<< HEAD
-	}*/
-	
+	}
+*/	
 
 
 //	if(tmp->nome) printf("Variavel Existe com escopo %s\n",tmp->escopo);
