@@ -42,7 +42,7 @@ s_variavel *hashSearchVar(list *hash,char *nome,char *escopo) {
 	return NULL;
 }
 
-void hashUpdateVar(list *hash,char *nome,char *escopo, void* valor) {
+void hashVarUpdateValue(list *hash,char *nome,char *escopo, void* valor) {
 
 	int index = sum_ascii(nome)%MAX_HASH_SIZE;
 	if(!hash[index]) return;
@@ -51,6 +51,20 @@ void hashUpdateVar(list *hash,char *nome,char *escopo, void* valor) {
 		aux = ((s_variavel*)(getNode(hash[index],j)));
 		if((strcmp(aux->nome,nome) == 0) && (strcmp(aux->escopo,escopo) == 0)){
 			aux->valor = valor;
+			return;
+		}
+	}
+	return;
+}
+void hashVarUpdateUse(list *hash,char *nome,char *escopo, int uso) {
+
+	int index = sum_ascii(nome)%MAX_HASH_SIZE;
+	if(!hash[index]) return;
+	s_variavel *aux;
+	for(int j=0; j < hash[index]->nElem; j++) {
+		aux = ((s_variavel*)(getNode(hash[index],j)));
+		if((strcmp(aux->nome,nome) == 0) && (strcmp(aux->escopo,escopo) == 0)){
+			aux->used = uso;
 			return;
 		}
 	}
@@ -108,7 +122,7 @@ int checkVariables(list* hash){
 			for (int j=0; j < hash[i]->nElem; j++){
 				list l = hash[i];
 				s_variavel* v = getNode(l,j);
-				if (v->valor == NULL){
+				if (v->used == NOT_USING){
 					 printf("A variavel %s nao foi utilizada\n",v->nome);
 				}
 			}

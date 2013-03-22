@@ -275,6 +275,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			char *varname = strtok(atrib," ");
 			printf("%s\n",varname);
 			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			printf("CURRENT FUNCTION = %s\n",currentFunction);
 			int tipo_var = v->tipo;
 
