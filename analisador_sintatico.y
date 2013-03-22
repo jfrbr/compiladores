@@ -14,6 +14,7 @@ extern char num_string[300];
 extern char num_boolean[10];
 extern lines;
 char currentFunction[50];
+char funcCalled[50];
 
 list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
@@ -582,7 +583,7 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		
-		strcpy(atrib,"\0");
+		//strcpy(atrib,"\0");
 	  }
 	  
 	  | token_abrep U_EXP_LIST token_fechap 
@@ -595,15 +596,10 @@ FATOR: token_num_float {
 		_toList(testList,tipo);
 	  }
 	  | CHAMADA_FUNCAO {
-		// Check if var exists
 		printf("Achei uma funcao: %s\n",ident);
-		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!funcExists(HashFunc,ident)) {
-		  printf("Erro na linha %d: Funcao %s nao declarada\n",lines,ident);
-		}
 		
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,ident)))->tipo_retorno;
+		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,funcCalled)))->tipo_retorno;
 		printf("Tipo da variavel: %d\n",*tipo);
 		
 		_toList(testList,tipo);
@@ -745,31 +741,39 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 
 TO_ATRIB:  U_EXP_LIST | token_string;
 
-CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
-			printf("Chamou funcao com parametros\n");
-			char *funcname,*parlist,*tmpparlist;
+CHAMADA_FUNCAO : token_ident token_abrep {
 			
-			int nParam=1;
+			//printf("Vish %s!\n",atrib);
+			char *funcname;
 			funcname = strtok(atrib,"(");
-			printf("funcname: %s\n",funcname);
-			parlist = strtok(NULL,")");
-			printf("parlist: %s\n",parlist);
-			//strcpy(tmpparlist,parlist);
-			//strcat(tmpparlist,"\0");
-			int i=0;
-			//printf("tmpparlist: %s\n",tmpparlist);
-			for(i=0; parlist[i] != '\0'; i++) {
-				//printf("tmpparlist[%d]: %c\n",i,'a');
-				if(parlist[i]==',') nParam++;
+			strcpy(funcCalled,funcname);
 			}
+			
+			PARAMETROS token_fechap {
+				printf("Chamou funcao com parametros\n");
+				char *funcname,*parlist,*tmpparlist;
+				printf("atrib: %s\n",atrib);
+				int nParam=1;
+				//funcname = strtok(atrib,"(");
+				printf("funcname: %s\n",funcCalled);
+				//parlist = strtok(NULL,")");
+				//printf("parlist: %s\n",parlist);
+				//strcpy(tmpparlist,parlist);
+				//strcat(tmpparlist,"\0");
+				int i=0;
+				//printf("tmpparlist: %s\n",tmpparlist);
+				for(i=0; atrib[i] != '\0'; i++) {
+					//printf("tmpparlist[%d]: %c\n",i,'a');
+					if(atrib[i]==',') nParam++;
+				}
 			printf("Parametros passados: %d\n",nParam);
 			
 			// Verifica existencia e aridade da funcao
-			if(!funcExists(HashFunc,funcname)) {
+			if(!funcExists(HashFunc,funcCalled)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
 			}
 			else {
-				s_funcao *aux = hashSearchFunction(HashFunc,funcname);
+				s_funcao *aux = hashSearchFunction(HashFunc,funcCalled);
 				if(checkArity(aux,nParam) != 1) {
 					printf("Erro na linha %d: Funcao sendo chamada com numero incorreto de parametros\n",lines);
 				}
@@ -817,7 +821,9 @@ CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
 			
 			//
 			
-			//debug();
+			  debug();
+			  strcpy(atrib,"\0");
+			  printf("%s\n",atrib);
 		}
 		
 
@@ -919,19 +925,19 @@ main(){
 	strcpy(num_char,"\0");
 
 	yyparse();
-	s_funcao *func = hashSearchFunction(HashFunc,"testando");
+/*	s_funcao *func = hashSearchFunction(HashFunc,"testando");
 	//printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 	func = hashSearchFunction(HashFunc,"f");
 	//if (func) printf("Aridade da funcao %s: %d\n",func->nome,func->aridade);
 
 	/* Checa se variaveis declaradas nao foram utilizadas */
 
-	checkVariables(HashVar);
+//	checkVariables(HashVar);
 	
-	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
+//	s_variavel *tmp = hashSearchVar(HashVar,"a","main");
 //	printf("%s\n",tmp->valor);
 
-	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
+//	s_variavel *tmp2 = hashSearchVar(HashVar,"c","testando");
 	//printf("%s %d\n",(char*)(tmp2->valor),tmp2->lineDeclared);
 
 	
