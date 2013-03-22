@@ -785,8 +785,9 @@ CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
 						printf("Parametro %d: %d\n",i,*(int*)(getNode(pList,i)));
 						//pList = pList->next;
 						
-						piPassado = *(int*)getNode(t,0);
 						list t = getNode(exprList,i);
+						piPassado = *(int*)getNode(t,0);
+						
 						printf("Parametro Passdo (%d): %d\n",i,*(int*)getNode(t,0));
 						
 						switch(piOriginal) {
@@ -795,6 +796,19 @@ CHAMADA_FUNCAO : token_ident token_abrep PARAMETROS token_fechap {
 									printf("Tipo de parametro incorreto!\n");
 								}
 								break;
+								
+							case T_CHAR:
+								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
+									printf("Tipo de parametro incorreto!\n");
+								}
+								break;
+							
+							case T_FLOAT:
+								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
+									printf("Tipo de parametro incorreto!\n");
+								}
+								break;
+								
 						}
 						
 					}
