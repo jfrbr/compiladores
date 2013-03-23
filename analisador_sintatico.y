@@ -270,9 +270,30 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| U_EXP_LIST token_ptevirgula 	{
 	  printf("Terminando comando -exp\n");
 	  strcpy(atrib,"\0");
-	  debug();
+	  int j;
+	  list concatList = initList();
+	  for(j=0;j<exprList->nElem;j++) {
+	  
+	      list _last = getNode(exprList,j);	  
+	      int i = 0;
+	      for(i = 0; i<_last->nElem; i++) {
+		printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+		_toList(concatList,getNode(_last,i));
+	      }
+			
+	  }
+	  
+	  printf("Concat List:\n");
+	  int i;
+	  for(i = 0; i<concatList->nElem; i++) {
+		printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
+		//_toList(concatList,*(int*)getNode(_last,i));
+	      }
+	  printf("Eval: %d\n",returnTypeExprList(concatList));
+	  destroyList(concatList);
+	  
 	  cleanExprList(exprList);
-	  debug();
+	  
 	}
 	
 	| ATRIBUICAO token_ptevirgula {
@@ -485,36 +506,71 @@ IF_EXP :
 
 U_EXP_LIST : U_EXP {
 	    // Append current expression on expression list and reset testList
-	    NODELISTPTR apList = allocateNode();
-	    apList->element = testList;
-	    addNode(exprList,apList);
-	    testList = initList();
-	    
+	    if(testList->head) {
+	      NODELISTPTR apList = allocateNode();
+	      apList->element = testList;
+	      addNode(exprList,apList);
+	      testList = initList();
+	      
+	      /*printf("Acabou a U_EXP\n");
+	      debug();
+			list _tmp = getNode(exprList,1);
+			int i=0;
+			//printf("nElem: %d
+			for(i = 0; i<_tmp->nElem; i++) {
+				printf("Expr!=(%d): %d\n",i,*(int*)getNode(_tmp,i));
+			}*/
+	      }
 	    } U_EXP_LIST2
 ;
 
 U_EXP_LIST2 : {
-		printf("Acabou a lista de expressoes!\n");
+		printf("Acabou a lista de expressoes!\nTotal de Expressoes: %d\n",exprList->nElem);
+		/*if(exprList->nElem == 3) {
+			debug();
+			list _tmp = getNode(exprList,1);
+			int i=0;
+			//printf("nElem: %d
+			for(i = 0; i<_tmp->nElem; i++) {
+				printf("Expr!(%d): %d\n",i,*(int*)getNode(_tmp,i));
+			}
+		}*/
+		
 	      }
-	      | token_ecomecom U_EXP {	      
+	      | token_ecomecom {
+			char *ecomecom = malloc(2*sizeof(char));
+			strcpy(ecomecom,"&&");
+			_toList(testList,ecomecom);
+	      } U_EXP {	      
+		  if(testList->head) {
 		  // Append current expression on expression list and reset testList
 		  NODELISTPTR apList = allocateNode();
 		  apList->element = testList;
 		  addNode(exprList,apList);
 		  testList = initList();
-		  
+		  }
 		  
 		  
 		  
 		  
 	      }	      
 	      U_EXP_LIST2 
-	      | token_ou U_EXP {
+	      | token_ou {
+			char *ouou = malloc(2*sizeof(char));
+			strcpy(ouou,"||");
+			_toList(testList,ouou);
+	      }
+	      
+	      U_EXP {
+		  
+		  if(testList->head) {
 		  // Append current expression on expression list and reset testList
 		  NODELISTPTR apList = allocateNode();
 		  apList->element = testList;
 		  addNode(exprList,apList);
 		  testList = initList();
+		  
+		  }
 	      }
 	    U_EXP_LIST2
 ;
@@ -586,7 +642,55 @@ FATOR: token_num_float {
 		//strcpy(atrib,"\0");
 	  }
 	  
-	  | token_abrep U_EXP_LIST token_fechap 
+	  | token_abrep {
+	    printf("Abriu parentese na expressao\n");
+	    
+	    NODELISTPTR apList = allocateNode();
+	    apList->element = testList;
+	    addNode(exprList,apList);
+	    
+	    printf("testList->nElem: %d\n",testList->nElem);
+	    printf("exprList->nElem: %d\n",exprList->nElem);
+	    
+	    
+			
+	    testList = initList();
+	    
+	    
+	    
+	  } U_EXP_LIST token_fechap {
+		printf("Terminou uma expressao entre parentes!\n");
+		printf("nElem: %d\n",exprList->nElem);
+		
+		//if(testList->head) printf("TestList vazia %d\n",testList->nElem);
+		// Evaluate
+		list _last = getNode(exprList,exprList->nElem-1);
+		
+		int i;
+		for(i = 0; i<_last->nElem; i++) {
+				printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+			}
+		printf("Eval: %d\n",returnTypeExprList(_last));
+		
+		int *eval = malloc(sizeof(int));
+		*eval = returnTypeExprList(_last);
+		if(*eval < 0) {
+			printf("Erro na linha %d: Tipos incompativeis numa expressao\n",lines);
+		}
+		
+		// Check if it needs appending
+		list _previous = getNode(exprList,exprList->nElem-2);
+		if(_previous) {
+			printf("Deve ser apendada\n");
+			removeFromList(exprList,exprList->nElem-1);
+			
+			_toList(_previous,eval);
+			
+		}
+		
+		
+		
+	  }
 	  | token_letra {
 		printf("Achei um char\n");
 		

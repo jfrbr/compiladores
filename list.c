@@ -68,6 +68,53 @@ NODELISTPTR copyNode(NODELISTPTR p) {
 	return aux;
 }
 
+void removeFromList(list l,int index) {
+	NODELISTPTR aux = l->head,aux2;
+	
+	if(index > l->nElem-1) {
+	    printf("Indice %d nao existe na lista\n",index);
+	    return;
+	}
+	  
+	//delete 5
+//	0 - 1 - 2 - 3 - 4 - 5 - 6
+	for(int i=0; i< index-1; i++) aux = aux->next;
+	
+	//if(aux->next) {
+	  if(aux->next->next) {
+	    // l->tail nao muda
+	    aux2 = aux->next->next;
+	  }
+	  else {
+	    l->tail = aux;
+	    aux2 = NULL;	  
+	  }  
+	
+	
+	if(index != 0) {
+	  free(aux->next);
+	  aux->next = aux2;
+	}
+	else {
+	  l->head = aux->next;
+	  free(aux);	  
+	}
+	
+	l->nElem--;
+	  
+	  
+	  
+	
+	/*else {
+	  aux2 = NULL;	  
+	}*/
+	
+	
+	
+	//l->
+  
+}
+
 void destroyList(list l) {
 	NODELISTPTR aux,aux2=l->head;
 	for(int i=0; i<l->nElem; i++) {

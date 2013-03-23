@@ -61,7 +61,7 @@ void cleanExprList(list l) {
 #define T_VOID 6
 */
 int changeType(int t1, int t2, char* c){
-
+	
 	if (!c) return -2;
 
 	if ( !strcmp(c,">") )
@@ -90,7 +90,7 @@ int changeType(int t1, int t2, char* c){
 
 	
 	if (t1 == 1){
-
+		
 		if ( t2 == 1 ) return 1;
 		if ( t2 == 2) return 2;
 		if ( t2 == 3) return -1;
@@ -125,7 +125,7 @@ int changeType(int t1, int t2, char* c){
 		return -1;
 	}
 	
-	if (t1==5 || t1 ==6) return -1;
+	if (t1==5 || t1 ==6 || t1 == -1 || t2 == -1) return -1;
 
 }
 
@@ -143,13 +143,17 @@ int returnTypeExprList(list l){
 
 	type = *((int*)aux->element);
 	
+	aux = aux->next;
+	
 	for (i=1;i<len;i++){
 		
-		if (i%2 == 0){
+		if (i%2 != 0){
+			
+			op = (char*) aux->element;
+			
+		}else{		
 			type = changeType(type, *(int*)aux->element,op);
 			
-		}else{
-			op = (char*) aux->element;
 		}
 				
 		aux = aux->next;
