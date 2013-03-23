@@ -14,6 +14,7 @@
 #define NOT_USING 0
 #define USING 1
 
+#define FLAG_FUNC 999
 
 #define MAX_HASH_SIZE 997
 

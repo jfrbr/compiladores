@@ -270,27 +270,45 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| U_EXP_LIST token_ptevirgula 	{
 	  printf("Terminando comando -exp\n");
 	  strcpy(atrib,"\0");
+	  
+	  //if(strcpy(funcCalled,
 	  int j;
-	  list concatList = initList();
-	  for(j=0;j<exprList->nElem;j++) {
 	  
-	      list _last = getNode(exprList,j);	  
-	      int i = 0;
-	      for(i = 0; i<_last->nElem; i++) {
-		printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
-		_toList(concatList,getNode(_last,i));
-	      }
-			
+	  list _last = getNode(exprList,exprList->nElem-1);	  
+	  if(*(int*)getNode(_last,1) != 999) {		
+		list concatList = initList();
+		for(j=0;j<exprList->nElem;j++) {
+		
+		    list _last = getNode(exprList,j);	  
+		    int i = 0;
+		    for(i = 0; i<_last->nElem; i++) {
+		      printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+		      _toList(concatList,getNode(_last,i));
+		    }
+			      
+		}
+		
+		printf("Concat List:\n");
+		int i;
+		for(i = 0; i<concatList->nElem; i++) {
+		      printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
+		      //_toList(concatList,*(int*)getNode(_last,i));
+		    }
+		printf("Eval: %d\n",returnTypeExprList(concatList));
+		destroyList(concatList);
 	  }
-	  
-	  printf("Concat List:\n");
-	  int i;
-	  for(i = 0; i<concatList->nElem; i++) {
-		printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
-		//_toList(concatList,*(int*)getNode(_last,i));
-	      }
-	  printf("Eval: %d\n",returnTypeExprList(concatList));
-	  destroyList(concatList);
+	  else {
+		// remove flagFunc
+		int j;
+		removeFromList(exprList,exprList->nElem-1);		
+		// Check one by one
+		for(j=0;j<exprList->nElem;j++) {
+			if(returnTypeExprList(getNode(exprList,j)) < 0) {
+				printf("Erro na linha %d: Expressao incompativel\n",lines);
+			}
+			printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
+		}
+	  }
 	  
 	  cleanExprList(exprList);
 	  
@@ -389,16 +407,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}		
 	| token_string token_ptevirgula
 	// TODO verificar se o tipo do return é o mesmo da funçao atual
-	| token_return {
+	| token_return U_EXP_LIST {
 	
 		printf("Aqui tem o return com exp\n");	
 		cleanExprList(exprList);
 		
-	} U_EXP_LIST token_ptevirgula
+	}  token_ptevirgula
 	
 	| token_return {
 	
-		printf("Aqui tem o return com exp\n");	
+		printf("Aqui tem o return sem exp\n");	
 		//cleanExprList(exprList);
 		
 	} token_ptevirgula
@@ -512,30 +530,13 @@ U_EXP_LIST : U_EXP {
 	      addNode(exprList,apList);
 	      testList = initList();
 	      
-	      /*printf("Acabou a U_EXP\n");
-	      debug();
-			list _tmp = getNode(exprList,1);
-			int i=0;
-			//printf("nElem: %d
-			for(i = 0; i<_tmp->nElem; i++) {
-				printf("Expr!=(%d): %d\n",i,*(int*)getNode(_tmp,i));
-			}*/
+	     
 	      }
 	    } U_EXP_LIST2
 ;
 
 U_EXP_LIST2 : {
 		printf("Acabou a lista de expressoes!\nTotal de Expressoes: %d\n",exprList->nElem);
-		/*if(exprList->nElem == 3) {
-			debug();
-			list _tmp = getNode(exprList,1);
-			int i=0;
-			//printf("nElem: %d
-			for(i = 0; i<_tmp->nElem; i++) {
-				printf("Expr!(%d): %d\n",i,*(int*)getNode(_tmp,i));
-			}
-		}*/
-		
 	      }
 	      | token_ecomecom {
 			char *ecomecom = malloc(2*sizeof(char));
@@ -700,14 +701,19 @@ FATOR: token_num_float {
 		_toList(testList,tipo);
 	  }
 	  | CHAMADA_FUNCAO {
-		printf("Achei uma funcao: %s\n",ident);
+		//printf("Achei uma funcao: %s\n",ident);
 		
 		int *tipo = malloc(sizeof(int));
 		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,funcCalled)))->tipo_retorno;
-		printf("Tipo da variavel: %d\n",*tipo);
+		printf("Tipo da funcao: %d\n",*tipo);
+		
+		int *flagFunc = malloc(sizeof(int));
+		*flagFunc = FLAG_FUNC;
 		
 		_toList(testList,tipo);
-	  
+		_toList(testList,flagFunc);
+		
+		strcpy(funcCalled,"\0");
 	  }
 	  
 	  
@@ -847,7 +853,7 @@ TO_ATRIB:  U_EXP_LIST | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep {
 			
-			//printf("Vish %s!\n",atrib);
+			printf("Vish %s!\n",atrib);
 			char *funcname;
 			funcname = strtok(atrib,"(");
 			strcpy(funcCalled,funcname);
@@ -894,11 +900,15 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 						//pList = pList->next;
 						
 						list t = getNode(exprList,i);
+						int j;
+						for(j = 0; j<t->nElem; j++) {
+							printf("Expr!=(%d): %d\n",j,*(int*)getNode(t,j));
+						}
 						
 						// TODO substituir essa linha pela funcao de avaliacao da expressao
-						piPassado = *(int*)getNode(t,0);
+						piPassado = returnTypeExprList(t);
 						
-						printf("Parametro Passdo (%d): %d\n",i,*(int*)getNode(t,0));
+						printf("Parametro Passdo (%d): %d\n",i,piPassado);
 						
 						switch(piOriginal) {
 							case T_INT:
