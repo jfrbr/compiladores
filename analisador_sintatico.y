@@ -154,14 +154,14 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {printf("
 
 DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
-		//	printf("ATRIB = %s\n",atrib);
+			printf("ATRIB = %s\n",atrib);
 			char *tipo, *funcname,*varlist,*var;
 			tipo = strtok(atrib," ");
-		//	printf("TIPO = %s\n",tipo);
+			printf("TIPO = %s\n",tipo);
 			int returnType = converType(tipo);
 			
 			funcname = strtok(NULL,"(");	
-		//	printf("%s\n",funcname);
+			printf("%s\n",funcname);
 			strcpy(currentFunction,funcname);
 
 			varlist = strtok(NULL,")");
@@ -201,14 +201,28 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
 			} token_abrec BLOCO token_fechac 
 	| TIPO token_ident token_abrep token_fechap {
+		printf("ATRIB = %s\n",atrib);
+			char *tipo, *funcname,*varlist,*var;
+			tipo = strtok(atrib," ");
+			printf("TIPO = %s\n",tipo);
+			int returnType = converType(tipo);
+			
+			funcname = strtok(NULL,"(");	
+			printf("%s\n",funcname);
+			strcpy(currentFunction,funcname);
+
+			//varlist = strtok(NULL,")");
 	
+		int type = converType(tipo);
+		/*printf("ATRIB = %s\n",atrib);
+		
 		char *tipo,*funcname,*var;
 		tipo = strtok(atrib," ");
 		int type = converType(tipo);
 		
 		funcname = strtok(NULL,"(");
 	
-		strcpy(currentFunction,funcname);
+		strcpy(currentFunction,funcname);*/
 
 		s_funcao *function = allocateFunction();
 		setFunction(function,funcname,0,type,NULL);
@@ -410,14 +424,67 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	// TODO verificar se o tipo do return é o mesmo da funçao atual
 	| token_return U_EXP_LIST {
 	
-		printf("Aqui tem o return com exp\n");	
-		cleanExprList(exprList);
+	printf("Aqui tem o return com exp da funcao: %s\n",currentFunction);	
+		
+	list _last = getNode(exprList,exprList->nElem-1);
+	int j;
+	  if(*(int*)getNode(_last,1) != FLAG_FUNC) {		
+		list concatList = initList();
+		for(j=0;j<exprList->nElem;j++) {
+		
+		    list _last = getNode(exprList,j);	  
+		    int i = 0;
+		    for(i = 0; i<_last->nElem; i++) {
+		      printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+		      _toList(concatList,getNode(_last,i));
+		    }
+			      
+		}
+		
+		printf("Concat List:\n");
+		int i;
+		for(i = 0; i<concatList->nElem; i++) {
+		      printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
+		      //_toList(concatList,*(int*)getNode(_last,i));
+		    }
+		printf("Eval: %d\n",returnTypeExprList(concatList));
+		if(returnTypeExprList(concatList) < 0) {
+				printf("Erro na linha %d: Expressao incompativel\n",lines);
+			}
+			
+		s_funcao *_fcalled;
+		_fcalled = hashSearchFunction(HashFunc,currentFunction);
+		//if(_fcalled) printf("funcao %s\n",_fcalled->nome);
+		
+		if(returnTypeExprList(concatList) == -1 || returnTypeExprList(concatList) != _fcalled->tipo_retorno) {
+		  printf("Erro na linha %d: Return associado a funcao %s nao corresponde ao tipo informado %d\n",lines,_fcalled->nome,_fcalled->tipo_retorno);
+		}
+		destroyList(concatList);
+	  }
+	  else {
+		// remove flagFunc
+		int j;
+		removeFromList(exprList,exprList->nElem-1);		
+		// Check one by one
+		for(j=0;j<exprList->nElem;j++) {
+			if(returnTypeExprList(getNode(exprList,j)) < 0) {
+				printf("Erro na linha %d: Expressao incompativel\n",lines);
+			}
+			printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
+		}
+	  }
+	  
+	  cleanExprList(exprList);
+	  strcpy(atrib,"\0");
+		
+		//cleanExprList(exprList);
 		
 	}  token_ptevirgula
 	
 	| token_return {
 	
 		printf("Aqui tem o return sem exp\n");	
+		strcpy(atrib,"\0");
 		//cleanExprList(exprList);
 		
 	} token_ptevirgula
@@ -1051,6 +1118,8 @@ main(){
 	s_funcao* min = allocateFunction();
 	setFunction(min,"min",2,T_INT,NULL);
 
+	
+	
 	strcpy(atrib,"\0");
 	strcpy(num_float,"\0");
 	strcpy(num_inteiro,"\0");
