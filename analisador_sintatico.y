@@ -129,6 +129,7 @@ list testList;
 %token token_bool
 %token token_true
 %token token_false
+%token token_stringtype
 
 %start PROG
 
@@ -1037,6 +1038,18 @@ main(){
 	
 	exprList = initList();
 	testList = initList();
+
+	s_funcao* print = allocateFunction();
+	setFunction(print,"printf",2,T_VOID,NULL);
+
+	s_funcao* scan = allocateFunction();
+	setFunction(scan,"scanf",2,T_INT,NULL);
+
+	s_funcao* max = allocateFunction();
+	setFunction(max,"max",2,T_INT,NULL);
+
+	s_funcao* min = allocateFunction();
+	setFunction(min,"min",2,T_INT,NULL);
 
 	strcpy(atrib,"\0");
 	strcpy(num_float,"\0");
