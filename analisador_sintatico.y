@@ -957,6 +957,9 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 				}
 				// Verifica se a lista de parametros esta com os tipos corretos
 				else {
+					// Casos especiais: printf, scanf, max, min - nao verificar os parametros
+					if(strcmp(funcCalled,"printf")!=0 && strcmp(funcCalled,"scanf")!=0 && strcmp(funcCalled,"max")!=0 && strcmp(funcCalled,"min")!=0) {
+					
 					list pList = aux->parametros;
 					int i=0;
 					for(i=0; i<aux->parametros->nElem; i++) {
@@ -1002,6 +1005,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 								}
 						}
 						
+					}
 					}
 				}
 			}
@@ -1118,7 +1122,10 @@ main(){
 	s_funcao* min = allocateFunction();
 	setFunction(min,"min",2,T_INT,NULL);
 
-	
+	hashInsertFunction(HashFunc,print);
+	hashInsertFunction(HashFunc,scan);
+	hashInsertFunction(HashFunc,max);
+	hashInsertFunction(HashFunc,min);
 	
 	strcpy(atrib,"\0");
 	strcpy(num_float,"\0");
