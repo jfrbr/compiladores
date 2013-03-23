@@ -15,6 +15,7 @@ extern char num_boolean[10];
 extern lines;
 char currentFunction[50];
 char funcCalled[50];
+int eval;
 
 list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
@@ -154,14 +155,14 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {printf("
 
 DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
-			printf("ATRIB = %s\n",atrib);
+
 			char *tipo, *funcname,*varlist,*var;
 			tipo = strtok(atrib," ");
-			printf("TIPO = %s\n",tipo);
+
 			int returnType = converType(tipo);
 			
 			funcname = strtok(NULL,"(");	
-			printf("%s\n",funcname);
+
 			strcpy(currentFunction,funcname);
 
 			varlist = strtok(NULL,")");
@@ -192,7 +193,8 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 				hashInsertFunction(HashFunc,function);
 			}
 			else {
-				printf("Erro: Funcao %s sendo redeclarada\n",function->nome);
+				printf("Erro semantico na linha %d: Funcao %s sendo redeclarada\n",lines,function->nome);
+				exit(2);
 			}
 			
 			strcpy(atrib,"\0");
@@ -201,29 +203,19 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
 			} token_abrec BLOCO token_fechac 
 	| TIPO token_ident token_abrep token_fechap {
-		printf("ATRIB = %s\n",atrib);
+		
 			char *tipo, *funcname,*varlist,*var;
 			tipo = strtok(atrib," ");
-			printf("TIPO = %s\n",tipo);
+		
 			int returnType = converType(tipo);
 			
 			funcname = strtok(NULL,"(");	
-			printf("%s\n",funcname);
+		
 			strcpy(currentFunction,funcname);
 
-			//varlist = strtok(NULL,")");
 	
 		int type = converType(tipo);
-		/*printf("ATRIB = %s\n",atrib);
 		
-		char *tipo,*funcname,*var;
-		tipo = strtok(atrib," ");
-		int type = converType(tipo);
-		
-		funcname = strtok(NULL,"(");
-	
-		strcpy(currentFunction,funcname);*/
-
 		s_funcao *function = allocateFunction();
 		setFunction(function,funcname,0,type,NULL);
 		
@@ -231,7 +223,8 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 			hashInsertFunction(HashFunc,function);
 		}
 		else {
-			printf("Erro: Funcao %s sendo redeclarada\n",function->nome);
+			printf("Erro semantico na linha %d: Funcao %s sendo redeclarada\n",lines,function->nome);
+			exit(2);
 		}
 			
 		strcpy(atrib,"\0");
@@ -251,14 +244,14 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
-	  printf("Comecando um novo comando - declaracao\n");
+	  
 
 	  char *tipo,*varlist,*var;
-	  printf("ATRIB = %s\n",atrib);
+	  
 	  tipo = strtok(atrib," ");
-	  printf("TIPO = %s\n",tipo);
+	  
 	  varlist = strtok(NULL," ");	
-	  printf("VAR LIST = %s\n",varlist);
+	  
 	  
 	  var = strtok(varlist,",;");
 	  int type= converType(tipo);
@@ -273,7 +266,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			hashInsertVar(HashVar,v);
 		}
 		else {
-			printf("Erro: Variavel %s sendo redeclarada\n",v->nome);
+			printf("Erro semantico na linha %d: Variavel %s sendo redeclarada\n",lines,v->nome);
 		}
 		var = strtok (NULL, " ,;");
 	  }
@@ -283,7 +276,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	
 	
 	| U_EXP_LIST token_ptevirgula 	{
-	  printf("Terminando comando -exp\n");
+	  
 	  strcpy(atrib,"\0");
 	  
 	  //if(strcpy(funcCalled,
@@ -297,19 +290,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		    list _last = getNode(exprList,j);	  
 		    int i = 0;
 		    for(i = 0; i<_last->nElem; i++) {
-		      printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
 		      _toList(concatList,getNode(_last,i));
 		    }
 			      
 		}
 		
-		printf("Concat List:\n");
-		int i;
-		for(i = 0; i<concatList->nElem; i++) {
-		      printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
-		      //_toList(concatList,*(int*)getNode(_last,i));
-		    }
-		printf("Eval: %d\n",returnTypeExprList(concatList));
+		if(returnTypeExprList(concatList) < 0) {
+				printf("Erro na linha %d: Expressao incompativel\n",lines);
+				exit(2);
+			}
+		
 		destroyList(concatList);
 	  }
 	  else {
@@ -320,8 +310,9 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
+				exit(2);
 			}
-			printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
+			
 		}
 	  }
 	  
@@ -330,49 +321,50 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}
 	
 	| ATRIBUICAO token_ptevirgula {
-			printf("Comecando um novo comando -atrib \n");
-			printf("ATRIBUICAO = %s\n",atrib);
-			char *varname = strtok(atrib," ");
-			printf("%s\n",varname);
+			/*char *varname = strtok(atrib," ");
+			
 			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
 			if (v == NULL){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
-			printf("CURRENT FUNCTION = %s\n",currentFunction);
+			
 			int tipo_var = v->tipo;
 
-			printf("TIPO VAR = %d\n",tipo_var);
+			 printf("-> %s \n",atrib);
+			
 			char *operador = strtok(NULL," ;");
-			printf("OPERADOR = %s\n",operador);
+			printf("operador: -%s-\n",operador);
 
 			int testando = returnAtualVarType();
-			printf("BAGULHO DOIDO = %d\n",testando);			
+			*/			
 	
-			if (!strcmp(operador,"=")){
-				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
-					printf("Ok! Tipo permitido!\n");
+			/*if (!strcmp(operador,"=")){
+				/*if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( tipo_var == T_FLOAT && strcmp(num_float,"\0")){
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( tipo_var == T_CHAR && strcmp(num_char,"\0")) {
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else{
-					printf("ATRIBUICAO NAO PERMITIDA\n");
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
 				}
 			}else if (!strcmp(operador,"+=")){
 				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( (tipo_var == T_FLOAT || tipo_var == T_INT || tipo_var == T_CHAR )&& strcmp(num_float,"\0")){
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( (tipo_var == T_CHAR || tipo_var == T_INT || tipo_var == T_FLOAT) && strcmp(num_char,"\0")) {
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else if ( tipo_var == T_BOOLEAN && strcmp(num_boolean,"\0")){
-					printf("Ok! Tipo permitido!\n");
+					//printf("Ok! Tipo permitido!\n");
 				}else{
-					printf("ATRIBUICAO NAO PERMITIDA\n");
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
 				}
 			}else if (!strcmp(operador,"-=")){
 				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && strcmp(num_inteiro,"\0")){
@@ -412,7 +404,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 				}
 			}else {
 					printf("OPERADOR NÃO TRATADO!\n");
-			}					
+			}	*/				
 			strcpy(num_float,"\0");
 			strcpy(num_inteiro,"\0");
 			strcpy(num_boolean,"\0");
@@ -905,11 +897,143 @@ FATOR: token_num_float {
 
 
 /* ATRIBUICAO */
-ATRIBUICAO: VAR token_igual TO_ATRIB
-	  | VAR token_maisigual TO_ATRIB
-	  | VAR token_menosigual TO_ATRIB
-	  | VAR token_vezesigual TO_ATRIB
-	  | VAR token_divisaoigual TO_ATRIB
+ATRIBUICAO: VAR token_igual TO_ATRIB {
+			char *varname = strtok(atrib," ");
+			
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
+			
+			int tipo_var = v->tipo;
+
+				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+					//printf("Ok! Tipo permitido!\n");
+				}
+				else if ( tipo_var == T_STRING && eval == T_STRING){
+					//printf("Ok! Tipo permitido!\n");
+				}
+				else{
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
+				}
+				eval = 0;
+
+	  }		
+	  | VAR token_maisigual TO_ATRIB {
+	  
+	  char *varname = strtok(atrib," ");
+			
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
+			
+			int tipo_var = v->tipo;
+
+	  
+	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+					//printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
+				}
+	  }
+	  
+	  | VAR token_menosigual TO_ATRIB {
+		char *varname = strtok(atrib," ");
+			
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
+			
+			int tipo_var = v->tipo;
+
+	  
+	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+					//printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
+				}
+		}	  
+	  | VAR token_vezesigual TO_ATRIB {
+		char *varname = strtok(atrib," ");
+			
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
+			
+			int tipo_var = v->tipo;
+
+	  
+	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+					//printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
+				}
+		}	  
+	  | VAR token_divisaoigual TO_ATRIB{
+		char *varname = strtok(atrib," ");
+			
+			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			if (v == NULL){
+				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
+				exit(1);
+			}
+			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
+			
+			int tipo_var = v->tipo;
+
+	  
+	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+					//printf("Ok! Tipo permitido!\n");
+				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+					//printf("Ok! Tipo permitido!\n");
+				}else{
+					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+					exit(2);
+				}
+		}	  
 	  | VAR token_ecomigual TO_ATRIB
 	  | VAR token_xnorigual TO_ATRIB
 	  | VAR token_ouigual TO_ATRIB
@@ -917,7 +1041,67 @@ ATRIBUICAO: VAR token_igual TO_ATRIB
 	  | VAR token_shiftesquerdaigual TO_ATRIB
 ;
 
-TO_ATRIB:  U_EXP_LIST | token_string;
+TO_ATRIB:  U_EXP_LIST {
+	  list _last = getNode(exprList,exprList->nElem-1);
+	int j;
+	//if(_last && _last->head) printf("Last ok\n");
+	  if(_last->nElem > 1) {
+	    if(*(int*)getNode(_last,1) != FLAG_FUNC) {		
+		  list concatList = initList();
+		  for(j=0;j<exprList->nElem;j++) {
+		  
+		      list _last = getNode(exprList,j);	  
+		      int i = 0;
+		      for(i = 0; i<_last->nElem; i++) {
+			printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+			_toList(concatList,getNode(_last,i));
+		      }
+				
+		  }
+		  
+		  printf("Concat List:\n");
+		  int i;
+		  for(i = 0; i<concatList->nElem; i++) {
+			printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
+			//_toList(concatList,*(int*)getNode(_last,i));
+		      }
+		  eval = returnTypeExprList(concatList);    
+		  printf("Eval: %d\n",returnTypeExprList(concatList));
+		  
+		  if(returnTypeExprList(concatList) < 0) {
+				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+			  }
+		
+		  
+		  //if(_fcalled) printf("funcao %s\n",_fcalled->nome);
+		  
+		  destroyList(concatList);
+	    }
+	    else {
+		  // remove flagFunc
+		  int j;
+		  removeFromList(exprList,exprList->nElem-1);		
+		  // Check one by one
+		  for(j=0;j<exprList->nElem;j++) {
+			  
+			  if(returnTypeExprList(getNode(exprList,j)) < 0) {
+				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+			  }
+			  printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
+		  }
+	    }
+	  }
+	  else {
+		  if(returnTypeExprList(_last) < 0) {
+				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+			  }
+		eval = returnTypeExprList(_last);
+	  
+	  }
+	  
+	  cleanExprList(exprList);
+	  }
+	  | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep {
 			
