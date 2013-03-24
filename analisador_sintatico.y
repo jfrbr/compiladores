@@ -17,12 +17,15 @@ char currentFunction[50];
 char funcCalled[50];
 int eval;
 int in_for;
+int tipoVar;
 
 list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
 
 list exprList;
 list testList;
+list parList;
+
 
 %}
 
@@ -150,14 +153,16 @@ BLOCO_GLOBAL2: /**/
 ;
 
 
-PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {printf("Wololo\n\n\n"); strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
+PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
       | token_int_main token_abrep token_fechap token_abrec {strcpy(atrib,"\0"); strcpy(currentFunction,"main");} BLOCO token_fechac
 ;
 
-DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
+DECFUNC : TIPO token_ident token_abrep {
+	strcpy(currentFunction,ident);
+}	PARAMETROS_TIPO token_fechap {
 
 
-			char *tipo, *funcname,*varlist,*var;
+			char *tipo, *funcname,*varlist,*var,*varname;
 			tipo = strtok(atrib," ");
 
 			int returnType = converType(tipo);
@@ -167,7 +172,7 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 			strcpy(currentFunction,funcname);
 
 			varlist = strtok(NULL,")");
-		//	printf("VAR LIST = %s\n",varlist);
+			
 
 			list parameters = initList();
 
@@ -175,10 +180,21 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 
 			var = strtok(varlist,",");
 			
+			int i=0;
+			
+			//for(i=0; i<parList->nElem-1; i++) {
+				//printf("Par: %s\n",(char*)getNode(parList,i));
+			//}
+			
 			while (var){
-
+			
+				
 				int *b = malloc(sizeof(int));
 				*b = converType(var);
+				
+				//printf("var: %s\n",var);
+				//varname = strtok(var," ");
+				//printf("varname: %s\n",ident);
 				//tipo_var = (int*)b;
 				NODELISTPTR node = allocateNode();
 				node->element = b;						
@@ -200,9 +216,12 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 			
 			strcpy(atrib,"\0");
 			strcpy(ident,"\0");
+			//strcpy(currentFunction,"global");
 
 
-			} token_abrec BLOCO token_fechac 
+			} token_abrec BLOCO token_fechac {
+			    strcpy(currentFunction,"global");
+			}
 	| TIPO token_ident token_abrep token_fechap {
 		
 			char *tipo, *funcname,*varlist,*var;
@@ -232,24 +251,73 @@ DECFUNC : TIPO token_ident token_abrep PARAMETROS_TIPO token_fechap {
 	} token_abrec BLOCO token_fechac 
 ;
 
-DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula
+DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula {
+
+	//printf("Current Function");
+	strcpy(currentFunction,"global");
+
+	  char *tipo,*varlist,*var;
+	  
+	  tipo = strtok(atrib," ");
+	  
+	  varlist = strtok(NULL," ");	
+	  
+	  
+	  var = strtok(varlist,",;");
+	  int type= converType(tipo);
+	  	  
+	  while(var){
+		
+		s_variavel *v = allocateVar();
+		
+		setVar(v,var,NULL,type,currentFunction,lines);
+			
+		if(!varExists(HashVar,v->nome,v->escopo)) {
+			hashInsertVar(HashVar,v);
+		}
+		else {
+			printf("Erro semantico na linha %d: Variavel %s sendo redeclarada\n",lines,v->nome);
+			exit(2);
+		}
+		var = strtok (NULL, " ,;");
+	  }
+	  strcpy(tipo,"\0");
+	  strcpy(atrib,"\0");
+	}
 ;
 
 DEC_VAR_GLOBAL2: | token_virgula VAR DEC_VAR_GLOBAL2
 ;
 
-PARAMETROS_TIPO: TIPO VAR PARAMETROS_TIPO2
+PARAMETROS_TIPO: TIPO VAR  {
+
+		/*printf("VarTipo: %d\n",tipoVar);
+		printf("currentFunction: %s\n",currentFunction);
+		*/
+		s_variavel *var = allocateVar();		
+		setVar(var,ident,NULL,tipoVar,currentFunction,lines);
+		hashInsertVar(HashVar,var);
+		
+} PARAMETROS_TIPO2
 ;
 
-PARAMETROS_TIPO2: | token_virgula TIPO VAR PARAMETROS_TIPO2
+PARAMETROS_TIPO2: | token_virgula TIPO VAR  {
+		/*printf("VarTipo: %d\n",tipoVar);
+		printf("currentFunction: %s\n",currentFunction);
+		*/
+		s_variavel *var = allocateVar();		
+		setVar(var,ident,NULL,tipoVar,currentFunction,lines);
+		hashInsertVar(HashVar,var);
+} PARAMETROS_TIPO2
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
 	  
-
+	  //printf("tipo: %s\n",atrib);
 	  char *tipo,*varlist,*var;
 	  
 	  tipo = strtok(atrib," ");
+	  
 	  
 	  varlist = strtok(NULL," ");	
 	  
@@ -268,6 +336,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		}
 		else {
 			printf("Erro semantico na linha %d: Variavel %s sendo redeclarada\n",lines,v->nome);
+			exit(2);
 		}
 		var = strtok (NULL, " ,;");
 	  }
@@ -340,11 +409,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	// TODO verificar se o tipo do return é o mesmo da funçao atual
 	| token_return U_EXP_LIST {
 	
-	printf("Aqui tem o return com exp da funcao: %s\n",currentFunction);	
+	
 		
 	list _last = getNode(exprList,exprList->nElem-1);
 	if(_last->nElem > 1) {
-	printf("aqui\n");
+	
 	int j;
 	  if(*(int*)getNode(_last,1) != FLAG_FUNC) {
 
@@ -354,31 +423,28 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		    list _last = getNode(exprList,j);	  
 		    int i = 0;
 		    for(i = 0; i<_last->nElem; i++) {
-		      printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
+	
 		      _toList(concatList,getNode(_last,i));
 		    }
 			      
 		}
 		
-		printf("Concat List:\n");
+	
 		int i;
-		for(i = 0; i<concatList->nElem; i++) {
-		      printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
-		      //_toList(concatList,*(int*)getNode(_last,i));
-		    }
-		debug();
+		
 		eval = returnTypeExprList(concatList);
-		printf("Eval: %d\n",returnTypeExprList(concatList));
+	
 		if(eval < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
-
+				exit(2);
 		}
 		s_funcao *_fcalled;
 		_fcalled = hashSearchFunction(HashFunc,currentFunction);
-		printf("%s\n",currentFunction);
+		
 		
 		if(returnTypeExprList(concatList) == -1 || returnTypeExprList(concatList) != _fcalled->tipo_retorno) {
 		  printf("Erro na linha %d: Return associado a funcao %s nao corresponde ao tipo informado %d\n",lines,_fcalled->nome,_fcalled->tipo_retorno);
+		  exit(2);
 		}
 		destroyList(concatList);
 	  }
@@ -390,24 +456,26 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
+				exit(2);
 			}
-			printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
+			
 		}
 	  }
 	  }
 	  else {
 		eval = returnTypeExprList(_last);
-		printf("Eval: %d\n",returnTypeExprList(_last));
+		
 		if(eval < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
-
+				exit(2);
 		}
 		s_funcao *_fcalled;
 		_fcalled = hashSearchFunction(HashFunc,currentFunction);
-		printf("%s\n",currentFunction);
+		
 		
 		if(eval == -1 || eval != _fcalled->tipo_retorno) {
 		  printf("Erro na linha %d: Return associado a funcao %s nao corresponde ao tipo informado %d\n",lines,_fcalled->nome,_fcalled->tipo_retorno);
+		  exit(2);
 		}
 	  
 	  }
@@ -420,14 +488,15 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	
 	| token_return {
 	
-		printf("Aqui tem o return sem exp\n");	
+		
 		strcpy(atrib,"\0");
 		//cleanExprList(exprList);
 		
 	} token_ptevirgula
 	
 	| token_ptevirgula {
-		printf("Comecando um novo comando\n");
+		strcpy(atrib,"\0");
+		cleanExprList(exprList);
 		strcpy(num_float,"\0");
 		strcpy(num_inteiro,"\0");
 		
@@ -450,10 +519,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac {
 		cleanExprList(exprList);
 	}
-	| SWITCH
-	| token_break token_ptevirgula
+	| SWITCH  {
+		strcpy(atrib,"\0");
+		cleanExprList(exprList);
+	}
+	| token_break token_ptevirgula 
 	| token_continue token_ptevirgula
-	| LOOP	
+	| LOOP	 {
+		strcpy(atrib,"\0");
+		cleanExprList(exprList);
+	}
 ;
 
 
@@ -496,7 +571,8 @@ COLCHETE2: /**/
 
 
 
-TIPO: token_int | token_char | token_double | token_float | token_void | token_bool
+TIPO: token_int {tipoVar = T_INT;} | token_char {tipoVar = T_CHAR;} | token_float {tipoVar = T_FLOAT;}| token_void {tipoVar = T_VOID;}
+      | token_bool {tipoVar = T_BOOLEAN;} | token_stringtype {tipoVar = T_STRING;}
 ;
 
 
@@ -552,10 +628,7 @@ U_EXP_LIST : U_EXP {
 	    } U_EXP_LIST2
 ;
 
-U_EXP_LIST2 : {
-		printf("Acabou a lista de expressoes!\nTotal de Expressoes: %d\n",exprList->nElem);
-	      }
-	      | token_ecomecom {
+U_EXP_LIST2 : | token_ecomecom {
 			char *ecomecom = malloc(2*sizeof(char));
 			strcpy(ecomecom,"&&");
 			_toList(testList,ecomecom);
@@ -595,13 +668,13 @@ U_EXP_LIST2 : {
 
 
 EXP: EXP token_mais {
-		printf("Achei um +\n");
+		
 		char *op = malloc(sizeof(char));
 		*op = '+';
 		_toList(testList,op);
       } TERMO
     | EXP token_menos {
-		printf("Achei um -\n");
+		
 		char *op = malloc(sizeof(char));
 		*op = '-';		
 		_toList(testList,op);
@@ -629,7 +702,7 @@ TERMO: TERMO token_vezes {
 
 FATOR: token_num_float {
 		
-		printf("Achei um float\n");		
+		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_FLOAT;
 		_toList(testList,tipo);
@@ -637,7 +710,7 @@ FATOR: token_num_float {
 	  }
 	  
 	  | token_num_inteiro {
-		printf("Achei um int\n");
+		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_INT;
 		_toList(testList,tipo);
@@ -645,15 +718,25 @@ FATOR: token_num_float {
 
 	  | VAR {
 		// Check if var exists
-		printf("Achei uma variavel: %s\n",ident);
+		
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}
 		
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
-		printf("Tipo da variavel: %d\n",*tipo);
+		
+		if(varExists(HashVar,ident,currentFunction)) {
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo; 
+		  hashVarUpdateUse(HashVar,ident,currentFunction,USING);
+		}
+		else  {
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
+		  hashVarUpdateUse(HashVar,ident,"global",USING);
+		  }
+		
 		
 		_toList(testList,tipo);
 		
@@ -661,30 +744,21 @@ FATOR: token_num_float {
 	  }
 	  
 	  | token_abrep {
-	    printf("Abriu parentese na expressao\n");
+	    
 	    
 	    NODELISTPTR apList = allocateNode();
 	    apList->element = testList;
 	    addNode(exprList,apList);
-	    
-	    printf("testList->nElem: %d\n",testList->nElem);
-	    printf("exprList->nElem: %d\n",exprList->nElem);
 	    	
 	    testList = initList();
 	    	    
 	  } U_EXP_LIST token_fechap {
-		printf("Terminou uma expressao entre parentes!\n");
-		printf("nElem: %d\n",exprList->nElem);
 		
 		//if(testList->head) printf("TestList vazia %d\n",testList->nElem);
 		// Evaluate
 		list _last = getNode(exprList,exprList->nElem-1);
 		
 		int i;
-		for(i = 0; i<_last->nElem; i++) {
-				printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
-			}
-		printf("Eval: %d\n",returnTypeExprList(_last));
 		
 		int *eval_aux = malloc(sizeof(int));
 		
@@ -693,23 +767,21 @@ FATOR: token_num_float {
 
 		if(eval < 0) {
 			printf("Erro na linha %d: Tipos incompativeis numa expressao\n",lines);
+			exit(2);
 		}
 
 		// Check if it needs appending
 		list _previous = getNode(exprList,exprList->nElem-2);
 		if(_previous) {
-			printf("Deve ser apendada\n");
-			removeFromList(exprList,exprList->nElem-1);
-			
-			_toList(_previous,eval_aux);
-			
+			removeFromList(exprList,exprList->nElem-1);			
+			_toList(_previous,eval_aux);			
 		}
 		
 		
 		
 	  }
 	  | token_letra {
-		printf("Achei um char\n");
+		
 		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_CHAR;
@@ -721,7 +793,7 @@ FATOR: token_num_float {
 		
 		int *tipo = malloc(sizeof(int));
 		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,funcCalled)))->tipo_retorno;
-		printf("Tipo da funcao: %d\n",*tipo);
+		
 		
 		int *flagFunc = malloc(sizeof(int));
 		*flagFunc = FLAG_FUNC;
@@ -736,21 +808,30 @@ FATOR: token_num_float {
 	  
       	  | VAR token_maismais {
 		// Check if var exists
-		printf("Achei uma variavel: %s\n",ident);
+		
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}
+		
 		
 		
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		//*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(varExists(HashVar,ident,currentFunction)) 
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		else  
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		  exit(2);
 		}
 		
-		printf("Tipo da variavel: %d\n",*tipo);
+		
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");
       	  }
@@ -758,18 +839,26 @@ FATOR: token_num_float {
 		// Check if var exists
 		printf("Achei uma variavel: %s\n",ident);
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}
 		
 		
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		//*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		if(varExists(HashVar,ident,currentFunction)) 
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		else  
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
+		
 		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
+		  exit(2);
 		}
-		printf("Tipo da variavel: %d\n",*tipo);
+		
 		
 		_toList(testList,tipo);
 		
@@ -777,20 +866,27 @@ FATOR: token_num_float {
 	  }
 	  
 	  | token_menosmenos VAR {
-		printf("Achei uma variavel: %s\n",ident);
+		
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}
 		
 		
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		//*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		
+		if(varExists(HashVar,ident,currentFunction)) 
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		else  
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		  exit(2);
 		}
-		printf("Tipo da variavel: %d\n",*tipo);
+		
 		
 		_toList(testList,tipo);
 		
@@ -798,50 +894,62 @@ FATOR: token_num_float {
 	  }
 	  | VAR token_menosmenos {
 		
-		printf("Achei uma variavel: %s\n",ident);
+		
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}		
 
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		//*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		if(varExists(HashVar,ident,currentFunction)) 
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		else  
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		  exit(2);
 		}
-		printf("Tipo da variavel: %d\n",*tipo);
+		
 
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");	  
 	  }
 	  | token_menos token_num_float {
-		printf("Achei um float\n");
+		
 
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_FLOAT;
 		_toList(testList,tipo);	  
 	  }
 	  | token_menos VAR {
-		printf("Achei uma variavel: %s\n",ident);
+		
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
-		if(!varExists(HashVar,ident,currentFunction)) {
+		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
+		  exit(2);
 		}		
 
 		int *tipo = malloc(sizeof(int));
-		*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		//*tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		if(varExists(HashVar,ident,currentFunction)) 
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+		else  
+		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
+		  exit(2);
 		}
-		printf("Tipo da variavel: %d\n",*tipo);
+		
 		_toList(testList,tipo);
 		
 		strcpy(atrib,"\0");	  
 	  }
 	  | token_menos token_num_inteiro {
-		printf("Achei um int\n");
+		
 		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_INT;
@@ -853,6 +961,7 @@ FATOR: token_num_float {
 
 /* ATRIBUICAO */
 ATRIBUICAO: VAR token_igual TO_ATRIB {
+			
 			char *varname = strtok(atrib," ");
 
 			if ( strlen(varname) > 1 && varname[0] == '('){
@@ -861,26 +970,42 @@ ATRIBUICAO: VAR token_igual TO_ATRIB {
 				varname[i] = '\0';
 			}
 			
-			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-			printf("%s %s\n",varname, currentFunction);
-			if (v == NULL){
+			/*s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
+			s_variavel *vglob = 
+			printf("%s %s\n",varname, currentFunction);*/
+			
+			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
+			
+			
+			
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			
-			int tipo_var = v->tipo;
+			
+			
+			int *tipo_var = malloc(sizeof(int));
+			
+			
+			if(varExists(HashVar,ident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			else  
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
+			
+			
+			//int tipo_var = v->tipo;
 
-				if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+				if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
 				}
-				else if ( tipo_var == T_STRING && eval == T_STRING){
+				else if ( *tipo_var == T_STRING && eval == T_STRING){
 					//printf("Ok! Tipo permitido!\n");
 				}
 				else{
@@ -894,23 +1019,26 @@ ATRIBUICAO: VAR token_igual TO_ATRIB {
 	  
 	  char *varname = strtok(atrib," ");
 			
-			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-			if (v == NULL){
+			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			
-			int tipo_var = v->tipo;
+			int *tipo_var = malloc(sizeof(int));
+			if(varExists(HashVar,ident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			else  
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 
 	  
-	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+	  if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
@@ -921,23 +1049,26 @@ ATRIBUICAO: VAR token_igual TO_ATRIB {
 	  | VAR token_menosigual TO_ATRIB {
 		char *varname = strtok(atrib," ");
 			
-			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-			if (v == NULL){
+						if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			
-			int tipo_var = v->tipo;
+			int *tipo_var = malloc(sizeof(int));
+			if(varExists(HashVar,ident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			else  
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 
 	  
-	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+	  if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
@@ -947,23 +1078,26 @@ ATRIBUICAO: VAR token_igual TO_ATRIB {
 	  | VAR token_vezesigual TO_ATRIB {
 		char *varname = strtok(atrib," ");
 			
-			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-			if (v == NULL){
+			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			
-			int tipo_var = v->tipo;
+			int *tipo_var = malloc(sizeof(int));
+			if(varExists(HashVar,ident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			else  
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 
 	  
-	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+	  if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
@@ -973,30 +1107,33 @@ ATRIBUICAO: VAR token_igual TO_ATRIB {
 	  | VAR token_divisaoigual TO_ATRIB{
 		char *varname = strtok(atrib," ");
 			
-			s_variavel *v = hashSearchVar(HashVar,varname,currentFunction);
-			if (v == NULL){
+			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			
-			int tipo_var = v->tipo;
+			int *tipo_var = malloc(sizeof(int));
+			if(varExists(HashVar,ident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			else  
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 
 	  
-	  if ( (tipo_var == T_INT || tipo_var == T_FLOAT || tipo_var == T_CHAR) && eval == T_INT){
+	  if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_FLOAT && eval == T_FLOAT){
+				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_CHAR && eval == T_CHAR) {
+				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
 					exit(2);
 				}
 		}	  
-	  | VAR token_ecomigual TO_ATRIB
+	  | VAR token_ecomigual TO_ATRIB	
 	  | VAR token_xnorigual TO_ATRIB
 	  | VAR token_ouigual TO_ATRIB
 	  | VAR token_shiftdireitaigual TO_ATRIB
@@ -1015,23 +1152,20 @@ TO_ATRIB:  U_EXP_LIST {
 		      list _last = getNode(exprList,j);	  
 		      int i = 0;
 		      for(i = 0; i<_last->nElem; i++) {
-			printf("Expr(%d): %d\n",i,*(int*)getNode(_last,i));
 			_toList(concatList,getNode(_last,i));
 		      }
 				
 		  }
 		  
-		  printf("Concat List:\n");
+		  
 		  int i;
-		  for(i = 0; i<concatList->nElem; i++) {
-			printf("Expr(%d): %d\n",i,*(int*)getNode(concatList,i));
-			//_toList(concatList,*(int*)getNode(_last,i));
-		      }
+		  
 		  eval = returnTypeExprList(concatList);    
-		  printf("Eval: %d\n",returnTypeExprList(concatList));
+		  
 
 		  if(returnTypeExprList(concatList) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+				  exit(2);
 			  }
 		
 		  
@@ -1047,15 +1181,16 @@ TO_ATRIB:  U_EXP_LIST {
 			  
 			  if(returnTypeExprList(getNode(exprList,j)) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+				  exit(2);
 			  }
 
-			  printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
 		  }
 	    }
 	  }
 	  else {
 		  if(returnTypeExprList(_last) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
+				  exit(2);
 			  }
 		eval = returnTypeExprList(_last);
 	  
@@ -1067,19 +1202,20 @@ TO_ATRIB:  U_EXP_LIST {
 
 CHAMADA_FUNCAO : token_ident token_abrep {
 			
-			printf("Vish %s!\n",atrib);
+			
 			char *funcname;
 			funcname = strtok(atrib,"(");
 			strcpy(funcCalled,funcname);
 			}
 			
 			PARAMETROS token_fechap {
-				printf("Chamou funcao com parametros\n");
+			
+				
 				char *funcname,*parlist,*tmpparlist;
-				printf("atrib: %s\n",atrib);
+				
 				int nParam=1;
 
-				printf("funcname: %s\n",funcCalled);
+				
 
 				int i=0;
 				//printf("tmpparlist: %s\n",tmpparlist);
@@ -1087,7 +1223,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 					//printf("tmpparlist[%d]: %c\n",i,'a');
 					if(atrib[i]==',') nParam++;
 				}
-			printf("Parametros passados: %d\n",nParam);
+			
 			
 			// Verifica existencia e aridade da funcao
 			if(!funcExists(HashFunc,funcCalled)) {
@@ -1112,41 +1248,40 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 						int piOriginal,piPassado;
 						
 						piOriginal = *(int*)(getNode(pList,i));
-						printf("Parametro %d: %d\n",i,*(int*)(getNode(pList,i)));
 						//pList = pList->next;
 						
 						list t = getNode(exprList,i);
 						int j;
-						for(j = 0; j<t->nElem; j++) {
-							printf("Expr!=(%d): %d\n",j,*(int*)getNode(t,j));
-						}
 						
-						// TODO substituir essa linha pela funcao de avaliacao da expressao
+						
 						piPassado = returnTypeExprList(t);
-						
-						printf("Parametro Passdo (%d): %d\n",i,piPassado);
 						
 						switch(piOriginal) {
 							case T_INT:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
-									printf("Tipo de parametro incorreto!\n");
+									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
+									exit(2);
 								}
+								
 								break;
 								
 							case T_CHAR:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
-									printf("Tipo de parametro incorreto!\n");
+									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
+									exit(2);
 								}
 								break;
 							
 							case T_FLOAT:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
-									printf("Tipo de parametro incorreto!\n");
+									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
+									exit(2);
 								}
 								break;
 							case T_BOOLEAN:
 								if(piPassado != T_BOOLEAN) {
-									printf("Tipo de parametro incorreto!\n");
+									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
+									exit(2);
 								}
 						}
 						
@@ -1156,16 +1291,15 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			}
 			
 			  strcpy(atrib,"\0");
-			  printf("%s\n",atrib);
 		}
 		
 
 
 		  | token_ident token_abrep token_fechap {
-			printf("Chamou uma funcao sem parametro: %s\n",atrib);
+			
 			char *funcname;
 			funcname = strtok(atrib,"(");
-			printf("funcname: %s\n",funcname);
+			
 			if(!funcExists(HashFunc,funcname)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
 				exit(2);
@@ -1229,15 +1363,15 @@ SWITCH_BLOCK2 :
 
 LOOP : FOR_LOOP | DO_WHILE_LOOP | WHILE_LOOP ;
 
-WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap COMANDAO
-	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec BLOCO token_fechac
+WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO
+	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac
 ;
 
 DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
 		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO	  
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO 
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
