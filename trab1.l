@@ -62,7 +62,7 @@ unsigned {return token_unsigned;}
 void {strcat(atrib,yytext); strcat(atrib," "); return token_void;}
 volatile {return token_volatile;}
 while {return token_while;}
-string {return token_stringtype;}
+string {strcat(atrib,yytext); strcat(atrib," "); return token_stringtype;}
 
 "int main" {return token_int_main;}
 

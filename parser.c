@@ -30,9 +30,10 @@ int converType(char* type){
 
 // Essa funao e' utilizada pra limpar uma lista de sublistas, como a lista de expressoes de um comando
 void cleanExprList(list l) {
-  printf("Passou1");
+  //printf("Passou1");
 	if(!l || !(l->head)) {
-	  printf("Lista nao iniciada\n");
+	  //printf("Lista nao iniciada\n");
+	  return;
 	}
 	
 	int i,len = l->nElem; 
@@ -40,7 +41,7 @@ void cleanExprList(list l) {
 	for(i=0;i<len;i++) {
 	    destroyList(getNode(l,i));
 	}
-	printf("Passou2");
+	//printf("Passou2");
 	NODELISTPTR aux = l->head;
 	for(i=0;i<len;i++) {
 	    free(aux);
