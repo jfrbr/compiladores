@@ -123,7 +123,7 @@ int checkVariables(list* hash){
 				list l = hash[i];
 				s_variavel* v = getNode(l,j);
 				if (v->used == NOT_USING){
-					 printf("A variavel %s/%s nao foi utilizada\n",v->nome,v->escopo);
+					 printf("Erro semantico: A variavel %s/%s nao foi utilizada (declarada na linha %d)\n",v->nome,v->escopo,v->lineDeclared);
 				}
 			}
 		}

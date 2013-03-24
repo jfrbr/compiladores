@@ -791,6 +791,7 @@ FATOR: token_num_float {
 	  | CHAMADA_FUNCAO {
 		//printf("Achei uma funcao: %s\n",ident);
 		
+		
 		int *tipo = malloc(sizeof(int));
 		*tipo = ((s_funcao*)(hashSearchFunction(HashFunc,funcCalled)))->tipo_retorno;
 		
@@ -1202,10 +1203,9 @@ TO_ATRIB:  U_EXP_LIST {
 
 CHAMADA_FUNCAO : token_ident token_abrep {
 			
+			printf("ident: %s\n",ident);
+			strcpy(funcCalled,ident);
 			
-			char *funcname;
-			funcname = strtok(atrib,"(");
-			strcpy(funcCalled,funcname);
 			}
 			
 			PARAMETROS token_fechap {
@@ -1367,14 +1367,14 @@ WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap {strcpy(atrib,"\0");
 	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac
 ;
 
-DO_WHILE_LOOP : token_do COMANDAO token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
-		| token_do token_abrec BLOCO token_fechac token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
+DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList(exprList);} token_abrep U_EXP_LIST token_fechap token_ptevirgula
+		| token_do token_abrec BLOCO token_fechac {strcpy(atrib,"\0"); cleanExprList(exprList);} token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap COMANDAO	  
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap COMANDAO 
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec BLOCO token_fechac
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {strcpy(atrib,"\0");}
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO 
+	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 ;
 
 ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
