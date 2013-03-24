@@ -284,6 +284,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  int j;
 	  
 	  list _last = getNode(exprList,exprList->nElem-1);	  
+	  
+	  if(_last->nElem > 1) {
 	  if(*(int*)getNode(_last,1) != 999) {		
 		list concatList = initList();
 		for(j=0;j<exprList->nElem;j++) {
@@ -316,6 +318,10 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			
 		}
 	  }
+	  }
+	  else {
+		eval = returnTypeExprList(_last);
+	  }
 	  
 	  cleanExprList(exprList);
 	  
@@ -337,7 +343,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	printf("Aqui tem o return com exp da funcao: %s\n",currentFunction);	
 		
 	list _last = getNode(exprList,exprList->nElem-1);
-	
+	if(_last->nElem > 1) {
 	printf("aqui\n");
 	int j;
 	  if(*(int*)getNode(_last,1) != FLAG_FUNC) {
@@ -363,12 +369,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		debug();
 		eval = returnTypeExprList(concatList);
 		printf("Eval: %d\n",returnTypeExprList(concatList));
-debug();
 		if(eval < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
 
 		}
-		s_funcao *_fcalled = allocateFunction();
+		s_funcao *_fcalled;
 		_fcalled = hashSearchFunction(HashFunc,currentFunction);
 		printf("%s\n",currentFunction);
 		
@@ -389,7 +394,23 @@ debug();
 			printf("Eval: %d\n",returnTypeExprList(getNode(exprList,j)));
 		}
 	  }
+	  }
+	  else {
+		eval = returnTypeExprList(_last);
+		printf("Eval: %d\n",returnTypeExprList(_last));
+		if(eval < 0) {
+				printf("Erro na linha %d: Expressao incompativel\n",lines);
+
+		}
+		s_funcao *_fcalled;
+		_fcalled = hashSearchFunction(HashFunc,currentFunction);
+		printf("%s\n",currentFunction);
+		
+		if(eval == -1 || eval != _fcalled->tipo_retorno) {
+		  printf("Erro na linha %d: Return associado a funcao %s nao corresponde ao tipo informado %d\n",lines,_fcalled->nome,_fcalled->tipo_retorno);
+		}
 	  
+	  }
 	  cleanExprList(exprList);
 	  strcpy(atrib,"\0");
 		
@@ -411,12 +432,24 @@ debug();
 		strcpy(num_inteiro,"\0");
 		
 	}
-	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO
-	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO
-	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO
-	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac
-	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO {
+		cleanExprList(exprList);
+	}
+	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO  {
+		cleanExprList(exprList);
+	}
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac  {
+		cleanExprList(exprList);
+	}
+	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO  {
+		cleanExprList(exprList);
+	}
+	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac  {
+		cleanExprList(exprList);
+	}
+	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac {
+		cleanExprList(exprList);
+	}
 	| SWITCH
 	| token_break token_ptevirgula
 	| token_continue token_ptevirgula
@@ -719,7 +752,6 @@ FATOR: token_num_float {
 		
 		printf("Tipo da variavel: %d\n",*tipo);
 		_toList(testList,tipo);
-		
 		strcpy(atrib,"\0");
       	  }
 	  | token_maismais VAR {
@@ -1060,11 +1092,13 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			// Verifica existencia e aridade da funcao
 			if(!funcExists(HashFunc,funcCalled)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
+				exit(2);
 			}
 			else {
 				s_funcao *aux = hashSearchFunction(HashFunc,funcCalled);
 				if(checkArity(aux,nParam) != 1) {
 					printf("Erro na linha %d: Funcao sendo chamada com numero incorreto de parametros\n",lines);
+					exit(2);
 				}
 				// Verifica se a lista de parametros esta com os tipos corretos
 				else {
@@ -1134,11 +1168,13 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			printf("funcname: %s\n",funcname);
 			if(!funcExists(HashFunc,funcname)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
+				exit(2);
 			}
 			else {
 				s_funcao *aux = hashSearchFunction(HashFunc,funcname);
 				if(checkArity(aux,0) != 1) {
 					printf("Erro na linha %d: Funcao com parametros sendo chamada sem parametros\n",lines);
+					exit(2);
 				}
 			}
 			strcpy(atrib,"\0");
