@@ -1,9 +1,45 @@
 \documentclass[a4paper,10pt]{article}
+
+\usepackage[a4paper,left=1.0cm,right=1.0cm,top=2.0cm]{geometry}
+
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[pdftex]{hyperref}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{float}
+
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+\lstset{
+	backgroundcolor=\color{lbcolor},
+	tabsize=2,
+	rulecolor=,
+	language=C,
+        basicstyle=\scriptsize,
+        upquote=true,
+        aboveskip={1.5\baselineskip},
+        columns=fixed,
+        showstringspaces=false,
+        extendedchars=true,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        frame=single,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,1},
+        commentstyle=\color[rgb]{0.133,0.545,0.133},
+        stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
 
 %opening
 \title{3º Trabalho de Compiladores - Analisador Sintático}
 \author{André Siviero e Juan França}
+
 
 \begin{document}
 
@@ -18,9 +54,86 @@ O objetivo deste trabalho é estabelecer um analisador semântico para a linguag
 e sua função é analisar a coerência dos elementos contidos em um arquivo de entrada (código fonte). 
 
 Utilizando a ferramenta Bison para gerar um analisador sintático, a tarefa foi facilitada. Nesta documentação, são descritas as regras da linguagem e as dificuldades encontradas pela dupla.
-\section{}
+
+\section{Objetivos}
+Basicamente, este terceiro trabalho consistia em verificar:
+\begin{enumerate}
+\item Se as variáveis utilizadas foram declaradas;
+\item Se há variáveis redeclaradas;
+\item Se há variáveis declaradas e não utilizadas;
+\item Se os tipos associados às variáveis e ao valor associado são compatíveis;
+\item Se o número de argumentos (aridade) de uma função está correto;
+\item Se o tipo associado ao valor de retorno de uma função está correto;
+\item Se os tipos associados aos argumentos de uma função estão corretos.
+\end{enumerate}
+
+Para solucionar isto foi implementado dois TADs: tabela Hash e lista genérica. O tamanho máximo utilizado para tabela foi de 997. A função que gera as keys está descrito a seguir:
+
+\begin{lstlisting}
+int sum_ascii(char *string) {
+  int i = 0;
+  int ascii = 0;
+
+  for(i=0;string[i]!='\0';i++) {
+    ascii += string[i];
+  }
+  return ascii;
+}
+\end{lstlisting}
+
+Antes de explicar o que foi utilizado para solucionar cada item, será feita uma breve introdução de como funciona o código.
+
+\section{Como funciona?}
+
+\subsection{Estruturas}
+Temos dois tipos básicos de estruturas para ajudar a concluir os objetivos acima. Estes são descritos abaixo:
+\subsubsection{s\_funcao}
+
+Cada função é definida da seguinte forma:
+
+\begin{lstlisting}
+struct  {
+  char nome[30];
+  int aridade;
+  int tipo_retorno;
+  list parametros;
+} typedef s_funcao;
+\end{lstlisting}
+
+As funções pré-definidas (min,max,printf e scanf) são inseridas na hash no início do programa. E a lista de parâmetros destas é checada no momento de execução pois os tipos são
+variáveis.
+
+\subsubsection{s\_variavel}
+Cada variável é definida da seguinte forma:
+\begin{lstlisting}
+ struct  {
+  char nome[30];
+  void *valor;
+  int tipo;
+  char escopo[30];
+  int lineDeclared;
+  int used;
+} typedef s_variavel;
+\end{lstlisting}
+
+O atribuito 'used' serve para determinar se uma variável foi usada ou não e o 'lineDeclared' armazena a linha da declaração da variável. Será explicado com mais detalhes no decorrer do relatório.
+
+\subsection{Declaração de funções}
+Na Poor C, só pode existir declaração de funções antes da main. Toda vez que tem-se uma declaração, esta é inserida na tabela hash de funções, não há sobrecarga de funções. Portanto, se ao tentar
+inserir uma função, já existir uma função com o mesmo nome na hash ocorre erro.
+\subsection{Chamada de função}
+Quando ocorre uma chamada de função, busca-se na hash o nome da função. Caso não exista a função, é retornado erro.
+\subsection{Declaração de variáveis}
+\subsection{Atribuição de variáveis}
 
 
+\section{1 - Se as variáveis utilizadas foram declaradas}
+\section{2 - Se há variáveis redeclaradas}
+\section{3 - Se há variáveis declaradas e não utilizadas}
+\section{4 - Se os tipos associados às variáveis e ao valor associado são compatíveis}
+\section{5 - Se o número de argumentos (aridade) de uma função está correto}
+\section{6 - Se o tipo associado ao valor de retorno de uma função está correto}
+\section{7 - Se os tipos associados aos argumentos de uma função estão corretos}
 
 \section{Exemplos}
 Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
