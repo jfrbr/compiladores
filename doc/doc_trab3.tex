@@ -120,19 +120,35 @@ O atribuito 'used' serve para determinar se uma variável foi usada ou não e o 
 
 \subsection{Declaração de funções}
 Na Poor C, só pode existir declaração de funções antes da main. Toda vez que tem-se uma declaração, esta é inserida na tabela hash de funções, não há sobrecarga de funções. Portanto, se ao tentar
-inserir uma função, já existir uma função com o mesmo nome na hash ocorre erro.
+inserir uma função, já existir uma função com o mesmo nome na hash ocorre erro. Os parâmetros da funções são inseridos na tabela de variáveis com o tipo definido na declaração.
 \subsection{Chamada de função}
 Quando ocorre uma chamada de função, busca-se na hash o nome da função. Caso não exista a função, é retornado erro.
 \subsection{Declaração de variáveis}
+Similarmente a declaração de funções, a declaração de variáveis executa o mesmo comando: tenta inserir na tabela hash de variáveis. Caso já tenha uma variável com o mesmo escopo ocorreu uma
+redeclaração de variáveis.
 \subsection{Atribuição de variáveis}
-
+Para atribuir valores as variáveis, é necessário procurar na tabela hash de variáveis o nome da variável assoaciado ao escopo. A seguir deve-se verificar se o tipo da expressão
+é compatível com o tipo da variável. Para isso, temos a função ilegível returnTypeExprList que atua sobre uma lista de tipos e operadores retornando o tipo resultante.
+\subsection{Atrib/Ident}
+A variável 'ident' guarda o valor do último identificador. A variável global 'atrib' guarda é um comando simples do código fonte, na maioria das vezes, equivalente a uma linha de código.
+É necessário zerar 'atrib' a cada comando terminado.
+\subsection{ExprList}
 
 \section{Se as variáveis utilizadas foram declaradas}
+Checa-se na tabela hash de variáveis se o nome da variável e com o respectivo escopo existe ou o nome da variável com escopo 'global' existe. 
+Caso exista é porque já foi declarada. Isto também checa que parâmetros da função usados dentro dela também são variáveis.
+
 \section{Se há variáveis redeclaradas}
+Caso similar ao anterior, caso em uma declaração de variável esta já existe(com mesmo nome e mesmo escopo) deve retornar erro.
 \section{Se há variáveis declaradas e não utilizadas}
+Para solucionar este tópico foi necessário adicionar os atributos a variável 'lineDeclared' e 'used'. Se no final do programa, existir alguma varíavel na tabela hash de variáveis
+com used com valor igual a zero significa que a variável não foi utilizada. O atributo 'LineDeclared' guarda a linha que foi declarada para retornar junto ao erro.
 \section{Se os tipos associados às variáveis e ao valor associado são compatíveis}
+
 \section{Se o número de argumentos (aridade) de uma função está correto}
+Em cada declaração de função a aridade é conhecida. Basta checar se na tabela hash de funções o valor da aridade é o mesmo da função que está sendo checada.
 \section{Se o tipo associado ao valor de retorno de uma função está correto}
+
 \section{Se os tipos associados aos argumentos de uma função estão corretos}
 
 \section{Exemplos}
