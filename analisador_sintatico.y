@@ -5,6 +5,7 @@
 #include "parser.h"
 
 extern char ident[256];
+char lident[256];
 int Nlinha=1;
 extern char atrib[200];
 extern char num_inteiro[50];
@@ -323,6 +324,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  
 	  var = strtok(varlist,",;");
 	  int type= converType(tipo);
+	  
+	  
 	  	  
 	  while(var){
 		
@@ -393,7 +396,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  else {
 		// remove flagFunc
 		int j;
-		
+		 
 		removeFromList(exprList,exprList->nElem-1);		
 		// Check one by one
 		
@@ -983,7 +986,7 @@ FATOR: token_num_float {
 
 
 /* ATRIBUICAO */
-ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0");} TO_ATRIB {
+ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 
 
 			
@@ -1007,19 +1010,19 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0");} TO_ATRIB {
 			
 			
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
-			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
+			hashVarUpdateUse(HashVar,lident,currentFunction,USING);
 			
 			
 			
 			int *tipo_var = malloc(sizeof(int));
 			
 			
-			if(varExists(HashVar,ident,currentFunction)) 
-			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,currentFunction)))->tipo;
+			if(varExists(HashVar,lident,currentFunction)) 
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,lident,currentFunction)))->tipo;
 			else  
-			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
+			    *tipo_var = ((s_variavel*)(hashSearchVar(HashVar,lident,"global")))->tipo;
 			
-			
+			//printf("var: %s, tipo_var: %d, eval: %d\n",lident,*tipo_var,eval);
 			//int tipo_var = v->tipo;
 
 				if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
@@ -1204,9 +1207,12 @@ TO_ATRIB:  U_EXP_LIST {
 		  // remove flagFunc
 		  
 		  int j;
+		 // printf("aqui\n");
+		  
 		  list fRet = getNode(exprList,exprList->nElem-1);
 		  
 		  eval = *(int*)getNode(fRet,0);
+		  
 		  
 		  removeFromList(exprList,exprList->nElem-1);
 		  
