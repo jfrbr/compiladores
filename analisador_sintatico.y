@@ -1496,7 +1496,7 @@ main(){
 	checkVariables(HashVar);	
 	
 	// Testando Fator
-	printf("Fator: %d, %f\n",fteste->tipo,*(float*)executaFator(fteste));
+	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
 	
 }
