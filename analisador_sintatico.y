@@ -26,6 +26,7 @@ list exprList;
 list testList;
 list parList;
 
+s_fator *fteste;
 
 %}
 
@@ -730,6 +731,14 @@ FATOR: token_num_float {
 		*tipo = T_FLOAT;
 		_toList(testList,tipo);
 		
+		printf("Tem um int\n");
+		fteste = allocateFator();
+		printf("Numero inteiro: %f\n",atof(num_float));
+		float *pf = malloc(sizeof(float));
+		*pf = atof(num_float);
+		
+		setFator(fteste,T_FLOAT,pf,NULL);
+		
 	  }
 	  
 	  | token_num_inteiro {
@@ -737,6 +746,15 @@ FATOR: token_num_float {
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_INT;
 		_toList(testList,tipo);
+		
+		printf("Tem um int\n");
+		fteste = allocateFator();
+		printf("Numero inteiro: %d\n",atoi(num_inteiro));
+		int *inteiro = malloc(sizeof(int));
+		*inteiro = atoi(num_inteiro);
+		
+		setFator(fteste,T_INT,inteiro,NULL);
+		
 	  }	  
 
 	  | VAR {
@@ -1475,7 +1493,12 @@ main(){
 
 	yyparse();
 
-	checkVariables(HashVar);
+	checkVariables(HashVar);	
+	
+	// Testando Fator
+	printf("Fator: %d, %f\n",fteste->tipo,*(float*)executaFator(fteste));
+	
+	
 }
 
 /* rotina chamada por yyparse quando encontra erro */

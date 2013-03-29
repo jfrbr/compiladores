@@ -1,24 +1,24 @@
-#include<stdio.h>
-// Testando comentario
+int d;
 
+void print(int var){
+	int c;
+	c = var;
+	printf("%d",var);
+}
+
+int e;
+
+void execute(){
+	d = max(d,e);
+}
 
 int main(){
-	float a;
-	float b;
-	a = 10.2;
-	b = 5.1e-9;
-	while(b < 2) {
-		a = !a / 2 % b++;
-		// Comentario bacana
-	}
-	/* /* Comentario Manero
-	*/
-	do {
-		printf("Ai meu deus como e' bom ser vida loka\n");
-	}
-	while(a > 0);
+
+	int a;
+
+	for (a=0;a<10;a++){
+		print(a);
+	}	
 	
 	return 0;
 }
-
-//* COMENTARIO*/*/*/*/*/*/*/*/*/*/*/*/**/

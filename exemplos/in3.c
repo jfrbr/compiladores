@@ -1,16 +1,17 @@
-#include<stdio.h>
-// Testando comentario
-void debug() {
-	printf("aooooo trem que pula!\n");
-}
-
 int main(){
-	float a;
-	float b;
-	a = 10;
-	b = 5.1e9;
-	debug();
-	debug();
-}
+	
+	int a;
+	char c;
+	c = 'a';
 
-//* COMENTARIO*/*/*/*/*/*/*/*/*/*/*/*/**/
+	for (a=0;a<10;a++){
+		c += a;
+	}
+
+	while (a < 10){
+		printf("%d",a);
+	}
+
+	return -1;
+
+}

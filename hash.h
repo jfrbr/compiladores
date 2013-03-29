@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "list.h"
 #include "function.h"
+#include "fator.h"
 #include "variable.h"
 
 #define T_INT 1

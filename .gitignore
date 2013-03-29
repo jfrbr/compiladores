@@ -17,6 +17,6 @@ doc/*
 *.o
 test.c
 tmp/*
-trab2
-trab3
+trab*
 exemplos_2/teste.c
+
