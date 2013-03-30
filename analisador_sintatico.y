@@ -28,6 +28,10 @@ list parList;
 
 s_fator *fteste;
 
+NODETREEPTR nodeTree;
+list fatorList;
+tree bigTree;
+
 %}
 
 %token token_numero
@@ -696,6 +700,9 @@ EXP: EXP token_mais {
 		char *op = malloc(sizeof(char));
 		*op = '+';
 		_toList(testList,op);
+		
+		
+		
       } TERMO
     | EXP token_menos {
 		
@@ -710,7 +717,21 @@ TERMO: TERMO token_vezes {
 		char *op = malloc(sizeof(char));
 		*op = '*';		
 		_toList(testList,op);
-      } FATOR 
+      } FATOR {
+	printf("Achou! Lista fatorList tem %d elementos\n",fatorList->nElem);
+	
+	nodeTree = allocateTreeNode();
+	
+	setTreeNode(nodeTree,fteste,F_TERMO);
+	int i=0;
+	/*NODELISTPTR
+	for(i=0; i<fatorList->nElem; i++) {
+		
+	}*/
+	appendToTreeNode(nodeTree,fatorList);
+	fatorList = initList();
+	//_toList(fatorList,nodeTree);
+      }
       | TERMO token_divisao {
 		char *op = malloc(sizeof(char));
 		*op = '/';		
@@ -739,6 +760,11 @@ FATOR: token_num_float {
 		
 		setFator(fteste,T_FLOAT,pf,NULL);
 		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
+		
 	  }
 	  
 	  | token_num_inteiro {
@@ -754,6 +780,11 @@ FATOR: token_num_float {
 		*inteiro = atoi(num_inteiro);
 		
 		setFator(fteste,T_INT,inteiro,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
 		
 	  }	  
 
@@ -1454,12 +1485,16 @@ COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP CO
 #include "lex.yy.c"
 
 main(){
+	bigTree = initTree();
 
 	initHash(HashVar,MAX_HASH_SIZE);
 	initHash(HashFunc,MAX_HASH_SIZE);
 	
 	exprList = initList();
 	testList = initList();
+	fatorList = initList();
+	
+	
 
 	s_funcao* print = allocateFunction();
 	setFunction(print,"printf",2,T_VOID,NULL);
@@ -1496,7 +1531,11 @@ main(){
 	checkVariables(HashVar);	
 	
 	// Testando Fator
-	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
+//	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
+	
+	printf("Fator: %f\n",*(float*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
+	printf("Fator: %f\n",*(float*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),1))));
+	printf("Fator: %d\n",((list)(nodeTree->children->head->element))->nElem);
 	
 	
 }

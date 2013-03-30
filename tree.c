@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "tree.h"
+#include "hash.h"
 
 tree initTree() {
 	tree aux = (tree)malloc(sizeof(struct tree));
@@ -21,4 +21,27 @@ NODETREEPTR allocateTreeNode() {
 		if (aux) return aux;
 		else return NULL;
 
+}
+
+void *executeNodeTree(NODETREEPTR node) {
+	//debug();
+	switch(node->tipoNodeTree) {
+		case F_FATOR:
+			debug();
+			return executaFator((s_fator*)node->element);
+			break;
+		default:
+			break;
+
+	}
+	return NULL;
+}
+
+void setTreeNode(NODETREEPTR node,void* toSet, int tipo) {
+	node->tipoNodeTree = tipo;
+	node->element = toSet;
+}
+
+void appendToTreeNode(NODETREEPTR node,void* toAppend) {
+	_toList(node->children,toAppend);
 }

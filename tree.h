@@ -6,6 +6,8 @@ struct nodeTree {
 	void* element;
 	struct nodeTree* next;
 	list children;
+	// Para auxiliar na execuçao
+	int tipoNodeTree;
 };
 typedef struct nodeTree* NODETREEPTR;
 
@@ -16,6 +18,12 @@ typedef struct tree* tree;
 
 tree initTree();
 NODETREEPTR allocateTreeNode();
+
+void setTreeNode(NODETREEPTR node,void* toSet,int tipo);
+void appendToTreeNode(NODETREEPTR node,void* toAppend);
+
+
+void *executeNodeTree(NODETREEPTR node);
 
 
 

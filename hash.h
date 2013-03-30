@@ -4,6 +4,9 @@
 #include "function.h"
 #include "fator.h"
 #include "variable.h"
+#include "tree.h"
+#include "termo.h"
+
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -11,6 +14,10 @@
 #define T_CHAR 4
 #define T_STRING 5
 #define T_VOID 6
+
+// Constantes de Execucao
+#define F_FATOR 7
+#define F_TERMO 8
 
 #define NOT_USING 0
 #define USING 1
