@@ -11,7 +11,7 @@ struct {
 } typedef s_termo;
 
 s_termo *allocateTermo();
-void *executeTermo(s_termo *toExecute);
+void *executeTermo(s_termo *toExecute,list operands);
 void setTermo(s_termo *t, char op);
 
 #endif /* TERMO_H_ */

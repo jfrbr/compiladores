@@ -718,11 +718,16 @@ TERMO: TERMO token_vezes {
 		*op = '*';		
 		_toList(testList,op);
       } FATOR {
+      
+      
 	printf("Achou! Lista fatorList tem %d elementos\n",fatorList->nElem);
 	
 	nodeTree = allocateTreeNode();
 	
-	setTreeNode(nodeTree,fteste,F_TERMO);
+	s_termo *termo = allocateTermo();
+	setTermo(termo,'*');	
+	
+	setTreeNode(nodeTree,termo,F_TERMO);
 	int i=0;
 	/*NODELISTPTR
 	for(i=0; i<fatorList->nElem; i++) {
@@ -742,7 +747,22 @@ TERMO: TERMO token_vezes {
 		*op = '%';		
 		_toList(testList,op);
       } FATOR
-      | FATOR
+      | FATOR {
+	nodeTree = allocateTreeNode();
+	
+	s_termo *termo = allocateTermo();
+	setTermo(termo,'(');	
+	
+	setTreeNode(nodeTree,termo,F_TERMO);
+	int i=0;
+	/*NODELISTPTR
+	for(i=0; i<fatorList->nElem; i++) {
+		
+	}*/
+	appendToTreeNode(nodeTree,fatorList);
+//	fatorList = initList();
+	
+      }
 ;
 
 FATOR: token_num_float {
@@ -785,6 +805,7 @@ FATOR: token_num_float {
 		setTreeNode(nodeTree,fteste,F_FATOR);
 		
 		_toList(fatorList,nodeTree);
+		
 		
 	  }	  
 
@@ -1533,10 +1554,14 @@ main(){
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
-	printf("Fator: %f\n",*(float*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
-	printf("Fator: %f\n",*(float*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),1))));
-	printf("Fator: %d\n",((list)(nodeTree->children->head->element))->nElem);
-	
+	printf("Fator: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
+/*	printf("Fator2: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),1))));
+	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
+*/	
+
+	debug();
+	printf("Fator: %d\n",*(int*)(executeNodeTree(nodeTree)));
+	debug();
 	
 }
 

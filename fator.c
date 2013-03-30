@@ -10,9 +10,11 @@ s_fator* allocateFator() {
 	else return NULL;
 }
 void *executaFator(s_fator* toExecute) {
+
 	switch(toExecute->tipo) {
 		case T_INT:
 		case T_FLOAT:
+			debug();
 			return toExecute->valor;
 			break;
 		default:

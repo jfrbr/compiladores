@@ -27,8 +27,11 @@ void *executeNodeTree(NODETREEPTR node) {
 	//debug();
 	switch(node->tipoNodeTree) {
 		case F_FATOR:
-			debug();
+
 			return executaFator((s_fator*)node->element);
+			break;
+		case F_TERMO:
+			return executeTermo((s_termo*)node->element,(list)(node->children->head->element));
 			break;
 		default:
 			break;
