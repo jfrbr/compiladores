@@ -14,15 +14,17 @@ void *executeTermo(s_termo *toExecute, list operands) {
 		return executaFator((s_fator*)(((NODETREEPTR)(getNode((list)(operands),0)))->element));
 	}
 	else {
-		s_fator *a,*b;
-		a = (((NODETREEPTR)(getNode((list)(operands),0)))->element);
-		b = (((NODETREEPTR)(getNode((list)(operands),1)))->element);
+		NODETREEPTR a,b;
+		a = ((NODETREEPTR)(getNode((list)(operands),0)));
+		b = ((NODETREEPTR)(getNode((list)(operands),1)));
 		void *a_v,*b_v,*r;
 		int *res;
 		res = malloc(sizeof(int));
+
 		switch(toExecute->op) {
 			case '*':
-				switch(a->tipo) {
+				if(a)
+				/*switch(a->tipoNodeTree) {
 					case T_INT:
 						///int a_v;
 						//a_v = (int*)malloc(sizeof(int));
@@ -31,7 +33,7 @@ void *executeTermo(s_termo *toExecute, list operands) {
 						//a_v = (float*)malloc(sizeof(float));
 						break;
 				}
-				switch(b->tipo) {
+				switch(b->tipoNodeTree) {
 					case T_INT:
 						///int a_v;
 						//b_v = (int*)malloc(sizeof(int));
@@ -39,12 +41,15 @@ void *executeTermo(s_termo *toExecute, list operands) {
 					case T_FLOAT:
 						//b_v = (float*)malloc(sizeof(float));
 						break;
-				}
+				}*/
+				printf("Valor1: %d",a->tipoNodeTree);
+				a_v = executeNodeTree(a);
+				b_v = executeNodeTree(b);
 
-				a_v = executaFator(a);
-				b_v = 	executaFator(b);
-				printf("Valor: %d",*(int*)a_v * *(int*)b_v);
+
+				//printf("Valor: %d",*(int*)a_v * *(int*)b_v);
 				printf("Valor: %d",*(int*)b_v);
+				printf("Passou1\n");
 				debug();
 
 				*res = (*(int*)a_v * *(int*)b_v);
