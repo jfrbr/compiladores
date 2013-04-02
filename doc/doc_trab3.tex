@@ -53,7 +53,7 @@ Documentação referente à terceira parte do trabalho de compiladores, que cons
 O objetivo deste trabalho é estabelecer um analisador semântico para a linguagem PC (Poor C). O analisador semântico é a terceira parte de um compilador,
 e sua função é analisar a coerência dos elementos contidos em um arquivo de entrada (código fonte). 
 
-Utilizando a ferramenta Bison para gerar um analisador sintático, a tarefa foi facilitada. Nesta documentação, são descritas as regras da linguagem e as dificuldades encontradas pela dupla.
+Utilizando a ferramenta Bison para gerar um analisador sintático, a tarefa foi facilitada. Nesta documentação, são descritas as situações consideradas inconsistentes e como elas foram detectadas.
 
 \section{Objetivos}
 Basicamente, este terceiro trabalho consistia em verificar:
@@ -128,11 +128,14 @@ Similarmente a declaração de funções, a declaração de variáveis executa o
 redeclaração de variáveis.
 \subsection{Atribuição de variáveis}
 Para atribuir valores as variáveis, é necessário procurar na tabela hash de variáveis o nome da variável assoaciado ao escopo. A seguir deve-se verificar se o tipo da expressão
-é compatível com o tipo da variável. Para isso, temos a função ilegível returnTypeExprList que atua sobre uma lista de tipos e operadores retornando o tipo resultante.
+é compatível com o tipo da variável. Para isso, temos a função ilegível returnTypeExprList que atua sobre uma lista de tipos e operadores, retornando o tipo resultante.
 \subsection{Atrib/Ident}
 A variável 'ident' guarda o valor do último identificador. A variável global 'atrib' guarda é um comando simples do código fonte, na maioria das vezes, equivalente a uma linha de código.
 É necessário zerar 'atrib' a cada comando terminado.
-\subsection{ExprList}
+\subsection{exprList e testList}
+Para avaliar cada expressão e sua coerência de tipos, criou-se duas listas. testList é a lista que monta uma única expressão numa lista de expressões linkadas
+por \&\& e || ou separadas por parênteses, no formato (TIPO OPERADOR TIPO OPERADOR TIPO...) . Ao final de cada testList, ela é apendada em exprList. Por fim,
+quando o comando termina de ser avaliado, exprList é avaliada para verificar a consistência e, então, resetada.
 
 \section{Se as variáveis utilizadas foram declaradas}
 Checa-se na tabela hash de variáveis se o nome da variável e com o respectivo escopo existe ou o nome da variável com escopo 'global' existe. 
@@ -143,15 +146,22 @@ Caso similar ao anterior, caso em uma declaração de variável esta já existe(
 \section{Se há variáveis declaradas e não utilizadas}
 Para solucionar este tópico foi necessário adicionar os atributos a variável 'lineDeclared' e 'used'. Se no final do programa, existir alguma varíavel na tabela hash de variáveis
 com used com valor igual a zero significa que a variável não foi utilizada. O atributo 'LineDeclared' guarda a linha que foi declarada para retornar junto ao erro.
+
 \section{Se os tipos associados às variáveis e ao valor associado são compatíveis}
+Já descrito na se\c cão que trata de atribui\c cão de variáveis.
 
 \section{Se o número de argumentos (aridade) de uma função está correto}
 Em cada declaração de função a aridade é conhecida. Basta checar se na tabela hash de funções o valor da aridade é o mesmo da função que está sendo checada.
+
 \section{Se o tipo associado ao valor de retorno de uma função está correto}
+Ao encontrar um return seguido de uma expressão (ou lista de expressões), esta expressão é avaliada (exprList) e seu tipo resultante é comparado com o tipo
+esperado da fun\c cão, dando erro caso eles sejam incompatíveis.
 
 \section{Se os tipos associados aos argumentos de uma função estão corretos}
+Como descrito na expica\c cão de exprList, aqui verifica-se se as expressões estão de acordo com os tipos de parâmetros definidos na respectiva s\_{}funcao.
+
 
 \section{Exemplos}
 Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
-situações erradas. Um teste com situações bizarras e mais difíceis também foi incluído.
+situações erradas.
 \end{document}
