@@ -16,7 +16,7 @@ struct {
 } typedef s_fator;
 
 s_fator *allocateFator();
-void *executaFator(s_fator *toExecute);
+s_fator *executaFator(s_fator *toExecute);
 void setFator(s_fator *f, int tipo,void *valor,list parList);
 
 #endif /* FATOR_H_ */

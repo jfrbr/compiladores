@@ -23,7 +23,7 @@ void setTreeNode(NODETREEPTR node,void* toSet,int tipo);
 void appendToTreeNode(NODETREEPTR node,void* toAppend);
 
 
-void *executeNodeTree(NODETREEPTR node);
+s_fator *executeNodeTree(NODETREEPTR node);
 
 
 

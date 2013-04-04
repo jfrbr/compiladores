@@ -23,11 +23,10 @@ NODETREEPTR allocateTreeNode() {
 
 }
 
-void *executeNodeTree(NODETREEPTR node) {
+s_fator *executeNodeTree(NODETREEPTR node) {
 	//debug();
 	switch(node->tipoNodeTree) {
 		case F_FATOR:
-
 			return executaFator((s_fator*)node->element);
 			break;
 		case F_TERMO:

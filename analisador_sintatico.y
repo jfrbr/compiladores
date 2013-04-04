@@ -734,8 +734,10 @@ TERMO: TERMO token_vezes {
 		
 	}*/
 	appendToTreeNode(nodeTree,fatorList);
-	fatorList = initList();
-	//_toList(fatorList,nodeTree);
+	
+	
+	fatorList = initList();	
+	_toList(fatorList,nodeTree);
       }
       | TERMO token_divisao {
 		char *op = malloc(sizeof(char));
@@ -772,6 +774,8 @@ FATOR: token_num_float {
 		*tipo = T_FLOAT;
 		_toList(testList,tipo);
 		
+		
+		//
 		printf("Tem um int\n");
 		fteste = allocateFator();
 		printf("Numero inteiro: %f\n",atof(num_float));
@@ -784,6 +788,7 @@ FATOR: token_num_float {
 		setTreeNode(nodeTree,fteste,F_FATOR);
 		
 		_toList(fatorList,nodeTree);
+		
 		
 	  }
 	  
@@ -1554,13 +1559,13 @@ main(){
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
-	printf("Fator: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
+	//printf("Fator: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
 /*	printf("Fator2: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),1))));
 	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
 */	
 
 	debug();
-	printf("Fator: %d\n",*(int*)(executeNodeTree(nodeTree)));
+	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	debug();
 	
 }
