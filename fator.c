@@ -15,6 +15,8 @@ s_fator *executaFator(s_fator* toExecute) {
 		case T_FLOAT:
 			return toExecute;
 			break;
+		// TODO Adicionar variavel com T_VAR
+
 		default:
 			return NULL;
 			break;

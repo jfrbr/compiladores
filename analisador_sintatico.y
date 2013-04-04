@@ -776,7 +776,7 @@ FATOR: token_num_float {
 		
 		
 		//
-		printf("Tem um int\n");
+		printf("Tem um float\n");
 		fteste = allocateFator();
 		printf("Numero inteiro: %f\n",atof(num_float));
 		float *pf = malloc(sizeof(float));
@@ -838,6 +838,7 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		
+		// TODO Adicionar setFator com F_VAR / nome_var
 		//strcpy(atrib,"\0");
 	  }
 	  
@@ -1564,9 +1565,9 @@ main(){
 	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
 */	
 
-	debug();
+
+	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
-	debug();
 	
 }
 
