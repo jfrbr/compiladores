@@ -15,8 +15,18 @@ s_fator *executaFator(s_fator* toExecute) {
 		case T_FLOAT:
 			return toExecute;
 			break;
-		// TODO Adicionar variavel com T_VAR
+        case T_VAR:
+        {
+            
+            s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
+            s_fator* fteste = allocateFator();
+            printf("tipo = %d\n",v->tipo);
 
+            setFator(fteste,v->tipo,v->valor,NULL);
+            printf("retornando\n");
+            return fteste;
+            break; // LOL BREAK :)
+        }
 		default:
 			return NULL;
 			break;

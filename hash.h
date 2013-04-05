@@ -15,11 +15,14 @@
 #define T_CHAR 4
 #define T_STRING 5
 #define T_VOID 6
+#define T_VAR 10
 
 // Constantes de Execucao
 #define F_FATOR 7
 #define F_TERMO 8
 #define F_EXP 9
+
+
 
 #define NOT_USING 0
 #define USING 1
@@ -28,6 +31,7 @@
 
 #define MAX_HASH_SIZE 997
 
+list HashVar[MAX_HASH_SIZE];
 
 void initHash(list *hash,int hashSize);
 void destroyHash(list *hash,int hashSize);

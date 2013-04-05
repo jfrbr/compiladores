@@ -18,9 +18,10 @@ void *executeExp(s_exp *toExecute, list operands) {
 
 		NODETREEPTR a,b;
 		a = ((NODETREEPTR)(getNode((list)(operands),0)));
+	
 
 		b = ((NODETREEPTR)(getNode((list)(operands),1)));
-
+	
 
 		s_fator *a_v,*b_v,*r = malloc(sizeof(s_fator));
 
@@ -30,8 +31,8 @@ void *executeExp(s_exp *toExecute, list operands) {
 		resf = malloc(sizeof(float));
 
 		a_v = executeNodeTree(a);
-
-
+        
+        
 		printf("Passando\n");
 		b_v = executeNodeTree(b);
 		printf("Passando\n");

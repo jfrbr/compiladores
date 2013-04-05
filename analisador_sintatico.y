@@ -19,7 +19,7 @@ char funcCalled[50];
 int eval;
 int in_for;
 int tipoVar;
-list HashVar[MAX_HASH_SIZE];
+extern list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
 
 list exprList;
@@ -878,7 +878,19 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		
-		// TODO Adicionar setFator com F_VAR / nome_var
+        printf("Tem uma variavel\n");
+		fteste = allocateFator();
+		printf("Variavel: %s\n",ident);
+		char *variavel = malloc(strlen(ident)*sizeof(char));
+        strcpy(variavel,ident);
+		
+		setFator(fteste,T_VAR,variavel,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
+
 		//strcpy(atrib,"\0");
 	  }
 	  
@@ -1595,6 +1607,17 @@ main(){
 
 	yyparse();
 
+ //   s_variavel* s = allocateVar();
+
+       
+ //   setVar(s,"a",1,T_INT,"main",5);
+ //   hashInsertVar(HashVar,s);
+
+    float* valor = malloc(sizeof(int));
+    *valor = 2.5;
+    hashVarUpdateValue(HashVar,"a","main",valor);
+    hashVarUpdateUse(HashVar,"a","main", USING);
+    
 	checkVariables(HashVar);	
 	
 	// Testando Fator
@@ -1605,8 +1628,9 @@ main(){
 	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
 */	
 
-
+	printf("\n\n\n\n");
 	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
+	printf("\n\n\n\n");
 	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	
 }
