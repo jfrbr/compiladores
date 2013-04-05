@@ -29,7 +29,9 @@ list parList;
 s_fator *fteste;
 
 NODETREEPTR nodeTree;
+NODETREEPTR expTree;
 list fatorList;
+list termoList;
 tree bigTree;
 
 %}
@@ -703,14 +705,51 @@ EXP: EXP token_mais {
 		
 		
 		
-      } TERMO
+      } TERMO {
+      
+	printf("Achou! Lista fatorList tem %d elementos\n",fatorList->nElem);
+	
+	nodeTree = allocateTreeNode();
+	
+	s_exp *exp = allocateExp();
+	setExp(exp,'+');	
+	
+	setTreeNode(nodeTree,exp,F_EXP);
+	int i=0;
+	/*NODELISTPTR
+	for(i=0; i<fatorList->nElem; i++) {
+		
+	}*/
+	appendToTreeNode(nodeTree,fatorList);
+	
+	
+	fatorList = initList();	
+	_toList(fatorList,nodeTree);
+      }
     | EXP token_menos {
 		
 		char *op = malloc(sizeof(char));
 		*op = '-';		
 		_toList(testList,op);
       } TERMO
-    | TERMO
+    | TERMO {
+    
+	printf("Termo\n");
+	nodeTree = allocateTreeNode();
+	
+	s_exp *exp = allocateExp();
+	setExp(exp,'+');	
+	
+	setTreeNode(nodeTree,exp,F_EXP);
+	int i=0;
+	/*NODELISTPTR
+	for(i=0; i<fatorList->nElem; i++) {
+		
+	}*/
+	appendToTreeNode(nodeTree,fatorList);
+//	fatorList = initList();
+
+    }
 ;
 
 TERMO: TERMO token_vezes {
@@ -750,6 +789,7 @@ TERMO: TERMO token_vezes {
 		_toList(testList,op);
       } FATOR
       | FATOR {
+	printf("Fator\n");
 	nodeTree = allocateTreeNode();
 	
 	s_termo *termo = allocateTermo();
@@ -776,7 +816,7 @@ FATOR: token_num_float {
 		
 		
 		//
-		printf("Tem um int\n");
+		printf("Tem um float\n");
 		fteste = allocateFator();
 		printf("Numero inteiro: %f\n",atof(num_float));
 		float *pf = malloc(sizeof(float));
@@ -838,6 +878,7 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		
+		// TODO Adicionar setFator com F_VAR / nome_var
 		//strcpy(atrib,"\0");
 	  }
 	  
@@ -1564,9 +1605,9 @@ main(){
 	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
 */	
 
-	debug();
+
+	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
-	debug();
 	
 }
 

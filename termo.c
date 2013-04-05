@@ -17,39 +17,162 @@ void *executeTermo(s_termo *toExecute, list operands) {
 		NODETREEPTR a,b;
 		a = ((NODETREEPTR)(getNode((list)(operands),0)));
 		b = ((NODETREEPTR)(getNode((list)(operands),1)));
-		s_fator *a_v,*b_v,*r;
-		int *res;
+		s_fator *a_v,*b_v,*r = malloc(sizeof(s_fator));
+
+		int *res,*aint,*bint;
+		float *resf,*afloat,*bfloat;
 		res = malloc(sizeof(int));
+		resf = malloc(sizeof(float));
+
+		a_v = executeNodeTree(a);
+		b_v = executeNodeTree(b);
 
 		switch(toExecute->op) {
+
 			case '*':
-				a_v = executeNodeTree(a);
-				b_v = executeNodeTree(b);
-
-				/*if(a->tipoNodeTree == F_FATOR) {
-					int tfatora = ((s_fator*)(a->element))->tipo;
+				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
+					*res = (*(int*)(a_v->valor) * *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
 				}
-				if(b->tipoNodeTree == F_FATOR) {
-
-				}*/
-				//printf("Valor: %d",*(int*)a_v * *(int*)b_v);
-				printf("Valor: %d",*(int*)b_v->valor);
-				printf("Passou1\n");
-				debug();
-
-				*res = (*(int*)(a_v->valor) * *(int*)(b_v->valor));
-				r = malloc(sizeof(int));
-				//r = (int*)r;
-				r->valor = res;
-				r->tipo = T_INT;
-
-				printf("Res: %d\nR: %d\n",*res,*(int*)r);
-				return r;
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_INT) {
+					*resf = (*(float*)(a_v->valor) * *(int*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_INT && b_v->tipo == T_FLOAT) {
+					*resf = (*(int*)(a_v->valor) * *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
+					*resf = (*(float*)(a_v->valor) * *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_INT && b_v->tipo == T_CHAR) {
+					*res = (*(int*)(a_v->valor) * *(char*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_INT) {
+					*res = (*(char*)(a_v->valor) * *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_CHAR) {
+					*resf = (*(float*)(a_v->valor) * *(char*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_FLOAT) {
+					*resf = (*(char*)(a_v->valor) * *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+					*res = (*(char*)(a_v->valor) * *(char*)(b_v->valor));
+					r->tipo = T_CHAR;
+					r->valor = res;
+				}
 				break;
+
+			case '/':
+				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
+					*res = (*(int*)(a_v->valor) / *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_INT) {
+					*resf = (*(float*)(a_v->valor) / *(int*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_INT && b_v->tipo == T_FLOAT) {
+					*resf = (*(int*)(a_v->valor) / *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
+					*resf = (*(float*)(a_v->valor) / *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_INT && b_v->tipo == T_CHAR) {
+					*res = (*(int*)(a_v->valor) / *(char*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_INT) {
+					*res = (*(char*)(a_v->valor) / *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_CHAR) {
+					*resf = (*(float*)(a_v->valor) / *(char*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_FLOAT) {
+					*resf = (*(char*)(a_v->valor) / *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+					*res = (*(char*)(a_v->valor) / *(char*)(b_v->valor));
+					r->tipo = T_CHAR;
+					r->valor = res;
+				}
+				break;
+
+			case '%':
+				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
+					*res = (*(int*)(a_v->valor) % *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+/*				else if(a_v->tipo == T_INT && b_v->tipo == T_FLOAT) {
+					*resf = (*(int*)(a_v->valor) % *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
+					*resf = (*(float*)(a_v->valor) % *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_INT && b_v->tipo == T_CHAR) {
+					*res = (*(int*)(a_v->valor) % *(char*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}*/
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_INT) {
+					*res = (*(char*)(a_v->valor) % *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				/*else if(a_v->tipo == T_FLOAT && b_v->tipo == T_CHAR) {
+					*resf = (*(float*)(a_v->valor) % *(char*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_FLOAT) {
+					*resf = (*(char*)(a_v->valor) % *(float*)(b_v->valor));
+					r->tipo = T_FLOAT;
+					r->valor = resf;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+					*res = (*(char*)(a_v->valor) % *(char*)(b_v->valor));
+					r->tipo = T_CHAR;
+					r->valor = res;
+				}*/
+				break;
+
 
 			default:
 				break;
 		}
+		return r;
 	}
 
 }
