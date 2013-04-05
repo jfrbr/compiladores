@@ -6,6 +6,7 @@
 #include "variable.h"
 #include "tree.h"
 #include "termo.h"
+#include "exp.h"
 
 
 #define T_INT 1
@@ -18,6 +19,7 @@
 // Constantes de Execucao
 #define F_FATOR 7
 #define F_TERMO 8
+#define F_EXP 9
 
 #define NOT_USING 0
 #define USING 1

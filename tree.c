@@ -32,6 +32,10 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 		case F_TERMO:
 			return executeTermo((s_termo*)node->element,(list)(node->children->head->element));
 			break;
+		case F_EXP:
+			debug();
+			return executeExp((s_exp*)node->element,(list)(node->children));
+			break;
 		default:
 			break;
 
