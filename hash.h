@@ -8,6 +8,7 @@
 #include "termo.h"
 #include "exp.h"
 #include "u_exp.h"
+#include "u_exp_list.h"
 
 
 #define T_INT 1
@@ -23,6 +24,7 @@
 #define F_TERMO 8
 #define F_EXP 9
 #define F_U_EXP 11
+#define F_U_EXP_LIST 12
 
 
 #define NOT_USING 0

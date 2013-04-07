@@ -31,6 +31,7 @@ s_fator *fteste;
 NODETREEPTR nodeTree;
 NODETREEPTR expTree;
 NODETREEPTR u_expTree;
+NODETREEPTR u_exp_listTree;
 list fatorList;
 list termoList;
 list auxlist;
@@ -754,6 +755,34 @@ U_EXP_LIST : U_EXP {
 	      
 	     
 	      }
+	      
+	      printf("UEXP\n");
+	      nodeTree = allocateTreeNode();
+	      
+	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
+	      setU_Exp_List(u_exp_list,"(");	
+	      
+	      setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
+	      //int i=0;
+	      /*NODELISTPTR
+	      for(i=0; i<fatorList->nElem; i++) {
+		      
+	      }*/
+	      
+	      
+	      appendToTreeNode(nodeTree,fatorList);
+      //	fatorList = initList();
+
+	      u_exp_listTree = allocateTreeNode();
+	      
+	      setTreeNode(u_exp_listTree,u_exp_list,F_U_EXP_LIST);
+	      debug();
+	      
+	      appendToTreeNode(u_exp_listTree,fatorList);
+	      //fatorList = initList();
+		    
+	      // Achou uma U_EXP
+	      //'('
 	    } U_EXP_LIST2
 ;
 
@@ -769,8 +798,42 @@ U_EXP_LIST2 : | token_ecomecom {
 		  addNode(exprList,apList);
 		  testList = initList();
 		  }
+		  printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 		  
+		  //printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+		  nodeTree = allocateTreeNode();
 		  
+		  s_u_exp_list *u_exp_list = allocateU_Exp_List();
+		  setU_Exp_List(u_exp_list,"&&");	
+		  
+		  setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
+		  int i=0;
+		  
+		  if(fatorList->nElem > 2) {
+		    int u=0;
+		    NODELISTPTR _tracker = fatorList->head;
+		    for(u=0; u < fatorList->nElem-3; u++) {
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = 2;
+		    
+		    _tracker->next = NULL;
+		    fatorList->tail = _tracker;
+		    fatorList->nElem = fatorList->nElem-2;
+		    appendToTreeNode(nodeTree,auxlist);
+		  }
+		  else {
+		    appendToTreeNode(nodeTree,fatorList);
+		    fatorList = initList();	
+		  }
+		  printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+			  
+		  _toList(fatorList,nodeTree);
+
+		  
+		  // Achou outra
 		  
 		  
 	      }	      
@@ -791,6 +854,8 @@ U_EXP_LIST2 : | token_ecomecom {
 		  testList = initList();
 		  
 		  }
+		  
+		  // Achou outra
 	      }
 	    U_EXP_LIST2
 ;
