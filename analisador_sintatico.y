@@ -704,7 +704,7 @@ EXP: EXP token_mais {
 		*op = '+';
 		_toList(testList,op);
 		
-		
+		printf("Encontrei soma\n");
 		
       } TERMO {
       
@@ -732,10 +732,12 @@ EXP: EXP token_mais {
 	//printf("Achou! Lista fatorList tem %d elementos, nodeTree tem %d\n",fatorList->nElem,nodeTree->children->nElem);
       }
     | EXP token_menos {
-		
+
+	    printf("Encontrei menos\n");
 		char *op = malloc(sizeof(char));
 		*op = '-';		
 		_toList(testList,op);
+
       } TERMO
     | TERMO {
     
@@ -970,7 +972,6 @@ FATOR: token_num_float {
 	  }
 	  | token_letra {
 		
-		
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_CHAR;
 		
@@ -1110,10 +1111,23 @@ FATOR: token_num_float {
 	  }
 	  | token_menos token_num_float {
 		
-
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_FLOAT;
 		_toList(testList,tipo);	  
+
+		printf("Tem um float negativo\n");
+		fteste = allocateFator();
+		printf("Numero float: %f\n",atof(num_float));
+		float *f = malloc(sizeof(float));
+		*f = -1 * atof(num_float);
+		
+		setFator(fteste,T_FLOAT,f,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
+
 	  }
 	  | token_menos VAR {
 		
@@ -1141,11 +1155,24 @@ FATOR: token_num_float {
 	  }
 	  | token_menos token_num_inteiro {
 		
-		
+        
 		int *tipo = malloc(sizeof(int));
 		*tipo = T_INT;
 		
 		_toList(testList,tipo);
+		
+		printf("Tem um int negativo\n");
+		fteste = allocateFator();
+		printf("Numero inteiro: %d\n",atoi(num_inteiro));
+		int *inteiro = malloc(sizeof(int));
+		*inteiro = -1 * atoi(num_inteiro);
+		
+		setFator(fteste,T_INT,inteiro,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
 	  }
 ;
 
@@ -1668,7 +1695,7 @@ main(){
 */	
 
 	  
-	//printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
+	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
 	debug();
 	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	
