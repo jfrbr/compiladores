@@ -1402,8 +1402,6 @@ FATOR: token_num_float {
 		_toList(testList,tipo);
 		_toList(testList,flagFunc);
 		
-		
-		
 		strcpy(funcCalled,"\0");
 	  }
 	  
@@ -1561,6 +1559,26 @@ FATOR: token_num_float {
 		}
 		
 		_toList(testList,tipo);
+		
+		printf("Tem uma variavel com valor negativo\n");
+		fteste = allocateFator();
+		printf("Variavel: %s\n",ident);
+		char *variavel = malloc(strlen(ident)*sizeof(char));
+        strcpy(variavel,ident);
+        
+		list par = initList();
+
+		int* p = malloc(sizeof(int));
+		*p = NEGATIVE_VALUE;
+		
+		_toList(par,p);		
+		
+		setFator(fteste,T_VAR,variavel,par);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
 		
 		strcpy(atrib,"\0");	  
 	  }

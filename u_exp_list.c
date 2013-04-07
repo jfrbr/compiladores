@@ -31,7 +31,7 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 		// < > <= >= == !=
 		//switch(toExecute->op) {
 		printf("op: %s\n",toExecute->op);
-			if(strcmp(toExecute->op,"&&")==0) {
+			if(!strcmp(toExecute->op,"&&")) {
 				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
 					*res = (*(int*)(a_v->valor) && *(int*)(b_v->valor));
 					r->tipo = T_INT;
@@ -76,57 +76,63 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 					*res = (*(char*)(a_v->valor) && *(char*)(b_v->valor));
 					r->tipo = T_INT;
 					r->valor = res;
+				}else if (a_v->tipo == T_BOOLEAN && b_v->tipo == T_BOOLEAN){
+                    *res = *(bool*) a_v->valor && *(bool*) b_v->valor;
+                    r->tipo = T_INT;
+					r->valor = res;
 				}
-			}
-			/*else if(strcmp(toExecute->op,">")) {
-
+			}else if(!strcmp(toExecute->op,"||")) {
+			
 				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
-					*res = (*(int*)(a_v->valor) - *(int*)(b_v->valor));
+					*res = (*(int*)(a_v->valor) || *(int*)(b_v->valor));
 					r->tipo = T_INT;
 					r->valor = res;
 				}
 				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_INT) {
-					*resf = (*(float*)(a_v->valor) - *(int*)(b_v->valor));
-					r->tipo = T_FLOAT;
-					r->valor = resf;
+					*res = (*(float*)(a_v->valor) || *(int*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
 				}
 				else if(a_v->tipo == T_INT && b_v->tipo == T_FLOAT) {
-					*resf = (*(int*)(a_v->valor) - *(float*)(b_v->valor));
-					r->tipo = T_FLOAT;
-					r->valor = resf;
+					*res = (*(int*)(a_v->valor) || *(float*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
 				}
 				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
-					*resf = (*(float*)(a_v->valor) - *(float*)(b_v->valor));
-					r->tipo = T_FLOAT;
-					r->valor = resf;
+					*resf = (*(float*)(a_v->valor) || *(float*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
 				}
 				else if(a_v->tipo == T_INT && b_v->tipo == T_CHAR) {
-					*res = (*(int*)(a_v->valor) - *(char*)(b_v->valor));
+					*res = (*(int*)(a_v->valor) || *(char*)(b_v->valor));
 					r->tipo = T_INT;
 					r->valor = res;
 				}
 				else if(a_v->tipo == T_CHAR && b_v->tipo == T_INT) {
-					*res = (*(char*)(a_v->valor) - *(int*)(b_v->valor));
+					*res = (*(char*)(a_v->valor) || *(int*)(b_v->valor));
 					r->tipo = T_INT;
 					r->valor = res;
 				}
 				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_CHAR) {
-					*resf = (*(float*)(a_v->valor) - *(char*)(b_v->valor));
-					r->tipo = T_FLOAT;
-					r->valor = resf;
-				}
-				else if(a_v->tipo == T_CHAR && b_v->tipo == T_FLOAT) {
-					*resf = (*(char*)(a_v->valor) - *(float*)(b_v->valor));
-					r->tipo = T_FLOAT;
-					r->valor = resf;
-				}
-				else if(a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
-					*res = (*(char*)(a_v->valor) - *(char*)(b_v->valor));
-					r->tipo = T_CHAR;
+					*res = (*(float*)(a_v->valor) || *(char*)(b_v->valor));
+					r->tipo = T_INT;
 					r->valor = res;
 				}
-			}*/
-
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_FLOAT) {
+					*res = (*(char*)(a_v->valor) || *(float*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}
+				else if(a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+					*res = (*(char*)(a_v->valor) || *(char*)(b_v->valor));
+					r->tipo = T_INT;
+					r->valor = res;
+				}else if (a_v->tipo == T_BOOLEAN && b_v->tipo == T_BOOLEAN){
+                    *res = *(bool*) a_v->valor && *(bool*) b_v->valor;
+                    r->tipo = T_INT;
+					r->valor = res;
+				}
+			}
 		//}
 		return r;
 	}

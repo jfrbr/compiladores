@@ -9,7 +9,7 @@
 #include "exp.h"
 #include "u_exp.h"
 #include "u_exp_list.h"
-
+#include "stdbool.h"
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -26,6 +26,8 @@
 #define F_U_EXP 11
 #define F_U_EXP_LIST 12
 
+// Variacoes de variavel
+#define NEGATIVE_VALUE 1
 
 #define NOT_USING 0
 #define USING 1

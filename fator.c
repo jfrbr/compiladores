@@ -10,6 +10,7 @@ s_fator* allocateFator() {
 	else return NULL;
 }
 s_fator *executaFator(s_fator* toExecute) {
+    
 	switch(toExecute->tipo) {
 		case T_INT:
 		case T_FLOAT:
@@ -22,8 +23,8 @@ s_fator *executaFator(s_fator* toExecute) {
             s_fator* fteste = allocateFator();
             printf("tipo = %d\n",v->tipo);
 
-            setFator(fteste,v->tipo,v->valor,NULL);
-            printf("retornando\n");
+            setFator(fteste,v->tipo,v->valor,toExecute->parametros);
+          
             return fteste;
             break; // LOL BREAK :)
         }
