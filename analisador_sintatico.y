@@ -718,25 +718,74 @@ EXP: EXP token_mais {
 	
 	setTreeNode(nodeTree,exp,F_EXP);
 	int i=0;
-	/*NODELISTPTR
-	for(i=0; i<fatorList->nElem; i++) {
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
-	}*/
-	
-	//appendToTreeNode(nodeTree,expTree);
-	appendToTreeNode(nodeTree,fatorList);
-	
-	fatorList = initList();	
 	_toList(fatorList,nodeTree);
-	
-	//printf("Achou! Lista fatorList tem %d elementos, nodeTree tem %d\n",fatorList->nElem,nodeTree->children->nElem);
+
       }
     | EXP token_menos {
 		
 		char *op = malloc(sizeof(char));
 		*op = '-';		
 		_toList(testList,op);
-      } TERMO
+      } TERMO {
+	printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+	nodeTree = allocateTreeNode();
+	
+	s_exp *exp = allocateExp();
+	setExp(exp,'-');	
+	
+	setTreeNode(nodeTree,exp,F_EXP);
+	int i=0;
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+      
+      }
     | TERMO {
     
 	printf("Termo\n");
@@ -751,6 +800,8 @@ EXP: EXP token_mais {
 	for(i=0; i<fatorList->nElem; i++) {
 		
 	}*/
+	
+	
 	appendToTreeNode(nodeTree,fatorList);
 //	fatorList = initList();
 
@@ -768,14 +819,7 @@ TERMO: TERMO token_vezes {
 		*op = '*';		
 		_toList(testList,op);
       } FATOR {
-      
-      
-	
-	int u=0;
-	
-	printf("\n");
-	
-	
+ 	
 	nodeTree = allocateTreeNode();
 	
 	s_termo *termo = allocateTermo();
@@ -805,25 +849,84 @@ TERMO: TERMO token_vezes {
 	  fatorList = initList();	
 	}
 	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
-	
-	
-	/*NODELISTPTR
-	for(i=0; i<fatorList->nElem; i++) {
 		
-	}*/
-	
 	_toList(fatorList,nodeTree);
       }
       | TERMO token_divisao {
 		char *op = malloc(sizeof(char));
 		*op = '/';		
 		_toList(testList,op);
-      } FATOR
+      } FATOR {
+	nodeTree = allocateTreeNode();
+	
+	s_termo *termo = allocateTermo();
+	setTermo(termo,'/');	
+	
+	setTreeNode(nodeTree,termo,F_TERMO);
+	
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+      }
       | TERMO token_mod {		
 		char *op = malloc(sizeof(char));
 		*op = '%';		
 		_toList(testList,op);
-      } FATOR
+      } FATOR {
+	nodeTree = allocateTreeNode();
+	
+	s_termo *termo = allocateTermo();
+	setTermo(termo,'%');	
+	
+	setTreeNode(nodeTree,termo,F_TERMO);
+	
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+     
+      }
       | FATOR {
 	printf("Fator\n");
 	nodeTree = allocateTreeNode();
@@ -1678,4 +1781,3 @@ main(){
 yyerror (void){
 	printf("Erro na Linha: %d\n", lines);
 }
-
