@@ -4,7 +4,7 @@
 #include "hash.h"
 
 struct {
-	char op[2];
+	char op[3];
 	//void *valor;
 	//list parametros;
 } typedef s_u_exp;
