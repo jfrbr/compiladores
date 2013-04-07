@@ -7,6 +7,7 @@
 #include "tree.h"
 #include "termo.h"
 #include "exp.h"
+#include "u_exp.h"
 
 
 #define T_INT 1
@@ -21,7 +22,7 @@
 #define F_FATOR 7
 #define F_TERMO 8
 #define F_EXP 9
-
+#define F_U_EXP 11
 
 
 #define NOT_USING 0
