@@ -32,6 +32,7 @@ NODETREEPTR nodeTree;
 NODETREEPTR expTree;
 list fatorList;
 list termoList;
+list auxlist;
 tree bigTree;
 
 %}
@@ -707,8 +708,9 @@ EXP: EXP token_mais {
 		
       } TERMO {
       
-	printf("Achou! Lista fatorList tem %d elementos\n",fatorList->nElem);
+	printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
 	
 	s_exp *exp = allocateExp();
@@ -720,11 +722,14 @@ EXP: EXP token_mais {
 	for(i=0; i<fatorList->nElem; i++) {
 		
 	}*/
-	appendToTreeNode(nodeTree,fatorList);
 	
+	//appendToTreeNode(nodeTree,expTree);
+	appendToTreeNode(nodeTree,fatorList);
 	
 	fatorList = initList();	
 	_toList(fatorList,nodeTree);
+	
+	//printf("Achou! Lista fatorList tem %d elementos, nodeTree tem %d\n",fatorList->nElem,nodeTree->children->nElem);
       }
     | EXP token_menos {
 		
@@ -738,7 +743,7 @@ EXP: EXP token_mais {
 	nodeTree = allocateTreeNode();
 	
 	s_exp *exp = allocateExp();
-	setExp(exp,'+');	
+	setExp(exp,'(');	
 	
 	setTreeNode(nodeTree,exp,F_EXP);
 	int i=0;
@@ -748,6 +753,12 @@ EXP: EXP token_mais {
 	}*/
 	appendToTreeNode(nodeTree,fatorList);
 //	fatorList = initList();
+
+	expTree = allocateTreeNode();
+	
+	setTreeNode(expTree,exp,F_EXP);
+	appendToTreeNode(expTree,fatorList);
+	//fatorList = initList();
 
     }
 ;
@@ -759,7 +770,11 @@ TERMO: TERMO token_vezes {
       } FATOR {
       
       
-	printf("Achou! Lista fatorList tem %d elementos\n",fatorList->nElem);
+	
+	int u=0;
+	
+	printf("\n");
+	
 	
 	nodeTree = allocateTreeNode();
 	
@@ -767,15 +782,36 @@ TERMO: TERMO token_vezes {
 	setTermo(termo,'*');	
 	
 	setTreeNode(nodeTree,termo,F_TERMO);
-	int i=0;
+	
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	
+	
 	/*NODELISTPTR
 	for(i=0; i<fatorList->nElem; i++) {
 		
 	}*/
-	appendToTreeNode(nodeTree,fatorList);
 	
-	
-	fatorList = initList();	
 	_toList(fatorList,nodeTree);
       }
       | TERMO token_divisao {
@@ -803,6 +839,7 @@ TERMO: TERMO token_vezes {
 	}*/
 	appendToTreeNode(nodeTree,fatorList);
 //	fatorList = initList();
+	
 	
       }
 ;
@@ -1572,6 +1609,8 @@ main(){
 	exprList = initList();
 	testList = initList();
 	fatorList = initList();
+	termoList = initList();
+	auxlist = initList();
 	
 	
 
@@ -1628,9 +1667,9 @@ main(){
 	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
 */	
 
-	printf("\n\n\n\n");
-	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
-	printf("\n\n\n\n");
+	  
+	//printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
+	debug();
 	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	
 }
