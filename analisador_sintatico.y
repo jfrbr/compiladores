@@ -614,7 +614,43 @@ U_EXP: EXP token_igualigual {
 		char *op = malloc(2*sizeof(char));
 		strcpy(op,"==");
 		_toList(testList,op);
-      } EXP
+      } EXP{
+            printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+	nodeTree = allocateTreeNode();
+	
+	s_u_exp *u_exp = allocateU_Exp();
+	setU_Exp(u_exp,"==");	
+	
+	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	int i=0;
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+
+
+      }
       | EXP token_maior {
 		char *op = malloc(sizeof(char));
 		strcpy(op,">");
@@ -701,17 +737,125 @@ U_EXP: EXP token_igualigual {
 		char *op = malloc(2*sizeof(char));
 		strcpy(op,">=");
 		_toList(testList,op);
-      } EXP
+      } EXP {
+      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+	nodeTree = allocateTreeNode();
+	
+	s_u_exp *u_exp = allocateU_Exp();
+	setU_Exp(u_exp,">=");	
+	
+	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	int i=0;
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+
+
+      }
       | EXP token_menorigual {
 		char *op = malloc(2*sizeof(char));
 		strcpy(op,"<=");
 		_toList(testList,op);
-      } EXP
+      } EXP{
+      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+	nodeTree = allocateTreeNode();
+	
+	s_u_exp *u_exp = allocateU_Exp();
+	setU_Exp(u_exp,"<=");	
+	
+	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	int i=0;
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+
+
+      }
       | EXP token_diferente {
 		char *op = malloc(2*sizeof(char));
 		strcpy(op,"!=");
 		_toList(testList,op);
-      } EXP
+      } EXP{
+      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	
+	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
+	nodeTree = allocateTreeNode();
+	
+	s_u_exp *u_exp = allocateU_Exp();
+	setU_Exp(u_exp,"!=");	
+	
+	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	int i=0;
+	
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		
+	_toList(fatorList,nodeTree);
+
+
+      }
       | EXP {
     
 	printf("EXP\n");
