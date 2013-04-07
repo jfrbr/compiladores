@@ -9,7 +9,9 @@
 #include "exp.h"
 #include "u_exp.h"
 #include "u_exp_list.h"
+#include "atrib.h"
 
+extern char currentFunction[50];
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -25,7 +27,7 @@
 #define F_EXP 9
 #define F_U_EXP 11
 #define F_U_EXP_LIST 12
-
+#define F_ATRIB 13
 
 #define NOT_USING 0
 #define USING 1

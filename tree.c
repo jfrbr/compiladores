@@ -41,6 +41,10 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 		case F_U_EXP_LIST:
 			return executeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
 			break;
+		case F_ATRIB:
+			executeAtrib((s_atrib*)node->element,HashVar);
+			return NULL;
+			break;
 
 		default:
 			break;

@@ -1,6 +1,5 @@
 #ifndef TREE_H_
 #define TREE_H_
-#include "hash.h"
 
 struct nodeTree {
 	void* element;
@@ -21,8 +20,6 @@ NODETREEPTR allocateTreeNode();
 
 void setTreeNode(NODETREEPTR node,void* toSet,int tipo);
 void appendToTreeNode(NODETREEPTR node,void* toAppend);
-
-
 s_fator *executeNodeTree(NODETREEPTR node);
 
 
