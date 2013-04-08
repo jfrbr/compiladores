@@ -9,7 +9,13 @@
 #include "exp.h"
 #include "u_exp.h"
 #include "u_exp_list.h"
+<<<<<<< HEAD
 #include "stdbool.h"
+=======
+#include "atrib.h"
+
+extern char currentFunction[50];
+>>>>>>> c2a54c418b21ed796164f29cee45c90f040fb902
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -26,8 +32,11 @@
 #define F_U_EXP 11
 #define F_U_EXP_LIST 12
 
+
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
+
+#define F_ATRIB 13
 
 #define NOT_USING 0
 #define USING 1

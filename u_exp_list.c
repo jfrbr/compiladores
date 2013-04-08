@@ -9,7 +9,7 @@ s_u_exp_list *allocateU_Exp_List() {
 }
 
 void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
-	printf("Operands U_Exp List size: %d\n",operands->nElem);
+	printf("Operands U_Exp List size: %d %s\n",operands->nElem,currentFunction);
 	if(operands->nElem == 1) {
 		//if((NODETREEPTR)(getNode((list)(operands),0))) printf("passei %d\n", ((NODETREEPTR)(getNode((list)(operands),0)))->tipoNodeTree);
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
