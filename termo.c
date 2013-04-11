@@ -27,8 +27,11 @@ void *executeTermo(s_termo *toExecute, list operands) {
 		res = malloc(sizeof(int));
 		resf = malloc(sizeof(float));
 
+
 		a_v = executeNodeTree(a);
+
 		b_v = executeNodeTree(b);
+
 
         if (a_v->parametros){
             if (a_v->parametros->nElem > 0){

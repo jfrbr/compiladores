@@ -919,12 +919,13 @@ U_EXP_LIST : U_EXP {
 	      appendToTreeNode(nodeTree,fatorList);
       //	fatorList = initList();
 
-	      u_exp_listTree = allocateTreeNode();
+	      /*u_exp_listTree = allocateTreeNode();
 	      
 	      setTreeNode(u_exp_listTree,u_exp_list,F_U_EXP_LIST);
 		
-	      appendToTreeNode(u_exp_listTree,fatorList);	      //fatorList = initList();
-		    
+	      appendToTreeNode(u_exp_listTree,fatorList);	      //fatorList = initList();*/
+		printf("Passou\n");    
+		printf("AAAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
 	      // Achou uma U_EXP
 	      //'('
 	    } U_EXP_LIST2
@@ -1158,9 +1159,10 @@ TERMO: TERMO token_vezes {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	
 		
 	_toList(fatorList,nodeTree);
+	printf("AAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
       }
       | TERMO token_divisao {
 		char *op = malloc(sizeof(char));
@@ -1378,9 +1380,45 @@ FATOR: token_num_float {
 			_toList(_previous,eval_aux);			
 		}
 		
+		printf("UEXPPAR\n");
+	      nodeTree = allocateTreeNode();
+	      
+	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
+	      setU_Exp_List(u_exp_list,"(");	
+	      
+	      setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
+	      //appendToTreeNode(nodeTree,fatorList);
+	      //_toList(fatorList,nodeTree);
+	      
+	      //fteste = (s_fator*)(executeNodeTree(nodeTree));
+	      
+	      if(fatorList->nElem > 2) {
+		int u=0;
+		NODELISTPTR _tracker = fatorList->head;
+		for(u=0; u < fatorList->nElem-3; u++) {
+		  _tracker = _tracker->next;	    
+		}
+		auxlist = initList();
+		auxlist->head = _tracker->next;
+		auxlist->nElem = 2;
 		
+		_tracker->next = NULL;
+		fatorList->tail = _tracker;
+		fatorList->nElem = fatorList->nElem-2;
+		appendToTreeNode(nodeTree,auxlist);
+	      }
+	      else {		
+		appendToTreeNode(nodeTree,fatorList);
+		fatorList = initList();	
+	      }
+		_toList(fatorList,nodeTree);
+	      
+	      //printf("fteste->valor %d %d %d\n",*(int*)fteste->valor,fatorList->nElem,((NODETREEPTR)(fatorList->head->element))->tipoNodeTree);
+	      //nodeTree = allocateTreeNode();
+	      //setTreeNode(nodeTree,fteste,F_FATOR);		
+	      //_toList(fatorList,nodeTree);
 		
-	  }
+	  }	
 	  | token_letra {
 		
 		int *tipo = malloc(sizeof(int));
@@ -2119,11 +2157,13 @@ main(){
 
 	  
 //	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
-	debug();
-	printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
-	
+	printf("Fator: %d\n",nodeTree->tipoNodeTree);
+	if((executeNodeTree(nodeTree))) {
+	  printf("Valor nulo\n");
+	} printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
+	printf("Entrou!\n");
 	// Testando Variavel:
-	s_variavel *s = hashSearchVar(HashVar,"a","main");
+	/*s_variavel *s = hashSearchVar(HashVar,"a","main");
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
@@ -2134,7 +2174,7 @@ main(){
 	
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}
+	}*/
 	
 }
 
