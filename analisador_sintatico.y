@@ -38,6 +38,7 @@ list termoList;
 list auxlist;
 tree bigTree;
 
+list cmdList;
 s_atrib *atribTeste;
 
 %}
@@ -439,6 +440,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			strcpy(num_char,"\0");
 			strcpy(num_string,"\0");
 			strcpy(atrib,"\0");
+			fatorList = initList();
+			nodeTree = NULL;
 	}		
 	| token_string token_ptevirgula
 	// TODO verificar se o tipo do return é o mesmo da funçao atual
@@ -1688,11 +1691,12 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 				}
 				eval = 0;
 				
-		
-		
+		atribTree=allocateTreeNode();
+		atribTeste=allocateAtrib();
 		setAtrib(atribTeste,"=",lident,nodeTree,NULL);
 	
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+		_toList(cmdList,atribTree);
 		
 		//void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ s_u_exp_list *toatrib, char *stringToAtrib);	
 	  }		
@@ -2092,6 +2096,7 @@ main(){
 	initHash(HashVar,MAX_HASH_SIZE);
 	initHash(HashFunc,MAX_HASH_SIZE);
 	
+	cmdList = initList();
 	exprList = initList();
 	testList = initList();
 	fatorList = initList();
@@ -2157,24 +2162,27 @@ main(){
 
 	  
 //	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
-	printf("Fator: %d\n",nodeTree->tipoNodeTree);
+/*	printf("Fator: %d\n",nodeTree->tipoNodeTree);
 	if((executeNodeTree(nodeTree))) {
 	  printf("Valor nulo\n");
 	} printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	printf("Entrou!\n");
-	// Testando Variavel:
-	/*s_variavel *s = hashSearchVar(HashVar,"a","main");
+	// Testando Variavel:*/
+	s_variavel *s = hashSearchVar(HashVar,"a","main");
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
+	printf("cmdList nelem: %d\n",cmdList->nElem);
+	if((NODETREEPTR)cmdList->head->element) {
+	  printf("Tree %d\n",((NODETREEPTR)cmdList->head->element)->tipoNodeTree);
+	}
+	//printf("Atrib: %s %s %d\n",atribTeste->varname,atribTeste->op,*(int*)((s_fator*)(executeNodeTree(cmdList->head->element)))->valor);
 	
-	printf("Atrib: %s %s %d\n",atribTeste->varname,atribTeste->op,*(int*)((s_fator*)(executeNodeTree(atribTeste->toatrib)))->valor);
-	
-	executeNodeTree(atribTree);
+	executeNodeTree((NODETREEPTR)cmdList->head->next->element);
 	
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}*/
+	}
 	
 }
 
