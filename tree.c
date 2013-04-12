@@ -57,6 +57,14 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 	return NULL;
 }
 
+void executeTreeList(list l) {
+	NODELISTPTR aux = l->head;
+	for(int i=0;i<l->nElem; i++) {
+		executeNodeTree(aux->element);
+		aux = aux->next;
+	}
+}
+
 void setTreeNode(NODETREEPTR node,void* toSet, int tipo) {
 	node->tipoNodeTree = tipo;
 	node->element = toSet;

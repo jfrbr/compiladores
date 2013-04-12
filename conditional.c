@@ -22,8 +22,8 @@ int checkCondition(s_conditional *cond) {
 	return *(int*)f->valor;
 }
 
-void* executeConditional(s_conditional* cond) {
+void executeConditional(s_conditional* cond) {
 	if(checkCondition(cond) == 1) {
-		return executeNodeTree(cond->commandList->head->element);
+		executeTreeList(cond->commandList);
 	}
 }

@@ -2216,6 +2216,11 @@ main(){
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
 	}
+	
+	executeTreeList(cmdList);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+	}
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
