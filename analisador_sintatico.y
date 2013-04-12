@@ -26,6 +26,7 @@ list exprList;
 list testList;
 list parList;
 
+
 s_fator *fteste;
 
 NODETREEPTR nodeTree;
@@ -33,6 +34,9 @@ NODETREEPTR atribTree;
 NODETREEPTR expTree;
 NODETREEPTR u_expTree;
 NODETREEPTR u_exp_listTree;
+NODETREEPTR conditionTree;
+NODETREEPTR _cond;
+
 list fatorList;
 list termoList;
 list auxlist;
@@ -40,7 +44,7 @@ tree bigTree;
 
 list cmdList;
 s_atrib *atribTeste;
-
+s_conditional *condition;
 %}
 
 %token token_numero
@@ -442,6 +446,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			strcpy(atrib,"\0");
 			fatorList = initList();
 			nodeTree = NULL;
+			//executeNodeTree((NODETREEPTR)cmdList->head->element);
+			
 	}		
 	| token_string token_ptevirgula
 	// TODO verificar se o tipo do return é o mesmo da funçao atual
@@ -540,6 +546,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO {
+	
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO  {
@@ -892,7 +899,19 @@ U_EXP: EXP token_igualigual {
 ;
 
 IF_EXP :
-      U_EXP_LIST {strcpy(atrib,"\0"); cleanExprList(exprList);}
+      U_EXP_LIST {
+      //printf("If nao associado %d\n",*(int*)executeNodeTree(nodeTree)->valor	);
+      
+      conditionTree = nodeTree;
+      
+      condition = allocateConditional();
+      setConditional(condition,conditionTree,NULL,NULL);
+      
+      strcpy(atrib,"\0"); cleanExprList(exprList);
+      
+      fatorList = initList();
+      nodeTree = NULL;
+      }
 ;
 
 U_EXP_LIST : U_EXP {
@@ -1698,6 +1717,8 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
 		_toList(cmdList,atribTree);
 		
+		printf("Colocou em cmdList %d\n",atribTree->tipoNodeTree);
+		
 		//void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ s_u_exp_list *toatrib, char *stringToAtrib);	
 	  }		
 	  | VAR token_maisigual TO_ATRIB {
@@ -2026,7 +2047,37 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO
 ;
 
-CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO
+CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
+			printf("If nao associado %d\n",cmdList->nElem);
+	 NODELISTPTR _tracker = cmdList->head;
+	  int u=0;
+	  for(u=0; u < cmdList->nElem-2; u++) {
+	    
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 1;
+	  
+	  _tracker->next = NULL;
+	  cmdList->tail = _tracker;
+	  cmdList->nElem = cmdList->nElem-1;
+	  //appendToTreeNode(nodeTree,auxlist);
+	  
+	  if((NODETREEPTR)auxlist->head->element) printf("Elemento tree %d\n",((NODETREEPTR)auxlist->head->element)->tipoNodeTree);
+	  else printf("Elemento not tree\n");
+	  
+	  //list ltracker = initList();
+	  //_toList(ltracker,_tracker);
+	  
+	  
+	  condition->commandList = auxlist;
+
+	  _cond = allocateTreeNode();
+	  setTreeNode(_cond,condition,F_CONDITIONAL);
+			
+			
+		}
 		| token_if token_abrep IF_EXP token_fechap COMANDO
 		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDO
 		| token_if token_abrep IF_EXP token_fechap token_else COMANDO
@@ -2151,7 +2202,20 @@ main(){
     hashVarUpdateUse(HashVar,"a","main", USING);
     
 	checkVariables(HashVar);	
-	
+		//executeNodeTree((NODETREEPTR)cmdList->head->element);
+	// Testando condicionais
+	s_variavel *s = hashSearchVar(HashVar,"a","main");
+	if(s && s->valor == NULL) {
+	  printf("Variavel a inicializada, mas ainda sem valor\n");
+	}
+	executeNodeTree((NODETREEPTR)cmdList->head->element);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+	}
+	executeNodeTree(_cond);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
+	}
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
@@ -2168,7 +2232,7 @@ main(){
 	} printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
 	printf("Entrou!\n");
 	// Testando Variavel:*/
-	s_variavel *s = hashSearchVar(HashVar,"a","main");
+/*	s_variavel *s = hashSearchVar(HashVar,"a","main");
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
@@ -2182,7 +2246,8 @@ main(){
 	
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}
+	}*/
+	
 	
 }
 

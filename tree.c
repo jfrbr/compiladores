@@ -46,7 +46,10 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			executeAtrib((s_atrib*)node->element,HashVar);
 			return NULL;
 			break;
-
+		case F_CONDITIONAL:
+			executeConditional((s_conditional*)node->element);
+			return NULL;
+			break;
 		default:
 			break;
 

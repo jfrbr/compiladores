@@ -11,6 +11,7 @@
 #include "u_exp_list.h"
 #include "stdbool.h"
 #include "atrib.h"
+#include "conditional.h"
 
 extern char currentFunction[50];
 
@@ -34,6 +35,7 @@ extern char currentFunction[50];
 #define NEGATIVE_VALUE 1
 
 #define F_ATRIB 13
+#define F_CONDITIONAL 14
 
 #define NOT_USING 0
 #define USING 1
