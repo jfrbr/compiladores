@@ -446,6 +446,9 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			strcpy(num_char,"\0");
 			strcpy(num_string,"\0");
 			strcpy(atrib,"\0");
+			
+			_toList(cmdList,atribTree);		
+
 			fatorList = initList();
 			nodeTree = NULL;
 			//executeNodeTree((NODETREEPTR)cmdList->head->element);
@@ -581,10 +584,19 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 
 
 
-BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO BLOCO2
+BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO {
+
+	printf("Achei um comando\n");
+	_toList(cmdList,_cond);
+	} BLOCO2
 ;
 
-BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO BLOCO2
+BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO{
+
+	  printf("Achei um comando\n");
+	  _toList(cmdList,_cond);
+	  
+	} BLOCO2
 ;
 
 /* Declaração de Variáveis */
@@ -1717,9 +1729,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		setAtrib(atribTeste,"=",lident,nodeTree,NULL);
 	
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
-		_toList(cmdList,atribTree);
 		
-		printf("Colocou em cmdList %d\n",atribTree->tipoNodeTree);
 		
 		//void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ s_u_exp_list *toatrib, char *stringToAtrib);	
 	  }		
@@ -2298,19 +2308,19 @@ main(){
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
-	executeNodeTree((NODETREEPTR)cmdList->head->element);
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}
-	executeNodeTree(_cond);
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}
-	
-	/*executeTreeList(cmdList);
+	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}*/
+	/*executeNodeTree(_cond);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
+	}*/
+	
+	executeTreeList(cmdList);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+	}
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
