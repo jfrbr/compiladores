@@ -26,6 +26,7 @@ list exprList;
 list testList;
 list parList;
 
+int *sizeBlock;
 
 s_fator *fteste;
 
@@ -43,6 +44,7 @@ list auxlist;
 tree bigTree;
 list exList;
 list elseList;
+list sizeBlockList;
 
 list cmdList;
 s_atrib *atribTeste;
@@ -605,9 +607,102 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO  {
+					printf("If associado %d\n",cmdList->nElem);
+		
+		// Else
+		
+		  NODELISTPTR _tracker = cmdList->head;
+		  int u=0;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  elseList = initList();
+		  elseList->head = _tracker->next;
+		  elseList->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+		  		  
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),NULL,elseList);
+
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  _toList(cmdList,_cond);
+
+	
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac  {
+		printf("If com else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
+		printf("O If tem %d comandos e o else, %d\n",*(int*)sizeBlockList->head->element,*(int*)sizeBlockList->head->next->element);
+		printf("A cmdList tem %d comandos\n",cmdList->nElem);
+		int ifsize,elsesize;
+		ifsize = *(int*)sizeBlockList->head->element;
+		elsesize = *(int*)sizeBlockList->head->next->element;
+		destroyList(sizeBlockList);
+		sizeBlockList = initList();
+		
+		
+		NODELISTPTR _tracker = cmdList->head;
+		if(elsesize == 0) {
+			printf("Else ta vazio");
+			elseList = NULL;
+		}
+		else {
+		  _tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    elseList = initList();
+		    elseList->head = _tracker->next;
+		    elseList->nElem = elsesize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-elsesize;
+		}
+		
+		_tracker = cmdList->head;
+		// If
+		if(ifsize == 0) {
+			printf("If ta vazio");
+			auxlist = NULL;
+		}
+		else {
+			_tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-ifsize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = ifsize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-ifsize;
+		}
+		
+		
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  _toList(cmdList,_cond);
+		
+		
 		
 		cleanExprList(exprList);
 	}
@@ -634,15 +729,34 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 
 
 
-BLOCO:	/**/ | COMANDAO BLOCO2 	| COMANDO {
+BLOCO:	/**/ {
+		printf("Acabou um Bloco Vazio\n");
+		sizeBlock = malloc(sizeof(int));
+		*sizeBlock = 0;
+		_toList(sizeBlockList,sizeBlock);
+		
+	} | COMANDAO {
+		printf("Comecou um bloco com um comando\n");
+		sizeBlock = malloc(sizeof(int));
+		*sizeBlock = 1;
+	} BLOCO2 | COMANDO {
 
 	printf("Achei um comando\n");
+	
+	sizeBlock = malloc(sizeof(int));
+	*sizeBlock = 1;
 	_toList(cmdList,_cond);
 	} BLOCO2
 ;
 
-BLOCO2: /**/ | COMANDAO BLOCO2 | COMANDO{
-
+BLOCO2: /**/ {
+		printf("Acabou um Bloco\n");
+		_toList(sizeBlockList,sizeBlock);
+	} | COMANDAO {
+	  printf("Um comandao aqui pahnois %d\n",*sizeBlock);
+	  *sizeBlock = *sizeBlock + 1;
+	} BLOCO2 | COMANDO{
+	  *sizeBlock = *sizeBlock + 1;
 	  printf("Achei um comando\n");
 	  _toList(cmdList,_cond);
 	  
@@ -2199,25 +2313,7 @@ CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
 		}
 		| token_if token_abrep IF_EXP token_fechap token_else COMANDO {
 		  printf("If nao associado com Else%d\n",cmdList->nElem);
-		/*NODELISTPTR _tracker = cmdList->head;
-		  int u=0;
-		  
-		  
-		  // If
-		  _tracker = cmdList->head;
-		  for(u=0; u < cmdList->nElem-2; u++) {
-		    
-		    _tracker = _tracker->next;	    
-		  }
-		  auxlist = initList();
-		  auxlist->head = _tracker->next;
-		  auxlist->nElem = 1;
-		  
-		  _tracker->next = NULL;
-		  cmdList->tail = _tracker;
-		  cmdList->nElem = cmdList->nElem-1;
-		  
-		  */
+		
 		  
 		  elseList = initList();
 		  _toList(elseList,_cond);
@@ -2305,6 +2401,7 @@ main(){
 	termoList = initList();
 	auxlist = initList();
 	exList = initList();
+	sizeBlockList = initList();
 	  
 	atribTeste = allocateAtrib();
 	  

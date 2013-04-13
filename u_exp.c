@@ -274,6 +274,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 					*res = (*(int*)(a_v->valor) != *(int*)(b_v->valor));
 					r->tipo = T_INT;
 					r->valor = res;
+
 				}
 				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_INT) {
 					*res = (*(float*)(a_v->valor) != *(int*)(b_v->valor));
@@ -315,6 +316,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 					r->tipo = T_INT;
 					r->valor = res;
 				}
+
 			}
 		//}
 		return r;
