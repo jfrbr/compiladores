@@ -1625,6 +1625,23 @@ FATOR: token_num_float {
 		*tipo = T_CHAR;
 		
 		_toList(testList,tipo);
+		
+		fteste = allocateFator();
+		//printf("Numero inteiro: %d\n",atoi(num_inteiro));
+		char *letra = malloc(sizeof(char));
+		if ( strlen(num_char) == 3){
+		    *letra = num_char[1];
+		}else{
+		    printf("token_letra # Erro no tamanho\n");
+		}
+		
+		setFator(fteste,T_CHAR,letra,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
+
 	  }
 	  | CHAMADA_FUNCAO {
 		//printf("Achei uma funcao: %s\n",ident);
@@ -1897,7 +1914,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		
 		//void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ s_u_exp_list *toatrib, char *stringToAtrib);	
 	  }		
-	  | VAR token_maisigual TO_ATRIB {
+	  | VAR token_maisigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 	  
 	  char *varname = strtok(atrib," ");
 			
@@ -1917,19 +1934,28 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 	  
 	  if ( (*tipo_var == T_INT || *tipo_var == T_FLOAT || *tipo_var == T_CHAR) && eval == T_INT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
+	  }else if ( *tipo_var == T_FLOAT && eval == T_FLOAT){
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
+	  }else if ( *tipo_var == T_CHAR && eval == T_CHAR) {
 					//printf("Ok! Tipo permitido!\n");
-				}else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
+	  }else if ( *tipo_var == T_BOOLEAN && eval == T_BOOLEAN){
 					//printf("Ok! Tipo permitido!\n");
-				}else{
-					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-					exit(2);
-				}
+	  }else{
+			printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
+			exit(2);
+		}
+
+	    atribTree=allocateTreeNode();
+		atribTeste=allocateAtrib();
+
+		setAtrib(atribTeste,"+=",lident,nodeTree,NULL);
+	
+		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
 	  }
+
 	  
-	  | VAR token_menosigual TO_ATRIB {
+	  | VAR token_menosigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 		char *varname = strtok(atrib," ");
 			
 						if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
@@ -1957,8 +1983,14 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
 					exit(2);
 				}
+		atribTree=allocateTreeNode();
+		atribTeste=allocateAtrib();
+
+		setAtrib(atribTeste,"-=",lident,nodeTree,NULL);
+	
+		setTreeNode(atribTree,atribTeste,F_ATRIB);
 		}	  
-	  | VAR token_vezesigual TO_ATRIB {
+	  | VAR token_vezesigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 		char *varname = strtok(atrib," ");
 			
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
@@ -1986,8 +2018,15 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
 					exit(2);
 				}
+		atribTree=allocateTreeNode();
+		atribTeste=allocateAtrib();
+
+		setAtrib(atribTeste,"*=",lident,nodeTree,NULL);
+	
+		setTreeNode(atribTree,atribTeste,F_ATRIB);
 		}	  
-	  | VAR token_divisaoigual TO_ATRIB{
+	  | VAR token_divisaoigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB{
+	  
 		char *varname = strtok(atrib," ");
 			
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
@@ -2015,6 +2054,12 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
 					exit(2);
 				}
+		atribTree=allocateTreeNode();
+		atribTeste=allocateAtrib();
+
+		setAtrib(atribTeste,"/=",lident,nodeTree,NULL);
+	
+		setTreeNode(atribTree,atribTeste,F_ATRIB);
 		}	  
 	  | VAR token_ecomigual TO_ATRIB	
 	  | VAR token_xnorigual TO_ATRIB
@@ -2444,19 +2489,20 @@ main(){
        
  //   setVar(s,"a",1,T_INT,"main",5);
  //   hashInsertVar(HashVar,s);
-
-    float* valor = malloc(sizeof(int));
-    *valor = 2.5;
-//    hashVarUpdateValue(HashVar,"a","main",valor);
-    hashVarUpdateUse(HashVar,"a","main", USING);
     
 	checkVariables(HashVar);	
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
 	s_variavel *s = hashSearchVar(HashVar,"a","main");
+	
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
+
+	executeTreeList(cmdList);
+
+	s_variavel *d = hashSearchVar(HashVar,"c","main");
+	printf("%c\n",*(char*)d->valor);
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
@@ -2465,11 +2511,11 @@ main(){
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
 	}*/
-	
+/*	
 	executeTreeList(cmdList);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}
+	}*/
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	

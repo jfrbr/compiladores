@@ -3,7 +3,7 @@
 #define ATRIB_H_
 
 struct {
-	char op[2];
+	char op[3];
 	char varname[50];
 	//char *escopo;
 	NODETREEPTR toatrib;
