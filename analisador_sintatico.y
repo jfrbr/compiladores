@@ -552,6 +552,56 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDAO {
 	
+			printf("If associado %d\n",cmdList->nElem);
+		
+		// Else
+		
+		  NODELISTPTR _tracker = cmdList->head;
+		  int u=0;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  elseList = initList();
+		  elseList->head = _tracker->next;
+		  elseList->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+		  
+		  // IF
+		  _tracker = cmdList->head;
+		  u=0;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  auxlist = initList();
+		  auxlist->head = _tracker->next;
+		  auxlist->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+		  
+		  
+		  
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+	      
+		  
+		  
+		  //condition->commandList = ;
+
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  _toList(cmdList,_cond);
+	
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else COMANDAO  {
@@ -2071,6 +2121,8 @@ CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
 	  auxlist->head = _tracker->next;
 	  auxlist->nElem = 1;
 	  
+	  
+	  
 	  _tracker->next = NULL;
 	  cmdList->tail = _tracker;
 	  cmdList->nElem = cmdList->nElem-1;
@@ -2090,8 +2142,8 @@ CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
 	  setTreeNode(_cond,condition,F_CONDITIONAL);
 	  
 	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
-	  removeWithoutFreeFromList(exList,exList->nElem-1);
-			
+	  removeWithoutFreeFromList(exList,exList->nElem-1);			
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
 			
 		}
 		

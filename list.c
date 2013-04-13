@@ -112,6 +112,11 @@ void removeWithoutFreeFromList(list l,int index) {
 	    printf("Indice %d nao existe na lista\n",index);
 	    return;
 	}
+
+	if(l->nElem == 1) {
+		l = initList();
+		return;
+	}
 	  
 	//delete 5
 //	0 - 1 - 2 - 3 - 4 - 5 - 6
