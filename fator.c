@@ -13,6 +13,7 @@ s_fator *executaFator(s_fator* toExecute) {
     
 	switch(toExecute->tipo) {
 		case T_INT:
+		case T_CHAR:
 		case T_FLOAT:
 			return toExecute;
 			break;
