@@ -646,13 +646,14 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		int ifsize,elsesize;
 		ifsize = *(int*)sizeBlockList->head->element;
 		elsesize = *(int*)sizeBlockList->head->next->element;
+		
 		destroyList(sizeBlockList);
 		sizeBlockList = initList();
 		
 		
 		NODELISTPTR _tracker = cmdList->head;
 		if(elsesize == 0) {
-			printf("Else ta vazio");
+			printf("Else ta vazio\n");
 			elseList = NULL;
 		}
 		else {
@@ -674,7 +675,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		_tracker = cmdList->head;
 		// If
 		if(ifsize == 0) {
-			printf("If ta vazio");
+			printf("If ta vazio\n");
 			auxlist = NULL;
 		}
 		else {
@@ -693,11 +694,12 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		    cmdList->nElem = cmdList->nElem-ifsize;
 		}
 		
-		
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+		  
 		  _cond = allocateTreeNode();
 		  setTreeNode(_cond,condition,F_CONDITIONAL);
 		  
-		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
 		  removeWithoutFreeFromList(exList,exList->nElem-1);
 		  
 		  _toList(cmdList,_cond);
@@ -2501,8 +2503,9 @@ main(){
 
 	executeTreeList(cmdList);
 
-	s_variavel *d = hashSearchVar(HashVar,"c","main");
-	printf("%c\n",*(char*)d->valor);
+	if(s) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+	}
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
