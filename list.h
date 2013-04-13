@@ -29,6 +29,7 @@ NODELISTPTR allocateNode();
 NODELISTPTR copyNode(NODELISTPTR p);
 int nList(list l);
 void removeFromList(list l,int index);
+void removeWithoutFreeFromList(list l,int index);
 void destroyList(list l);
 void _toList(list l,void *var);
 

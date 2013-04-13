@@ -23,7 +23,12 @@ int checkCondition(s_conditional *cond) {
 }
 
 void executeConditional(s_conditional* cond) {
-	if(checkCondition(cond) == 1) {
+	printf("Executando Condicional\n");
+	if(checkCondition(cond) != 0 && cond->commandList->head) {
 		executeTreeList(cond->commandList);
 	}
+	else
+		if(cond->elseCommandList->head)
+			executeTreeList(cond->elseCommandList);
+
 }

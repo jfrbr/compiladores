@@ -41,6 +41,8 @@ list fatorList;
 list termoList;
 list auxlist;
 tree bigTree;
+list exList;
+list elseList;
 
 list cmdList;
 s_atrib *atribTeste;
@@ -900,14 +902,14 @@ U_EXP: EXP token_igualigual {
 
 IF_EXP :
       U_EXP_LIST {
-      //printf("If nao associado %d\n",*(int*)executeNodeTree(nodeTree)->valor	);
+      //printf("If nao associado %d\n",*(int*)executeNodeTree(nodeTree)->valor);
       
       conditionTree = nodeTree;
-      
-      condition = allocateConditional();
-      setConditional(condition,conditionTree,NULL,NULL);
+      _toList(exList,nodeTree);
       
       strcpy(atrib,"\0"); cleanExprList(exprList);
+      
+      
       
       fatorList = initList();
       nodeTree = NULL;
@@ -925,7 +927,7 @@ U_EXP_LIST : U_EXP {
 	     
 	      }
 	      
-	      printf("UEXP\n");
+	      //printf("UEXP\n");
 	      nodeTree = allocateTreeNode();
 	      
 	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
@@ -946,8 +948,8 @@ U_EXP_LIST : U_EXP {
 	      setTreeNode(u_exp_listTree,u_exp_list,F_U_EXP_LIST);
 		
 	      appendToTreeNode(u_exp_listTree,fatorList);	      //fatorList = initList();*/
-		printf("Passou\n");    
-		printf("AAAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
+		//printf("Passou\n");    
+		//printf("AAAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
 	      // Achou uma U_EXP
 	      //'('
 	    } U_EXP_LIST2
@@ -965,7 +967,7 @@ U_EXP_LIST2 : | token_ecomecom {
 		  addNode(exprList,apList);
 		  testList = initList();
 		  }
-		  printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+		  //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 		  
 		  //printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 		  nodeTree = allocateTreeNode();
@@ -995,7 +997,7 @@ U_EXP_LIST2 : | token_ecomecom {
 		    appendToTreeNode(nodeTree,fatorList);
 		    fatorList = initList();	
 		  }
-		  printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+		  //printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 			  
 		  _toList(fatorList,nodeTree);
 
@@ -1034,11 +1036,11 @@ EXP: EXP token_mais {
 		*op = '+';
 		_toList(testList,op);
 		
-		printf("Encontrei soma\n");
+		//printf("Encontrei soma\n");
 		
       } TERMO {
       
-	printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	//printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -1069,20 +1071,20 @@ EXP: EXP token_mais {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
       }
     | EXP token_menos {
 
-	    printf("Encontrei menos\n");
+	  //  printf("Encontrei menos\n");
 		char *op = malloc(sizeof(char));
 		*op = '-';		
 		_toList(testList,op);
 
       } TERMO {
-	printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+	//printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -1113,7 +1115,7 @@ EXP: EXP token_mais {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
       
@@ -1121,7 +1123,7 @@ EXP: EXP token_mais {
 
     | TERMO {
     
-	printf("Termo\n");
+	//printf("Termo\n");
 	nodeTree = allocateTreeNode();
 	
 	s_exp *exp = allocateExp();
@@ -1184,7 +1186,7 @@ TERMO: TERMO token_vezes {
 	
 		
 	_toList(fatorList,nodeTree);
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",fatorList->nElem,nodeTree->tipoNodeTree);
       }
       | TERMO token_divisao {
 		char *op = malloc(sizeof(char));
@@ -1219,7 +1221,7 @@ TERMO: TERMO token_vezes {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
       }
@@ -1256,13 +1258,13 @@ TERMO: TERMO token_vezes {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
      
       }
       | FATOR {
-	printf("Fator\n");
+	//printf("Fator\n");
 	nodeTree = allocateTreeNode();
 	
 	s_termo *termo = allocateTermo();
@@ -1290,9 +1292,9 @@ FATOR: token_num_float {
 		
 		
 		//
-		printf("Tem um float\n");
+		//printf("Tem um float\n");
 		fteste = allocateFator();
-		printf("Numero inteiro: %f\n",atof(num_float));
+		//printf("Numero inteiro: %f\n",atof(num_float));
 		float *pf = malloc(sizeof(float));
 		*pf = atof(num_float);
 		
@@ -1312,9 +1314,9 @@ FATOR: token_num_float {
 		*tipo = T_INT;
 		_toList(testList,tipo);
 		
-		printf("Tem um int\n");
+		//printf("Tem um int\n");
 		fteste = allocateFator();
-		printf("Numero inteiro: %d\n",atoi(num_inteiro));
+		//printf("Numero inteiro: %d\n",atoi(num_inteiro));
 		int *inteiro = malloc(sizeof(int));
 		*inteiro = atoi(num_inteiro);
 		
@@ -2064,23 +2066,110 @@ CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
 	  cmdList->nElem = cmdList->nElem-1;
 	  //appendToTreeNode(nodeTree,auxlist);
 	  
-	  if((NODETREEPTR)auxlist->head->element) printf("Elemento tree %d\n",((NODETREEPTR)auxlist->head->element)->tipoNodeTree);
-	  else printf("Elemento not tree\n");
-	  
 	  //list ltracker = initList();
 	  //_toList(ltracker,_tracker);
 	  
+	  condition = allocateConditional();
+	  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,NULL);
+      
 	  
-	  condition->commandList = auxlist;
+	  
+	  //condition->commandList = ;
 
 	  _cond = allocateTreeNode();
 	  setTreeNode(_cond,condition,F_CONDITIONAL);
+	  
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  removeWithoutFreeFromList(exList,exList->nElem-1);
 			
 			
 		}
-		| token_if token_abrep IF_EXP token_fechap COMANDO
-		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDO
-		| token_if token_abrep IF_EXP token_fechap token_else COMANDO
+		
+		| token_if token_abrep IF_EXP token_fechap COMANDO {
+		
+		
+			printf("If aninhado!\n");
+			printf("ANumero de Elementos em exList: %d\n",exList->nElem);
+			//NODETREEPTR _aux = _cond;
+			auxlist = initList();
+			_toList(auxlist,_cond);
+			
+			condition = allocateConditional();
+			setConditional(condition,getNode(exList,exList->nElem-1),auxlist,NULL);
+			
+			_cond = allocateTreeNode();
+			setTreeNode(_cond,condition,F_CONDITIONAL);
+		
+		}
+		| token_if token_abrep IF_EXP token_fechap COMANDAO token_else COMANDO {
+		printf("If nao associado com Else%d\n",cmdList->nElem);
+		NODELISTPTR _tracker = cmdList->head;
+		  int u=0;
+		  
+		  elseList = initList();
+		  _toList(elseList,_cond);
+		  
+		  // If
+		  _tracker = cmdList->head;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  auxlist = initList();
+		  auxlist->head = _tracker->next;
+		  auxlist->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+		  
+		  
+		  
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+	      
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  //removeWithoutFreeFromList(exList,exList->nElem-1);
+		
+		}
+		| token_if token_abrep IF_EXP token_fechap token_else COMANDO {
+		  printf("If nao associado com Else%d\n",cmdList->nElem);
+		/*NODELISTPTR _tracker = cmdList->head;
+		  int u=0;
+		  
+		  
+		  // If
+		  _tracker = cmdList->head;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  auxlist = initList();
+		  auxlist->head = _tracker->next;
+		  auxlist->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+		  
+		  */
+		  
+		  elseList = initList();
+		  _toList(elseList,_cond);
+		  
+		  
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),NULL,elseList);
+	      
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+		  //removeWithoutFreeFromList(exList,exList->nElem-1);
+		}
 ;
 
 /* SWITCH */
@@ -2153,6 +2242,7 @@ main(){
 	fatorList = initList();
 	termoList = initList();
 	auxlist = initList();
+	exList = initList();
 	  
 	atribTeste = allocateAtrib();
 	  
@@ -2217,10 +2307,10 @@ main(){
 	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
 	}
 	
-	executeTreeList(cmdList);
+	/*executeTreeList(cmdList);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}
+	}*/
 	// Testando Fator
 //	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
 	
