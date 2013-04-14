@@ -658,7 +658,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
-		if(sizeBlockList->nElem < 2) {
+
+
+
+		if(sizeBlockList->nElem <= 2) {
+
 		  sizeBlockList = initList();
 		}
 		else {
@@ -727,12 +731,201 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO  {
+		
+		
+		int ifsize;
+		ifsize = *(int*)sizeBlockList->head->element;
+		//elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		//destroyList(sizeBlockList);		
+		//sizeBlockList = initList();
+		if(sizeBlockList->nElem <= 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		printf("Entrou aqui!\n");
+		NODELISTPTR _tracker = cmdList->head;
+		  _tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-2; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    elseList = initList();
+		    elseList->head = _tracker->next;
+		    elseList->nElem = 1;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-1;
+		
+		_tracker = cmdList->head;
+		// If
+		if(ifsize == 0) {
+			printf("If ta vazio\n");
+			auxlist = NULL;
+		}
+		else {
+			_tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-ifsize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = ifsize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-ifsize;
+		}
+		
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+		  
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  _toList(cmdList,_cond);
+		
+		// Popping the value of sizeBlock
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+	
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac  {
+		printf("Entrou aqui!\n");
+		int ifsize;
+		//ifsize = *(int*)sizeBlockList->head->element;
+		elsesize = *(int*)sizeBlockList->head->element;
+		
+		//destroyList(sizeBlockList);		
+		//sizeBlockList = initList();
+		if(sizeBlockList->nElem <= 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		
+		
+		if(elsesize == 0) {
+			printf("Else ta vazio\n");
+			elseList = NULL;
+		}
+		else {
+		  _tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    elseList = initList();
+		    elseList->head = _tracker->next;
+		    elseList->nElem = elsesize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-elsesize;
+		}
+		
+		// IF
+		  _tracker = cmdList->head;
+		  u=0;
+		  for(u=0; u < cmdList->nElem-2; u++) {
+		    
+		    _tracker = _tracker->next;	    
+		  }
+		  auxlist = initList();
+		  auxlist->head = _tracker->next;
+		  auxlist->nElem = 1;
+		  
+		  _tracker->next = NULL;
+		  cmdList->tail = _tracker;
+		  cmdList->nElem = cmdList->nElem-1;
+
+		
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+		  
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  _toList(cmdList,_cond);
+		
+		// Popping the value of sizeBlock
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+	
+	
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac {
+			printf("Entrou aqui!\n");
+		int ifsize;
+		//ifsize = *(int*)sizeBlockList->head->element;
+		elsesize = *(int*)sizeBlockList->head->element;
+		
+		//destroyList(sizeBlockList);		
+		//sizeBlockList = initList();
+		if(sizeBlockList->nElem <= 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		
+		
+		if(elsesize == 0) {
+			printf("Else ta vazio\n");
+			elseList = NULL;
+		}
+		else {
+		  _tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    elseList = initList();
+		    elseList->head = _tracker->next;
+		    elseList->nElem = elsesize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-elsesize;
+		}
+		
+		
+		
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),NULL,elseList);
+		  
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  _toList(cmdList,_cond);
+		
+		// Popping the value of sizeBlock
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+	
 		cleanExprList(exprList);
 	}
 	| SWITCH  {
@@ -2316,7 +2509,7 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 		ifsize = *(int*)sizeBlockList->head->element;
 		//elsesize = *(int*)sizeBlockList->head->next->element;
 		
-		if(sizeBlockList->nElem == 1) {
+		if(sizeBlockList->nElem <= 1) {
 		  sizeBlockList = initList();
 		}
 		else {
@@ -2376,7 +2569,7 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 				  printf("-%d\n",ifsize);
 				  //elsesize = *(int*)sizeBlockList->head->next->element;
 				  
-				  if(sizeBlockList->nElem == 1) {
+				  if(sizeBlockList->nElem <= 1) {
 				    sizeBlockList = initList();
 				  }
 				  else {
