@@ -58,6 +58,7 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 }
 
 void executeTreeList(list l) {
+	if(!l) return;
 	NODELISTPTR aux = l->head;
 	printf("Executando Lista de arvores com %d elementos",l->nElem);
 	for(int i=0;i<l->nElem; i++) {

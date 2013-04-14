@@ -22,6 +22,7 @@ int tipoVar;
 extern list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
 
+list _size;
 list exprList;
 list testList;
 list parList;
@@ -334,7 +335,6 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR  {
 ;
 	  
 COMANDAO:   DEC_VAR token_ptevirgula {
-	  
 	  //printf("tipo: %s\n",atrib);
 	  char *tipo,*varlist,*var;
 	  
@@ -366,6 +366,12 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  strcpy(tipo,"\0");
 	  strcpy(atrib,"\0");
+	  
+	  
+	  // Inserindo node dummy na lista cmdList
+	  NODETREEPTR dummy = allocateTreeNode();
+	  setTreeNode(dummy,NULL,F_DEC);
+	  _toList(cmdList,dummy);
 	}
 	
 	
@@ -640,6 +646,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac  {
+		
 		printf("If com else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
 		printf("O If tem %d comandos e o else, %d\n",*(int*)sizeBlockList->head->element,*(int*)sizeBlockList->head->next->element);
 		printf("A cmdList tem %d comandos\n",cmdList->nElem);
@@ -647,8 +654,15 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		ifsize = *(int*)sizeBlockList->head->element;
 		elsesize = *(int*)sizeBlockList->head->next->element;
 		
-		destroyList(sizeBlockList);
-		sizeBlockList = initList();
+		//destroyList(sizeBlockList);		
+		//sizeBlockList = initList();
+		if(sizeBlockList->nElem == 2) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next->next;
+		  sizeBlockList->nElem -= 2;
+		}
 		
 		
 		NODELISTPTR _tracker = cmdList->head;
@@ -704,7 +718,9 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  
 		  _toList(cmdList,_cond);
 		
-		
+		// Popping the value of sizeBlock
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-3);
+		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 		
 		cleanExprList(exprList);
 	}
@@ -739,11 +755,23 @@ BLOCO:	/**/ {
 		
 	} | COMANDAO {
 		printf("Comecou um bloco com um comando\n");
+		if(sizeBlock) {
+		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+		  if(!_size) _size = initList();
+		  _toList(_size,sizeBlock);
+		  }
+		
 		sizeBlock = malloc(sizeof(int));
 		*sizeBlock = 1;
 	} BLOCO2 | COMANDO {
 
-	printf("Achei um comando\n");
+	
+	if(sizeBlock) {
+		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+		  if(!_size) _size = initList();
+		  _toList(_size,sizeBlock);
+		  }
+		
 	
 	sizeBlock = malloc(sizeof(int));
 	*sizeBlock = 1;
@@ -752,14 +780,18 @@ BLOCO:	/**/ {
 ;
 
 BLOCO2: /**/ {
-		printf("Acabou um Bloco\n");
+		printf("\n\nAcabou um Bloco de tamanho %d---\n\n",*sizeBlock);
 		_toList(sizeBlockList,sizeBlock);
+				
+		
 	} | COMANDAO {
-	  printf("Um comandao aqui pahnois %d\n",*sizeBlock);
 	  *sizeBlock = *sizeBlock + 1;
+	  printf("Um comandao aqui pahnois %d\n",*sizeBlock);
+	  printf("cmdList: %d\n",cmdList->nElem);
+	  
 	} BLOCO2 | COMANDO{
 	  *sizeBlock = *sizeBlock + 1;
-	  printf("Achei um comando\n");
+	  printf("Achei um comando %d\n",*sizeBlock);
 	  _toList(cmdList,_cond);
 	  
 	} BLOCO2
@@ -808,7 +840,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,"==");
 		_toList(testList,op);
       } EXP{
-            printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+            //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -838,7 +870,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -849,7 +881,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,">");
 		_toList(testList,op);
       } EXP {
-      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+      //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -879,7 +911,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -890,7 +922,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,"<");
 		_toList(testList,op);
       } EXP {
-      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+      //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -920,7 +952,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -931,7 +963,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,">=");
 		_toList(testList,op);
       } EXP {
-      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+      //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -961,7 +993,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -972,7 +1004,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,"<=");
 		_toList(testList,op);
       } EXP{
-      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+      //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -1002,7 +1034,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -1013,7 +1045,7 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,"!=");
 		_toList(testList,op);
       } EXP{
-      printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
+      //printf("Achou! Lista fatorList tem %d elementos, exptree tem %d\n",fatorList->nElem,expTree->children->nElem);
 	
 	//printf("Debug Tipo de B: %d\n",((NODETREEPTR)(fatorList->head->next)->element)->tipoNodeTree);
 	nodeTree = allocateTreeNode();
@@ -1043,7 +1075,7 @@ U_EXP: EXP token_igualigual {
 	  appendToTreeNode(nodeTree,fatorList);
 	  fatorList = initList();	
 	}
-	printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
+	//printf("AAchou! Lista fatorList tem %d elementos %d\n",auxlist->nElem,nodeTree->tipoNodeTree);
 		
 	_toList(fatorList,nodeTree);
 
@@ -2266,12 +2298,124 @@ PAR2: | token_virgula U_EXP_LIST PAR2 | token_virgula token_string PAR2;
 COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
 ;
 
-CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac
-		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO
+CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac {
+		printf("If SEM else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
+		printf("O If tem %d comandos\n",*(int*)sizeBlockList->head->element);
+		printf("A cmdList tem %d comandos\n",cmdList->nElem);
+		int ifsize;
+		ifsize = *(int*)sizeBlockList->head->element;
+		//elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		if(sizeBlockList->nElem == 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		
+		NODELISTPTR _tracker = cmdList->head;
+		// If
+		if(ifsize == 0) {
+			printf("If ta vazio\n");
+			auxlist = NULL;
+		}
+		else {
+			_tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-ifsize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = ifsize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-ifsize;
+		}
+		
+		  condition = allocateConditional();
+		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,NULL);
+		  
+		  _cond = allocateTreeNode();
+		  setTreeNode(_cond,condition,F_CONDITIONAL);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  //_toList(cmdList,_cond);
+		  
+		  // Popping the value of sizeBlock
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+		      }
+		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO {
+				printf("\n\n\n\nIf nao associado com Else // %d\n\n\n\n",cmdList->nElem);
+				
+				
+				//NODELISTPTR _tracker = cmdList->head;
+				  int u=0;
+				  
+				  elseList = initList();
+				  _toList(elseList,_cond);
+				  
+				  int ifsize;
+				  ifsize = *(int*)sizeBlockList->head->element;
+				  printf("-%d\n",ifsize);
+				  //elsesize = *(int*)sizeBlockList->head->next->element;
+				  
+				  if(sizeBlockList->nElem == 1) {
+				    sizeBlockList = initList();
+				  }
+				  else {
+				    sizeBlockList->head = sizeBlockList->head->next;
+				    sizeBlockList->nElem -= 1;
+				  }
+				  
+				  
+				  NODELISTPTR _tracker = cmdList->head;
+				  // If
+				  if(ifsize == 0) {
+					  printf("If ta vazio\n");
+					  auxlist = NULL;
+				  }
+				  else {
+					  _tracker = cmdList->head;
+				      int u=0;
+				      for(u=0; u < cmdList->nElem-ifsize-1; u++) {
+					
+					_tracker = _tracker->next;	    
+				      }
+				      auxlist = initList();
+				      auxlist->head = _tracker->next;
+				      auxlist->nElem = ifsize;
+				      
+				      _tracker->next = NULL;
+				      cmdList->tail = _tracker;
+				      cmdList->nElem = cmdList->nElem-ifsize;
+				  }
+				  
+				  
+				  condition = allocateConditional();
+				  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
+			      
+				  _cond = allocateTreeNode();
+				  setTreeNode(_cond,condition,F_CONDITIONAL);
+				  
+				  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+				  removeWithoutFreeFromList(exList,exList->nElem-1);
+				
+				  // Popping the value of sizeBlock
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+		      
+		      }
 ;
 
 CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
-			printf("If nao associado %d\n",cmdList->nElem);
+			printf("If nao associado ||||%d\n",cmdList->nElem);
 	 NODELISTPTR _tracker = cmdList->head;
 	  int u=0;
 	  for(u=0; u < cmdList->nElem-2; u++) {
@@ -2302,9 +2446,9 @@ CMD_NAO_ASSOC : token_if token_abrep IF_EXP token_fechap COMANDAO {
 	  _cond = allocateTreeNode();
 	  setTreeNode(_cond,condition,F_CONDITIONAL);
 	  
-	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  //printf("Numero de Elementos em exList: %d\n",exList->nElem);
 	  removeWithoutFreeFromList(exList,exList->nElem-1);			
-	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  //printf("Numero de Elementos em exList: %d\n",exList->nElem);
 			
 		}
 		
@@ -2449,7 +2593,7 @@ main(){
 	auxlist = initList();
 	exList = initList();
 	sizeBlockList = initList();
-	  
+	  _size = initList();
 	atribTeste = allocateAtrib();
 	  
 	atribTree = allocateTreeNode();

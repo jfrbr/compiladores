@@ -34,8 +34,10 @@ extern char currentFunction[50];
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
 
+// Comandos Especiais
 #define F_ATRIB 13
 #define F_CONDITIONAL 14
+#define F_DEC 15
 
 #define NOT_USING 0
 #define USING 1
