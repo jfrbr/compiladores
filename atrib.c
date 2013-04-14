@@ -39,6 +39,7 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
                         int* int_value = malloc(sizeof(int));
                         *int_value = (*(int*)v->valor)+(*(int*)executeResult->valor);
                         hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+
                     }else{
                         printf("Atribuindo valor a variavel nao inicializada.\n");
                         exit(1);

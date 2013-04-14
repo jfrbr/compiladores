@@ -15,7 +15,7 @@ s_fator *executaFator(s_fator* toExecute) {
 		case T_INT:
 		case T_CHAR:
 		case T_FLOAT:
-		    printf("TO RETORNANDO\n");
+		    
 			return toExecute;
 			break;
         case T_VAR:

@@ -658,7 +658,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
-		if(sizeBlockList->nElem == 2) {
+		if(sizeBlockList->nElem < 2) {
 		  sizeBlockList = initList();
 		}
 		else {
@@ -743,7 +743,14 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| token_continue token_ptevirgula
 	| LOOP	 {
 
+		if (_loop){
 		    _toList(cmdList,_loop);	    
+		}
+		else{
+		    printf("LOOP NULO\nAbortando...");
+		    exit(1);
+		}
+		
 		strcpy(atrib,"\0");
 		cleanExprList(exprList);
 	}
@@ -2591,6 +2598,9 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
         }
 	    | token_while token_abrep IF_EXP token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac{
 
+	            printf("while com bloco\n");
+	            
+
 	    }
 ;
 
@@ -2688,6 +2698,7 @@ main(){
 	executeTreeList(cmdList);
 
 	printf("\nTerminei de executar\n");
+
 
 	
 	if(s) {
