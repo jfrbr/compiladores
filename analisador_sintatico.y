@@ -2846,8 +2846,95 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
 	    }
 ;
 
-DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList(exprList);} token_abrep U_EXP_LIST token_fechap token_ptevirgula
-		| token_do token_abrec BLOCO token_fechac {strcpy(atrib,"\0"); cleanExprList(exprList);} token_while token_abrep U_EXP_LIST token_fechap token_ptevirgula
+DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList(exprList);} token_abrep IF_EXP token_fechap token_ptevirgula{
+            printf("to no do while loop\n");
+
+                   NODELISTPTR _tracker = cmdList->head;
+	  int u=0;
+	  for(u=0; u < cmdList->nElem-2; u++) {
+	    
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 1;
+	  
+	  
+	  _tracker->next = NULL;
+	  cmdList->tail = _tracker;
+	  cmdList->nElem = cmdList->nElem-1;
+	  //appendToTreeNode(nodeTree,auxlist);
+	  
+	  //list ltracker = initList();
+	  //_toList(ltracker,_tracker);
+	  
+	  loop = allocateLoop();
+	  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+     
+	  //condition->commandList = ;
+
+	  _loop = allocateTreeNode();
+	  setTreeNode(_loop,loop,F_LOOP);
+	  
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  removeWithoutFreeFromList(exList,exList->nElem-1);			
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+
+            
+        }
+		| token_do token_abrec BLOCO token_fechac {strcpy(atrib,"\0"); cleanExprList(exprList);} token_while token_abrep IF_EXP token_fechap token_ptevirgula{
+
+
+		int whilesize;
+		whilesize = *(int*)sizeBlockList->head->element;
+		//elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		if(sizeBlockList->nElem <= 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		
+		NODELISTPTR _tracker = cmdList->head;
+		// If
+		if(whilesize == 0) {
+			printf("While ta vazio\n");
+			auxlist = NULL;
+		}
+		else {
+			_tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-whilesize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = whilesize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-whilesize;
+		}
+		
+		  loop = allocateLoop();
+		  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+		  
+		  _loop = allocateTreeNode();
+		  setTreeNode(_loop,loop,F_LOOP);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  //_toList(cmdList,_cond);
+		  
+		  // Popping the value of sizeBlock
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+		}
 ;
 
 FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {strcpy(atrib,"\0");}
@@ -2932,10 +3019,13 @@ main(){
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
 	s_variavel *s = hashSearchVar(HashVar,"a","main");
+    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
 	
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
+
+	
 
 	executeTreeList(cmdList);
 
@@ -2946,6 +3036,8 @@ main(){
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
+	
+	
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
