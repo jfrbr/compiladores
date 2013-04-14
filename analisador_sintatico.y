@@ -2792,6 +2792,55 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
 	    | token_while token_abrep IF_EXP token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac{
 
 	            printf("while com bloco\n");
+		int whilesize;
+		whilesize = *(int*)sizeBlockList->head->element;
+		//elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		if(sizeBlockList->nElem <= 1) {
+		  sizeBlockList = initList();
+		}
+		else {
+		  sizeBlockList->head = sizeBlockList->head->next;
+		  sizeBlockList->nElem -= 1;
+		}
+		
+		
+		NODELISTPTR _tracker = cmdList->head;
+		// If
+		if(whilesize == 0) {
+			printf("While ta vazio\n");
+			auxlist = NULL;
+		}
+		else {
+			_tracker = cmdList->head;
+		    int u=0;
+		    for(u=0; u < cmdList->nElem-whilesize-1; u++) {
+		      
+		      _tracker = _tracker->next;	    
+		    }
+		    auxlist = initList();
+		    auxlist->head = _tracker->next;
+		    auxlist->nElem = whilesize;
+		    
+		    _tracker->next = NULL;
+		    cmdList->tail = _tracker;
+		    cmdList->nElem = cmdList->nElem-whilesize;
+		}
+		
+		  loop = allocateLoop();
+		  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+		  
+		  _loop = allocateTreeNode();
+		  setTreeNode(_loop,loop,F_LOOP);
+		  
+		  removeWithoutFreeFromList(exList,exList->nElem-1);
+		  
+		  //_toList(cmdList,_cond);
+		  
+		  // Popping the value of sizeBlock
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+	            
 	            
 
 	    }
