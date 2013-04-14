@@ -803,7 +803,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac  {
 		printf("Entrou aqui!\n");
-		int ifsize;
+		int elsesize;
 		//ifsize = *(int*)sizeBlockList->head->element;
 		elsesize = *(int*)sizeBlockList->head->element;
 		
@@ -824,7 +824,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			elseList = NULL;
 		}
 		else {
-		  _tracker = cmdList->head;
+		  NODELISTPTR _tracker = cmdList->head;
 		    int u=0;
 		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
 		      
@@ -840,8 +840,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		}
 		
 		// IF
-		  _tracker = cmdList->head;
-		  u=0;
+		  NODELISTPTR _tracker = cmdList->head;
+		  int u=0;
 		  for(u=0; u < cmdList->nElem-2; u++) {
 		    
 		    _tracker = _tracker->next;	    
@@ -874,7 +874,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac {
 			printf("Entrou aqui!\n");
-		int ifsize;
+		int elsesize;
 		//ifsize = *(int*)sizeBlockList->head->element;
 		elsesize = *(int*)sizeBlockList->head->element;
 		
@@ -895,7 +895,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			elseList = NULL;
 		}
 		else {
-		  _tracker = cmdList->head;
+		  NODELISTPTR _tracker = cmdList->head;
 		    int u=0;
 		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
 		      
