@@ -12,6 +12,7 @@
 #include "stdbool.h"
 #include "atrib.h"
 #include "conditional.h"
+#include "loop.h"
 
 extern char currentFunction[50];
 
@@ -37,7 +38,13 @@ extern char currentFunction[50];
 // Comandos Especiais
 #define F_ATRIB 13
 #define F_CONDITIONAL 14
-#define F_DEC 15
+#define F_DEC 16
+#define F_LOOP 15
+
+// Variacoes LOOP
+#define WHILE 0
+#define DO_WHILE 1
+#define FOR 2
 
 #define NOT_USING 0
 #define USING 1
