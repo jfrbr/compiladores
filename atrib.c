@@ -29,18 +29,32 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 	    }else if (!strcmp(op_value,"+=")){
 
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
+
             if (v){
+
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
 
-                    int* int_value = malloc(sizeof(int));
-                    *int_value = (*(int*)v->valor)+(*(int*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+
+                    if (v->valor != NULL){
+                        int* int_value = malloc(sizeof(int));
+                        *int_value = (*(int*)v->valor)+(*(int*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
 
                 }else if (v->tipo == T_FLOAT){
+
+                    if (v->valor != NULL){
                 
-                    float* float_value = malloc(sizeof(float));
-                    *float_value = (*(float*)v->valor)+ (*(float*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+                        float* float_value = malloc(sizeof(float));
+                        *float_value = (*(float*)v->valor)+ (*(float*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
                 }
             }else{
                 printf("ATRIB # Nao achei variavel na hash.\n");
@@ -50,16 +64,25 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
-
-                    int* int_value = malloc(sizeof(int));
-                    *int_value = (*(int*)v->valor)-(*(int*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    if (v->valor != NULL){
+                        int* int_value = malloc(sizeof(int));
+                        *int_value = (*(int*)v->valor)-(*(int*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
 
                 }else if (v->tipo == T_FLOAT){
-                
-                    float* float_value = malloc(sizeof(float));
-                    *float_value = (*(float*)v->valor)-(*(float*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+
+                    if (v->valor != NULL){
+                        float* float_value = malloc(sizeof(float));
+                        *float_value = (*(float*)v->valor)-(*(float*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
                 }
             }else{
                 printf("ATRIB # Nao achei variavel na hash.\n");
@@ -69,16 +92,24 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
-
-                    int* int_value = malloc(sizeof(int));
-                    *int_value = (*(int*)v->valor) * (*(int*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    if (v->valor != NULL){
+                        int* int_value = malloc(sizeof(int));
+                        *int_value = (*(int*)v->valor) * (*(int*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                    }
 
                 }else if (v->tipo == T_FLOAT){
-                
-                    float* float_value = malloc(sizeof(float));
-                    *float_value = (*(float*)v->valor)  * (*(float*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+
+                    if (v->valor != NULL){
+                        float* float_value = malloc(sizeof(float));
+                        *float_value = (*(float*)v->valor)  * (*(float*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
                 }
             }else{
                 printf("ATRIB # Nao achei variavel na hash.\n");
@@ -89,15 +120,25 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
 
-                    int* int_value = malloc(sizeof(int));
-                    *int_value = (*(int*)v->valor)/(*(int*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    if (v->valor != NULL){
+                        int* int_value = malloc(sizeof(int));
+                        *int_value = (*(int*)v->valor)/(*(int*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,int_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
 
                 }else if (v->tipo == T_FLOAT){
-                
-                    float* float_value  = malloc(sizeof(float));
-                    *float_value = (*(float*)v->valor)/(*(float*)executeResult->valor);
-                    hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+
+                    if (v->valor != NULL){
+                        float* float_value  = malloc(sizeof(float));
+                        *float_value = (*(float*)v->valor)/(*(float*)executeResult->valor);
+                        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
+                    }else{
+                        printf("Atribuindo valor a variavel nao inicializada.\n");
+                        exit(1);
+                    }
                 }
             }else{
                 printf("ATRIB # Nao achei variavel na hash.\n");

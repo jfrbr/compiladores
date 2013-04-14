@@ -50,6 +50,9 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			executeConditional((s_conditional*)node->element);
 			return NULL;
 			break;
+		case F_LOOP:
+		    executeLoop((s_loop*)node->element);
+		    break;
 		default:
 			break;
 

@@ -14,6 +14,7 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 	if(operands->nElem == 1) {
 		//if((NODETREEPTR)(getNode((list)(operands),0))) printf("passei %d\n", ((NODETREEPTR)(getNode((list)(operands),0)))->tipoNodeTree);
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
+		
 	}
 	else {
 
@@ -29,8 +30,9 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 
 		a_v = executeNodeTree(a);
 
+
 		b_v = executeNodeTree(b);
-		printf("Aqui2!\n");
+
 		// < > <= >= == !=
 		//switch(toExecute->op) {
 		printf("op: %s\n",toExecute->op);

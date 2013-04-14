@@ -37,6 +37,7 @@ NODETREEPTR u_expTree;
 NODETREEPTR u_exp_listTree;
 NODETREEPTR conditionTree;
 NODETREEPTR _cond;
+NODETREEPTR _loop;
 
 list fatorList;
 list termoList;
@@ -49,6 +50,7 @@ list sizeBlockList;
 list cmdList;
 s_atrib *atribTeste;
 s_conditional *condition;
+s_loop *loop;
 %}
 
 %token token_numero
@@ -724,6 +726,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| token_break token_ptevirgula 
 	| token_continue token_ptevirgula
 	| LOOP	 {
+
+		    _toList(cmdList,_loop);	    
 		strcpy(atrib,"\0");
 		cleanExprList(exprList);
 	}
@@ -1085,9 +1089,8 @@ IF_EXP :
       conditionTree = nodeTree;
       _toList(exList,nodeTree);
       
-      strcpy(atrib,"\0"); cleanExprList(exprList);
-      
-      
+      strcpy(atrib,"\0"); 
+      cleanExprList(exprList);
       
       fatorList = initList();
       nodeTree = NULL;
@@ -2406,8 +2409,45 @@ SWITCH_BLOCK2 :
 
 LOOP : FOR_LOOP | DO_WHILE_LOOP | WHILE_LOOP ;
 
-WHILE_LOOP: token_while token_abrep U_EXP_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO
-	    | token_while token_abrep U_EXP_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac
+WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO {
+
+            printf("to no while\n");    
+
+       NODELISTPTR _tracker = cmdList->head;
+	  int u=0;
+	  for(u=0; u < cmdList->nElem-2; u++) {
+	    
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 1;
+	  
+	  
+	  _tracker->next = NULL;
+	  cmdList->tail = _tracker;
+	  cmdList->nElem = cmdList->nElem-1;
+	  //appendToTreeNode(nodeTree,auxlist);
+	  
+	  //list ltracker = initList();
+	  //_toList(ltracker,_tracker);
+	  
+	  loop = allocateLoop();
+	  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+     
+	  //condition->commandList = ;
+
+	  _loop = allocateTreeNode();
+	  setTreeNode(_loop,loop,F_LOOP);
+	  
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  removeWithoutFreeFromList(exList,exList->nElem-1);			
+	  printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	  
+        }
+	    | token_while token_abrep IF_EXP token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);}  BLOCO token_fechac{
+
+	    }
 ;
 
 DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList(exprList);} token_abrep U_EXP_LIST token_fechap token_ptevirgula
@@ -2503,6 +2543,9 @@ main(){
 
 	executeTreeList(cmdList);
 
+	printf("\nTerminei de executar\n");
+
+	
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
