@@ -1962,27 +1962,12 @@ FATOR: token_num_float {
 		strcpy(atrib,"\0");	  
 		
 		// trab4
-			/*printf("Tem uma variavel com ++anterior\n");
-		fteste = allocateFator();
-		printf("Variavel: %s\n",ident);
 		
-		char *variavel = malloc(strlen(ident)*sizeof(char));
-		strcpy(variavel,ident);
-		
-		//auxlist = initList();
-		//_toList(auxlist,P_MAISMAISANT);		
-		
-		setFator(fteste,T_VAR,variavel,NULL);
-		
-		nodeTree = allocateTreeNode();
-		setTreeNode(nodeTree,fteste,F_FATOR);
-		
-		_toList(fatorList,nodeTree);*/
 		printf("Tem uma variavel com ++anterior\n");
 		fteste = allocateFator();
 		printf("Variavel: %s\n",ident);
 		char *variavel = malloc(strlen(ident)*sizeof(char));
-        strcpy(variavel,ident);
+		strcpy(variavel,ident);
         
        		auxlist = initList();
        		int *_aux = (int*) malloc(sizeof(int));
@@ -2027,6 +2012,28 @@ FATOR: token_num_float {
 		_toList(testList,tipo);
 		
 		strcpy(atrib,"\0");
+		
+		// Trab 4
+		printf("Tem uma variavel com ++anterior\n");
+		fteste = allocateFator();
+		printf("Variavel: %s\n",ident);
+		char *variavel = malloc(strlen(ident)*sizeof(char));
+		strcpy(variavel,ident);
+        
+       		auxlist = initList();
+       		int *_aux = (int*) malloc(sizeof(int));
+       		*_aux = P_MENOSMENOSANT;
+		_toList(auxlist,_aux);		
+		printf("Aqui: %d\n",*(int*)(auxlist->head->element));
+		
+		setFator(fteste,T_VAR,variavel,auxlist);
+		
+		
+		auxlist=NULL;
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
 	  }
 	  | VAR token_menosmenos {
 		
@@ -3081,7 +3088,7 @@ main(){
 
 	
 	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%f\n",*(float*)(s->valor));
 	}
 	
 	
