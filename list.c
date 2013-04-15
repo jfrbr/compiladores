@@ -29,7 +29,10 @@ list initList() {
 }
 
 void* getNode(list l,int index) {
-	if(!l || !l->head || index > nList(l)-1) return NULL;
+	if(!l || !l->head || index > nList(l)) {
+		printf("FAIL\n");
+		return NULL;
+	}
 	NODELISTPTR aux = l->head;
 	for(int i=0; i<index; i++) aux = aux->next;
 	return aux->element;

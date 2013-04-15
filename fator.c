@@ -25,10 +25,23 @@ s_fator *executaFator(s_fator* toExecute) {
             s_fator* fteste = allocateFator();
             printf("tipo = %d\n",v->tipo);
 
+            if(toExecute->parametros && toExecute->parametros->head) {
+            	//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
+            	int *_t = getNode(toExecute->parametros,0);
+            	printf("'E nois Aqui: %d\n",*(int*)_t);
+            	if(*(int*)_t == P_MAISMAISANT) {
+					if(v->tipo == T_INT) {
+						int _tmp = *(int*)v->valor + 1;
+						*(int*)v->valor = _tmp;
+					}
+            	}
+            	//if(*_t) printf("T ok\n");
+
+            }
             setFator(fteste,v->tipo,v->valor,toExecute->parametros);
           
             return fteste;
-            break; // LOL BREAK :)
+            break; // LOL BREAK :) - lolwut?
         }
 		default:
 			return NULL;

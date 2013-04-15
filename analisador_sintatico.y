@@ -1287,6 +1287,7 @@ U_EXP: EXP token_igualigual {
       }
       | EXP {
     
+	
 	printf("EXP\n");
 	nodeTree = allocateTreeNode();
 	
@@ -1927,6 +1928,9 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");
+		
+	
+		
       	  }
 	  | token_maismais VAR {
 		// Check if var exists
@@ -1956,6 +1960,45 @@ FATOR: token_num_float {
 		_toList(testList,tipo);
 		
 		strcpy(atrib,"\0");	  
+		
+		// trab4
+			/*printf("Tem uma variavel com ++anterior\n");
+		fteste = allocateFator();
+		printf("Variavel: %s\n",ident);
+		
+		char *variavel = malloc(strlen(ident)*sizeof(char));
+		strcpy(variavel,ident);
+		
+		//auxlist = initList();
+		//_toList(auxlist,P_MAISMAISANT);		
+		
+		setFator(fteste,T_VAR,variavel,NULL);
+		
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);*/
+		printf("Tem uma variavel com ++anterior\n");
+		fteste = allocateFator();
+		printf("Variavel: %s\n",ident);
+		char *variavel = malloc(strlen(ident)*sizeof(char));
+        strcpy(variavel,ident);
+        
+       		auxlist = initList();
+       		int *_aux = (int*) malloc(sizeof(int));
+       		*_aux = P_MAISMAISANT;
+		_toList(auxlist,_aux);		
+		printf("Aqui: %d\n",*(int*)(auxlist->head->element));
+		
+		setFator(fteste,T_VAR,variavel,auxlist);
+		
+		
+		auxlist=NULL;
+		nodeTree = allocateTreeNode();
+		setTreeNode(nodeTree,fteste,F_FATOR);
+		
+		_toList(fatorList,nodeTree);
+		
 	  }
 	  
 	  | token_menosmenos VAR {
@@ -2100,18 +2143,20 @@ FATOR: token_num_float {
 
 /* ATRIBUICAO */
 ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
-
-			char *varname = strtok(atrib," ");
-			if ( strlen(varname) > 1 && varname[0] == '('){
+		  
+			printf("atrib: %s\n",lident);
+			char *varname = strtok(ident," ");
+			/*if ( strlen(varname) > 1 && varname[0] == '('){
 				int i;
 				for (i=0;i<strlen(varname);i++) varname[i] = varname[i+1];
 				varname[i] = '\0';
-			}
+			}*/
 			
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				exit(1);
 			}
+			//printf("Passei\n");
 			
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,lident,currentFunction,USING);
@@ -2141,7 +2186,8 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					exit(2);
 				}
 				eval = 0;
-				
+		
+		
 		atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
 		setAtrib(atribTeste,"=",lident,nodeTree,NULL);
@@ -2373,6 +2419,7 @@ TO_ATRIB:  U_EXP_LIST {
 	  }
 	  
 	  cleanExprList(exprList);
+	  
 	  }
 	  | token_string;
 
@@ -3014,12 +3061,12 @@ main(){
        
  //   setVar(s,"a",1,T_INT,"main",5);
  //   hashInsertVar(HashVar,s);
-    
 	checkVariables(HashVar);	
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
 	s_variavel *s = hashSearchVar(HashVar,"a","main");
-    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
+//    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
+
 	
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
