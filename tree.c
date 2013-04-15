@@ -25,9 +25,56 @@ NODETREEPTR allocateTreeNode() {
 
 s_fator *executeNodeTree(NODETREEPTR node) {
 	//debug();
+	s_fator *f,*r;
+	s_variavel *v;
 	switch(node->tipoNodeTree) {
 		case F_FATOR:
-			return executaFator((s_fator*)node->element);
+			f = (s_fator*)node->element;
+			r = executaFator(f);
+			if(f->tipo == T_VAR) {
+				printf("Executando Variavel aaeHOOOOOOOOOOOOOOOOOO\n");
+				v = hashSearchVar(HashVar,(char*)f->valor,"main");
+				//s_fator* fteste = allocateFator();
+				printf("tipo = %d\n",v->tipo);
+
+				if(f->parametros && f->parametros->head) {
+					//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
+					int *_t = getNode(f->parametros,0);
+					printf("'E nois Aqui: %d\n",*(int*)_t);
+					if(*(int*)_t == P_MAISMAISAFT) {
+						if(r->tipo == T_INT) {
+							int _tmp = *(int*)r->valor + 1;
+							*(int*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_CHAR) {
+							char _tmp = *(char*)r->valor + 1;
+							*(char*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_FLOAT) {
+							float _tmp = *(float*)r->valor + 1;
+							*(float*)r->valor = _tmp;
+						}
+					} else if(*(int*)_t == P_MENOSMENOSAFT) {
+						if(r->tipo == T_INT) {
+							int _tmp = *(int*)r->valor - 1;
+							*(int*)r->valor = _tmp;
+						}
+						else if(v->tipo == T_CHAR) {
+							char _tmp = *(char*)r->valor - 1;
+							*(char*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_FLOAT) {
+							float _tmp = *(float*)r->valor - 1;
+							*(float*)r->valor = _tmp;
+						}
+					}
+					//if(*_t) printf("T ok\n");
+
+				}
+
+			}
+			//return executaFator((s_fator*)node->element);
+			return r;
 			break;
 		case F_TERMO:
 			return executeTermo((s_termo*)node->element,(list)(node->children->head->element));

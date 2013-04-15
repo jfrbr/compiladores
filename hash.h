@@ -36,6 +36,8 @@ extern char currentFunction[50];
 #define NEGATIVE_VALUE 1
 #define P_MAISMAISANT 0
 #define P_MENOSMENOSANT 1
+#define P_MAISMAISAFT 2
+#define P_MENOSMENOSAFT 3
 
 // Comandos Especiais
 #define F_ATRIB 13
