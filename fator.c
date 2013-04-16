@@ -21,11 +21,13 @@ s_fator *executaFator(s_fator* toExecute) {
 			break;
         case T_VAR:
         {
-            
-            s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
+
+
+        	s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
+
             s_fator* fteste = allocateFator();
             printf("Atipo = %d %d\n",v->tipo,*(int*)v->valor);
-
+            printf("Teste\n");
             if(toExecute->parametros && toExecute->parametros->head) {
             	//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
             	int *_t = getNode(toExecute->parametros,0);

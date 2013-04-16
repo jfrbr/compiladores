@@ -32,7 +32,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 		printf("Passou2\n");
 		// < > <= >= == !=
 		//switch(toExecute->op) {
-		printf("op: %s\n",toExecute->op);
+		//printf("op: %s\n",toExecute->op);
 			if(!strcmp(toExecute->op,"<")) {
 
 				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {

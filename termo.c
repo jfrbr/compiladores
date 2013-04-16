@@ -9,7 +9,7 @@ s_termo *allocateTermo() {
 }
 
 void *executeTermo(s_termo *toExecute, list operands) {
-	printf("Operands size: %d\n",operands->nElem);
+	//printf("Operands size: %d\n",operands->nElem);
 	if(operands->nElem == 1) {
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
 	}

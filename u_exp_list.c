@@ -30,7 +30,6 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 
 		a_v = executeNodeTree(a);
 
-
 		b_v = executeNodeTree(b);
 
 		// < > <= >= == !=
