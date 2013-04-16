@@ -445,8 +445,9 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  
 	  cleanExprList(exprList);
-	  if(nodeTree) printf("NodeTree!\n");
+	  if(nodeTree) {printf("NodeTree!\n");
 	  _toList(cmdList,nodeTree);
+	  }
 	}
 	
 	| ATRIBUICAO token_ptevirgula {
