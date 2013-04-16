@@ -229,7 +229,7 @@ DECFUNC : TIPO token_ident token_abrep {
 			}
 
 			s_funcao *function = allocateFunction();
-			setFunction(function,funcname,parameters->nElem,returnType,parameters);
+			setFunction(function,funcname,parameters->nElem,returnType,parameters,NULL);
 		
 			if(!funcExists(HashFunc,function->nome)) {
 				hashInsertFunction(HashFunc,function);
@@ -262,7 +262,7 @@ DECFUNC : TIPO token_ident token_abrep {
 		int type = converType(tipo);
 		
 		s_funcao *function = allocateFunction();
-		setFunction(function,funcname,0,type,NULL);
+		setFunction(function,funcname,0,type,NULL,NULL);
 		
 		if(!funcExists(HashFunc,function->nome)) {
 			hashInsertFunction(HashFunc,function);
@@ -273,7 +273,10 @@ DECFUNC : TIPO token_ident token_abrep {
 		}
 			
 		strcpy(atrib,"\0");
-	} token_abrec BLOCO token_fechac 
+	} token_abrec BLOCO token_fechac {
+		printf("Funcao sem parametros é nós!\n");
+	
+	}
 ;
 
 DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula {
@@ -3074,19 +3077,19 @@ main(){
 	atribTree = allocateTreeNode();
 
 	s_funcao* print = allocateFunction();
-	setFunction(print,"printf",2,T_VOID,NULL);
+	setFunction(print,"printf",2,T_VOID,NULL,NULL);
 
 	s_funcao* scan = allocateFunction();
-	setFunction(scan,"scanf",2,T_INT,NULL);
+	setFunction(scan,"scanf",2,T_INT,NULL,NULL);
 
 	s_funcao* max = allocateFunction();
-	setFunction(max,"max",2,T_INT,NULL);
+	setFunction(max,"max",2,T_INT,NULL,NULL);
 
 	s_funcao* min = allocateFunction();
-	setFunction(min,"min",2,T_INT,NULL);
+	setFunction(min,"min",2,T_INT,NULL,NULL);
 
 	s_funcao* _main = allocateFunction();
-	setFunction(_main,"main",0,T_INT,NULL);
+	setFunction(_main,"main",0,T_INT,NULL,NULL);
 
 	hashInsertFunction(HashFunc,print);
 	hashInsertFunction(HashFunc,scan);

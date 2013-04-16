@@ -10,11 +10,12 @@ struct  {
   int aridade;
   int tipo_retorno;
   list parametros;
+  list cmdList;
 } typedef s_funcao;
 
 
 s_funcao* allocateFunction();
-void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros);
+void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros,list cmdList);
 
 
 #endif /* FUNCTION_H_ */

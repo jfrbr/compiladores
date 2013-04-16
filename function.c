@@ -9,7 +9,7 @@ s_funcao* allocateFunction() {
 	else return NULL;
 }
 
-void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros) {
+void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros, list cmdList) {
 	if(!function) {
 		printf("Ponteiro pra Var nulo\n");
 		exit(1);
@@ -18,6 +18,7 @@ void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list
 	function->aridade = aridade;
 	function->tipo_retorno = tipo_retorno;
 	function->parametros = parametros;
+	function->cmdList = cmdList;
 }
 
 int checkArity(s_funcao *function,int arity) {
