@@ -669,6 +669,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac  {
 		
 		printf("If com else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
+		
 		printf("O If tem %d comandos e o else, %d\n",*(int*)getNode(sizeBlockList,sizeBlockList->nElem-2),*(int*)getNode(sizeBlockList,sizeBlockList->nElem-1));
 		printf("A cmdList tem %d comandos\n",cmdList->nElem);
 		int ifsize,elsesize;
@@ -681,7 +682,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 
 		NODELISTPTR _tracker = sizeBlockList->head;
 		if(sizeBlockList->nElem <= 2) {
-		  printf("Aqui---------------------------\n");
+		  //printf("Aqui---------------------------\n");
 		  sizeBlockList = initList();
 		}
 		else {
@@ -753,7 +754,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  _toList(cmdList,_cond);
 		
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-3);
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);	
 		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 		
 		cleanExprList(exprList);
@@ -762,7 +763,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		
 		
 		int ifsize;
-		ifsize = *(int*)sizeBlockList->head->element;
+		ifsize = *(int*)getNode(sizeBlockList,sizeBlockList->nElem-1);
 		//elsesize = *(int*)sizeBlockList->head->next->element;
 		
 		//destroyList(sizeBlockList);		
@@ -771,7 +772,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  int i=0;
+		  for(i = 0; i < sizeBlockList->nElem-2; i++) _tracker = _tracker->next;
+		  _tracker->next = NULL;
+		  
 		  sizeBlockList->nElem -= 1;
 		}
 		
@@ -834,7 +839,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		printf("Entrou aqui!\n");
 		int elsesize;
 		//ifsize = *(int*)sizeBlockList->head->element;
-		elsesize = *(int*)sizeBlockList->head->element;
+		elsesize = *(int*)sizeBlockList->tail->element;
 		
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
@@ -842,7 +847,12 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next;
+		  NODELISTPTR _tmp = sizeBlockList->head;
+		  int i=0;
+		  for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  _tmp->next = NULL;
+		  sizeBlockList->tail = _tmp;
 		  sizeBlockList->nElem -= 1;
 		}
 		
@@ -905,7 +915,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			printf("Entrou aqui!\n");
 		int elsesize;
 		//ifsize = *(int*)sizeBlockList->head->element;
-		elsesize = *(int*)sizeBlockList->head->element;
+		elsesize = *(int*)sizeBlockList->tail->element;
 		
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
@@ -913,7 +923,13 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  NODELISTPTR _tmp = sizeBlockList->head;
+		  int i=0;
+		  for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  _tmp->next = NULL;
+		  sizeBlockList->tail = _tmp;
 		  sizeBlockList->nElem -= 1;
 		}
 		
@@ -2626,17 +2642,23 @@ COMANDO: CMD_NAO_ASSOC | CMD_NAO_ASSOC_CHAVE
 
 CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac {
 		printf("If SEM else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
-		printf("O If tem %d comandos\n",*(int*)sizeBlockList->head->element);
+		//printf("O If tem %d comandos\n",*(int*)sizeBlockList->head->element);
 		printf("A cmdList tem %d comandos\n",cmdList->nElem);
 		int ifsize;
-		ifsize = *(int*)sizeBlockList->head->element;
+		ifsize = *(int*)sizeBlockList->tail->element;
 		//elsesize = *(int*)sizeBlockList->head->next->element;
 		
 		if(sizeBlockList->nElem <= 1) {
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  NODELISTPTR _tmp = sizeBlockList->head;
+		  int i=0;
+		  for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		  //sizeBlockList->head = sizeBlockList->head->next;
+		  _tmp->next = NULL;
+		  sizeBlockList->tail = _tmp;
 		  sizeBlockList->nElem -= 1;
 		}
 		
@@ -2674,10 +2696,10 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 		  //_toList(cmdList,_cond);
 		  
 		  // Popping the value of sizeBlock
-		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 		      }
-		      | token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO {
+		| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDO {
 				printf("\n\n\n\nIf nao associado com Else // %d\n\n\n\n",cmdList->nElem);
 				
 				
@@ -2688,7 +2710,7 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 				  _toList(elseList,_cond);
 				  
 				  int ifsize;
-				  ifsize = *(int*)sizeBlockList->head->element;
+				  ifsize = *(int*)sizeBlockList->tail->element;
 				  printf("-%d\n",ifsize);
 				  //elsesize = *(int*)sizeBlockList->head->next->element;
 				  
@@ -2696,7 +2718,13 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 				    sizeBlockList = initList();
 				  }
 				  else {
-				    sizeBlockList->head = sizeBlockList->head->next;
+				    //sizeBlockList->head = sizeBlockList->head->next;
+				    NODELISTPTR _tmp = sizeBlockList->head;
+				    int i=0;
+				    for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+				    //sizeBlockList->head = sizeBlockList->head->next;
+				    _tmp->next = NULL;
+				    sizeBlockList->tail = _tmp;
 				    sizeBlockList->nElem -= 1;
 				  }
 				  
