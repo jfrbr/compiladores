@@ -445,7 +445,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  
 	  cleanExprList(exprList);
-	  
+	  if(nodeTree) printf("NodeTree!\n");
+	  _toList(cmdList,nodeTree);
 	}
 	
 	| ATRIBUICAO token_ptevirgula {
@@ -3128,7 +3129,7 @@ main(){
 
 	
 	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%f\n",*(float*)(s->valor));
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
 	
 	
