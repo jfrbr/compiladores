@@ -47,6 +47,8 @@ tree bigTree;
 list exList;
 list elseList;
 list sizeBlockList;
+list incList;
+list atribList;
 
 list cmdList;
 s_atrib *atribTeste;
@@ -378,6 +380,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  
 	  
 	  // Inserindo node dummy na lista cmdList
+//	  printf("Inserindo node dummy na lista cmdList\n");
 	  NODETREEPTR dummy = allocateTreeNode();
 	  setTreeNode(dummy,NULL,F_DEC);
 	  _toList(cmdList,dummy);
@@ -475,11 +478,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 			strcpy(num_char,"\0");
 			strcpy(num_string,"\0");
 			strcpy(atrib,"\0");
-			
-			_toList(cmdList,atribTree);		
 
-			fatorList = initList();
-			nodeTree = NULL;
+
 			//executeNodeTree((NODETREEPTR)cmdList->head->element);
 			
 	}		
@@ -982,10 +982,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		setTreeNode(dummy,NULL,F_BREAK);
 		_toList(cmdList,dummy);
 	}
-	| token_continue token_ptevirgula
+	| token_continue token_ptevirgula {
+	      NODETREEPTR dummy = allocateTreeNode();
+		setTreeNode(dummy,NULL,F_CONTINUE);
+		_toList(cmdList,dummy);
+	}
 	| LOOP	 {
 
 		if (_loop){
+		     printf("Inserindo loop na cmdList...\n");
+		     printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem);
 		    _toList(cmdList,_loop);	    
 		}
 		else{
@@ -1369,6 +1375,7 @@ IF_EXP :
       //printf("If nao associado %d\n",*(int*)executeNodeTree(nodeTree)->valor);
       
       conditionTree = nodeTree;
+      printf("Inserindo condicao na exList\n");
       _toList(exList,nodeTree);
       
       strcpy(atrib,"\0"); 
@@ -2287,8 +2294,16 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
 		setAtrib(atribTeste,"=",lident,nodeTree,NULL);
-	
+
+	    printf("SETEI O F_ATRIB PARA IGUAL\n");
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
+		printf("Inserindo atribTree na cmdList\n");
+			
+	    _toList(cmdList,atribTree);		
+
+		fatorList = initList();
+		nodeTree = NULL;
 		
 		
 		//void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ s_u_exp_list *toatrib, char *stringToAtrib);	
@@ -2328,8 +2343,15 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		atribTeste=allocateAtrib();
 
 		setAtrib(atribTeste,"+=",lident,nodeTree,NULL);
-	
+		printf("SETEI O F_ATRIB PARA MAIS IGUAL\n");
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
+		printf("Inserindo atribTree na cmdList\n");
+			
+		_toList(cmdList,atribTree);		
+
+		fatorList = initList();
+		nodeTree = NULL;
 
 	  }
 
@@ -2368,6 +2390,13 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		setAtrib(atribTeste,"-=",lident,nodeTree,NULL);
 	
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
+		printf("Inserindo atribTree na cmdList\n");
+			
+		_toList(cmdList,atribTree);		
+
+		fatorList = initList();
+		nodeTree = NULL;
 		}	  
 	  | VAR token_vezesigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 		char *varname = strtok(atrib," ");
@@ -2403,6 +2432,13 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		setAtrib(atribTeste,"*=",lident,nodeTree,NULL);
 	
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
+					printf("Inserindo atribTree na cmdList\n");
+			
+			_toList(cmdList,atribTree);		
+
+			fatorList = initList();
+			nodeTree = NULL;
 		}	  
 	  | VAR token_divisaoigual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB{
 	  
@@ -2439,6 +2475,13 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		setAtrib(atribTeste,"/=",lident,nodeTree,NULL);
 	
 		setTreeNode(atribTree,atribTeste,F_ATRIB);
+
+					printf("Inserindo atribTree na cmdList\n");
+			
+			_toList(cmdList,atribTree);		
+
+			fatorList = initList();
+			nodeTree = NULL;
 		}	  
 	  | VAR token_ecomigual TO_ATRIB	
 	  | VAR token_xnorigual TO_ATRIB
@@ -2918,6 +2961,7 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
 	    
 	    _tracker = _tracker->next;	    
 	  }
+	  
 	  auxlist = initList();
 	  auxlist->head = _tracker->next;
 	  auxlist->nElem = 1;
@@ -2996,8 +3040,7 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
 		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
 		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 	            
-	            
-
+	           
 	    }
 ;
 
@@ -3092,29 +3135,261 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		}
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
+FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
 
-                strcpy(atrib,"\0");
-                
+              strcpy(atrib,"\0");
+              
+              printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem); 
+              NODELISTPTR _tracker = cmdList->head;
+              
+	          int u;
+	          
+	          for(u=0; u < cmdList->nElem-3; u++) {
+	            _tracker = _tracker->next;	    
+	          }
 
+              // Lista de atribuicoes
+              atribList = initList();
+              atribList->head = _tracker;
+              atribList->nElem = 1;	 
+                       
+	           // Incremento
+	          _tracker = _tracker->next;
+	          
+              incList = initList();
+	          incList->head = _tracker;
+	          incList->nElem = 1;
 
+	          _tracker = _tracker->next;
+	          
+	          // Comando dentro do for 
+	          auxlist = initList();
+	          auxlist->head = _tracker;
+	          auxlist->nElem = 1;
+
+	          _tracker = cmdList->head;
+
+	          for (u=0; u < cmdList->nElem-4; u++){
+	            _tracker = _tracker->next;
+	          }
+	          
+	          _tracker->next = NULL;
+	          
+	          cmdList->tail = _tracker;
+	          cmdList->nElem = cmdList->nElem-3;
+	           
+	          loop = allocateLoop();
+	          setLoop(loop,getNode(exList,exList->nElem-1),auxlist,atribList,incList,FOR);
+             
+	          _loop = allocateTreeNode();
+	          setTreeNode(_loop,loop,F_LOOP);
+	          
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	          removeWithoutFreeFromList(exList,exList->nElem-1);			
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+                                  
            }
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO 
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   {
+
+
+	        printf("for com bloco\n");
+	        
+		    int forsize;
+		    forsize = *(int*)sizeBlockList->head->element;
+		    //elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		    if(sizeBlockList->nElem <= 1) {
+		      sizeBlockList = initList();
+		    }
+		    else {
+		      sizeBlockList->head = sizeBlockList->head->next;
+		      sizeBlockList->nElem -= 1;
+		    }
+
+		    printf("forsize = %d\n",forsize);
+
+
+		    NODELISTPTR _tracker;
+
+		    if(forsize == 0) {
+			    printf("For ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-forsize-2; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        // Atribuicoes
+		        atribList = initList();
+		        atribList->head = _tracker;
+		        atribList->nElem = 1;
+
+                _tracker = _tracker->next;
+                
+		        // Incremento
+		        incList = initList();
+		        incList->head = _tracker;
+                incList->nElem = 1;
+
+		        // Comandos a serem executados
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = forsize;
+
+    	        _tracker = cmdList->head;
+
+	            for (u=0; u < cmdList->nElem-forsize-3; u++){
+	                _tracker = _tracker->next;
+	            }
+	          		        
+		        _tracker->next = NULL;
+		        
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-forsize-2;
+
+		        printf("CMD LIST NELEM%d\n",cmdList->nElem);
+		    }
+
+		      loop = allocateLoop();
+	          setLoop(loop,getNode(exList,exList->nElem-1),auxlist,atribList,incList,FOR);
+             
+	          _loop = allocateTreeNode();
+	          setTreeNode(_loop,loop,F_LOOP);
+	          
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	          removeWithoutFreeFromList(exList,exList->nElem-1);			
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+
+
+	      
+        }
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO {
+	   
+              
+              printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem); 
+              NODELISTPTR _tracker = cmdList->head;
+              
+	          int u;
+	          
+	          for(u=0; u < cmdList->nElem-3; u++) {
+	            _tracker = _tracker->next;	    
+	          }
+
+              // Lista de atribuicoes
+              atribList = initList();
+              atribList->head = _tracker;
+              atribList->nElem = 1;	 
+                       
+	           // Incremento
+	          _tracker = _tracker->next;
+	          
+              incList = initList();
+	          incList->head = _tracker;
+	          incList->nElem = 1;
+
+	          _tracker = _tracker->next;
+	          
+	          // Comando dentro do for 
+	          auxlist = initList();
+	          auxlist->head = _tracker;
+	          auxlist->nElem = 1;
+
+              // Tirando os elementos da cmdList
+              
+	          _tracker = cmdList->head;
+
+	          for (u=0; u < cmdList->nElem-4; u++){
+	            _tracker = _tracker->next;
+	          }
+	          
+	          cmdList->tail = _tracker;
+	          cmdList->nElem = cmdList->nElem-3;
+	           
+	          loop = allocateLoop();
+	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
+             
+	          _loop = allocateTreeNode();
+	          setTreeNode(_loop,loop,F_LOOP);
+	        	          
+	   }
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   {
+	   
+	        printf("for com bloco\n");
+	        
+		    int forsize;
+		    forsize = *(int*)sizeBlockList->head->element;
+		    //elsesize = *(int*)sizeBlockList->head->next->element;
+		
+		    if(sizeBlockList->nElem <= 1) {
+		      sizeBlockList = initList();
+		    }
+		    else {
+		      sizeBlockList->head = sizeBlockList->head->next;
+		      sizeBlockList->nElem -= 1;
+		    }
+
+		    printf("forsize = %d\n",forsize);
+
+
+		    NODELISTPTR _tracker;
+
+		    if(forsize == 0) {
+			    printf("For ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-forsize-2; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        // Atribuicoes
+		        atribList = initList();
+		        atribList->head = _tracker;
+		        atribList->nElem = 1;
+
+                _tracker = _tracker->next;
+                
+		        // Incremento
+		        incList = initList();
+		        incList->head = _tracker;
+                incList->nElem = 1;
+
+		        // Comandos a serem executados
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = forsize;
+
+    	        _tracker = cmdList->head;
+
+	            for (u=0; u < cmdList->nElem-forsize-3; u++){
+	                _tracker = _tracker->next;
+	            }
+	          		        
+		        _tracker->next = NULL;
+		        
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-forsize-2;
+
+		        printf("CMD LIST NELEM%d\n",cmdList->nElem);
+		    }
+
+		      loop = allocateLoop();
+	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
+             
+	          _loop = allocateTreeNode();
+	          setTreeNode(_loop,loop,F_LOOP);
+	   
+	   }
 ;
 
-ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
+COMMAND_LIST : | ATRIBUICAO | EXP
 ;
 
-ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
-;
-
-COMMAND_LIST : | ATRIBUICAO COMMAND_LIST2 | EXP COMMAND_LIST2
-;
-
-COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP COMMAND_LIST2
-;
 %%
 
 #include "lex.yy.c"
@@ -3133,7 +3408,7 @@ main(){
 	auxlist = initList();
 	exList = initList();
 	sizeBlockList = initList();
-	  _size = initList();
+	_size = initList();
 	atribTeste = allocateAtrib();
 	  
 	atribTree = allocateTreeNode();
@@ -3179,26 +3454,24 @@ main(){
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
 	s_variavel *s = hashSearchVar(HashVar,"a","main");
-//    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
+    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
 
 	
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
 
-	
-
 	executeTreeList(cmdList);
 
 	printf("\nTerminei de executar\n");
 
-
-	
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
-	
-	
+		if(s2) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
+	}
+
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));

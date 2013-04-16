@@ -38,6 +38,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
 
 					*res = (*(int*)(a_v->valor) < *(int*)(b_v->valor));
+					printf("%d %d\n",(*(int*)(a_v->valor)),*(int*)(b_v->valor));
 					printf("Passou3\n");
 					r->tipo = T_INT;
 					r->valor = res;
@@ -324,7 +325,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 
 			}
 		//}
-			//printf("Passou3\n");
+			printf("To retornando\n");
 		return r;
 	}
 

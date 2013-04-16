@@ -32,6 +32,7 @@ int hasBreak;
 #define F_U_EXP 11
 #define F_U_EXP_LIST 12
 #define F_BREAK 17
+#define F_CONTINUE 18
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
