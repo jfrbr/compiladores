@@ -16,6 +16,6 @@ struct  {
 
 s_funcao* allocateFunction();
 void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros,list cmdList);
-
+void setFunctionCmdList(s_funcao *function,list cmdList);
 
 #endif /* FUNCTION_H_ */

@@ -28,3 +28,7 @@ int checkArity(s_funcao *function,int arity) {
 int checkReturnType(s_funcao *function,int returnType) {
 	return (function) && function->tipo_retorno == returnType;
 }
+
+void setFunctionCmdList(s_funcao *function,list cmdList) {
+	function->cmdList = cmdList;
+}

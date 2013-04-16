@@ -52,6 +52,8 @@ list cmdList;
 s_atrib *atribTeste;
 s_conditional *condition;
 s_loop *loop;
+s_funcao *function;
+
 %}
 
 %token token_numero
@@ -228,7 +230,7 @@ DECFUNC : TIPO token_ident token_abrep {
 				var = strtok(NULL,",");
 			}
 
-			s_funcao *function = allocateFunction();
+			function = allocateFunction();
 			setFunction(function,funcname,parameters->nElem,returnType,parameters,NULL);
 		
 			if(!funcExists(HashFunc,function->nome)) {
@@ -261,7 +263,7 @@ DECFUNC : TIPO token_ident token_abrep {
 	
 		int type = converType(tipo);
 		
-		s_funcao *function = allocateFunction();
+		function = allocateFunction();
 		setFunction(function,funcname,0,type,NULL,NULL);
 		
 		if(!funcExists(HashFunc,function->nome)) {
@@ -275,7 +277,9 @@ DECFUNC : TIPO token_ident token_abrep {
 		strcpy(atrib,"\0");
 	} token_abrec BLOCO token_fechac {
 		printf("Funcao sem parametros é nós!\n");
-	
+		printf("cmdList size: %d\n",cmdList->nElem);
+		setFunctionCmdList(function,cmdList);
+		cmdList = initList();
 	}
 ;
 
@@ -424,6 +428,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  exit(2);
 		}*/
 		destroyList(concatList);
+		
+		
 	  }
 	  }
 	  else {
@@ -448,8 +454,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  
 	  cleanExprList(exprList);
-	  if(nodeTree) {printf("NodeTree!\n");
-	  _toList(cmdList,nodeTree);
+	  if(nodeTree) {
+	    printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    _toList(cmdList,nodeTree);
+	    printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    
+	    nodeTree = NULL;
+	    fatorList = initList();
+	    //NODETREEPTR _teste = getNode(exList,0);
+	    //printf("_teste: %d\n",*(int*)(executeNodeTree(_teste))->valor);
+	    //exit(1);
 	  }
 	}
 	
@@ -655,28 +669,32 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else token_abrec BLOCO token_fechac  {
 		
 		printf("If com else com blocos, sizeBlockList tem %d elementos\n",sizeBlockList->nElem);
-		printf("O If tem %d comandos e o else, %d\n",*(int*)sizeBlockList->head->element,*(int*)sizeBlockList->head->next->element);
+		printf("O If tem %d comandos e o else, %d\n",*(int*)getNode(sizeBlockList,sizeBlockList->nElem-2),*(int*)getNode(sizeBlockList,sizeBlockList->nElem-1));
 		printf("A cmdList tem %d comandos\n",cmdList->nElem);
 		int ifsize,elsesize;
-		ifsize = *(int*)sizeBlockList->head->element;
-		elsesize = *(int*)sizeBlockList->head->next->element;
+		ifsize = *(int*)getNode(sizeBlockList,sizeBlockList->nElem-2);
+		elsesize = *(int*)getNode(sizeBlockList,sizeBlockList->nElem-1);
 		
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
 
 
-
+		NODELISTPTR _tracker = sizeBlockList->head;
 		if(sizeBlockList->nElem <= 2) {
-
+		  printf("Aqui---------------------------\n");
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next->next;
+		  //sizeBlockList->head = sizeBlockList->head->next->next;
+		  int i=0;
+		  for(i = 0; i < sizeBlockList->nElem-3; i++) _tracker = _tracker->next;
+		  _tracker->next = NULL;
+		  
 		  sizeBlockList->nElem -= 2;
 		}
 		
 		
-		NODELISTPTR _tracker = cmdList->head;
+		_tracker = cmdList->head;
 		if(elsesize == 0) {
 			printf("Else ta vazio\n");
 			elseList = NULL;
@@ -684,8 +702,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		else {
 		  _tracker = cmdList->head;
 		    int u=0;
-		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {
-		      
+		    for(u=0; u < cmdList->nElem-elsesize-1; u++) {		      
 		      _tracker = _tracker->next;	    
 		    }
 		    elseList = initList();
@@ -718,7 +735,13 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		    cmdList->tail = _tracker;
 		    cmdList->nElem = cmdList->nElem-ifsize;
 		}
-		
+		int i;	
+		    NODELISTPTR _temp = auxlist->head;
+		    for(i=1;_temp;i++) {
+		      printf("%d\n",i);
+		      _temp = _temp->next;
+		    }
+		    
 		  condition = allocateConditional();
 		  setConditional(condition,getNode(exList,exList->nElem-1),auxlist,elseList);
 		  
@@ -752,7 +775,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  sizeBlockList->nElem -= 1;
 		}
 		
-		printf("Entrou aqui!\n");
+		printf("---\nEntrou aqui Ifsize: %d!\n---\n",ifsize);
 		NODELISTPTR _tracker = cmdList->head;
 		  _tracker = cmdList->head;
 		    int u=0;
@@ -767,6 +790,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		    _tracker->next = NULL;
 		    cmdList->tail = _tracker;
 		    cmdList->nElem = cmdList->nElem-1;
+		
 		
 		_tracker = cmdList->head;
 		// If

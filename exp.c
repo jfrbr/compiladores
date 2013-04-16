@@ -9,7 +9,7 @@ s_exp *allocateExp() {
 }
 
 void *executeExp(s_exp *toExecute, list operands) {
-	printf("Operands Exp size: %d\n",operands->nElem);
+	//printf("Operands Exp size: %d\n",operands->nElem);
 	if(operands->nElem == 1) {
 		//if((NODETREEPTR)(getNode((list)(operands),0))) printf("passei %d\n", ((NODETREEPTR)(getNode((list)(operands),0)))->tipoNodeTree);
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
@@ -31,11 +31,11 @@ void *executeExp(s_exp *toExecute, list operands) {
 		resf = malloc(sizeof(float));
 
 		a_v = executeNodeTree(a);
-		printf("Executou A\n");
+//		printf("Executou A\n");
         
 
 		b_v = executeNodeTree(b);
-		printf("Executou B\n");
+	//	printf("Executou B\n");
 
 
 		switch(toExecute->op) {
