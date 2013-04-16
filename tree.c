@@ -83,10 +83,11 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			return executeExp((s_exp*)node->element,(list)(node->children->head->element));
 			break;
 		case F_U_EXP:
+
 			return executeU_Exp((s_u_exp*)node->element,(list)(node->children->head->element));
 			break;
 		case F_U_EXP_LIST:
-
+		    
 			return executeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
 			break;
 		case F_ATRIB:
@@ -99,6 +100,7 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			break;
 		case F_LOOP:
 		    executeLoop((s_loop*)node->element);
+		    printf("TERMINEI DE EXECUTAR O LOOP\n");
 		    break;
 		default:
 			break;
@@ -112,8 +114,12 @@ void executeTreeList(list l) {
 	NODELISTPTR aux = l->head;
 	printf("Executando Lista de arvores com %d elementos",l->nElem);
 	for(int i=0;i<l->nElem; i++) {
-		executeNodeTree(aux->element);
-		aux = aux->next;
+		if (aux){
+		    executeNodeTree(aux->element);
+		    aux = aux->next;
+		}else{
+            //printf("TREE LIST # AUX NULO\n");
+		}
 	}
 }
 

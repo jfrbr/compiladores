@@ -25,15 +25,21 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 		float *afloat,*bfloat;
 		res = malloc(sizeof(int));
 
+
 		a_v = executeNodeTree(a);
+		printf("Passou1\n");
 		b_v = executeNodeTree(b);
+		printf("Passou2\n");
 		// < > <= >= == !=
 		//switch(toExecute->op) {
 		printf("op: %s\n",toExecute->op);
 			if(!strcmp(toExecute->op,"<")) {
 
 				if(a_v->tipo == T_INT && b_v->tipo == T_INT) {
+
 					*res = (*(int*)(a_v->valor) < *(int*)(b_v->valor));
+					printf("%d %d\n",(*(int*)(a_v->valor)),*(int*)(b_v->valor));
+					printf("Passou3\n");
 					r->tipo = T_INT;
 					r->valor = res;
 				}
@@ -319,6 +325,7 @@ void *executeU_Exp(s_u_exp *toExecute, list operands) {
 
 			}
 		//}
+			printf("To retornando\n");
 		return r;
 	}
 

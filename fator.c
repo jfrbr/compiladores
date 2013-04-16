@@ -15,7 +15,8 @@ s_fator *executaFator(s_fator* toExecute) {
 		case T_INT:
 		case T_CHAR:
 		case T_FLOAT:
-		    
+		    printf("Numero %d\n",*(int*)toExecute->valor);
+
 			return toExecute;
 			break;
         case T_VAR:
@@ -23,7 +24,7 @@ s_fator *executaFator(s_fator* toExecute) {
             
             s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
             s_fator* fteste = allocateFator();
-            printf("tipo = %d\n",v->tipo);
+            printf("Atipo = %d %d\n",v->tipo,*(int*)v->valor);
 
             if(toExecute->parametros && toExecute->parametros->head) {
             	//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
@@ -59,6 +60,7 @@ s_fator *executaFator(s_fator* toExecute) {
             	//if(*_t) printf("T ok\n");
 
             }
+
             setFator(fteste,v->tipo,v->valor,toExecute->parametros);
           
             return fteste;
