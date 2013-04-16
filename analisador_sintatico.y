@@ -2968,7 +2968,7 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 	  //_toList(ltracker,_tracker);
 	  
 	  loop = allocateLoop();
-	  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+	  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,DO_WHILE);
      
 	  //condition->commandList = ;
 
@@ -3020,7 +3020,7 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		}
 		
 		  loop = allocateLoop();
-		  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,WHILE);
+		  setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,NULL,DO_WHILE);
 		  
 		  _loop = allocateTreeNode();
 		  setTreeNode(_loop,loop,F_LOOP);
@@ -3036,7 +3036,13 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		}
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {strcpy(atrib,"\0");}
+FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
+
+                strcpy(atrib,"\0");
+                
+
+
+           }
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO 
 	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
