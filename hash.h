@@ -15,6 +15,7 @@
 #include "loop.h"
 
 extern char currentFunction[50];
+int hasBreak;
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -30,7 +31,7 @@ extern char currentFunction[50];
 #define F_EXP 9
 #define F_U_EXP 11
 #define F_U_EXP_LIST 12
-
+#define F_BREAK 17
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1

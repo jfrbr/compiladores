@@ -754,7 +754,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  _toList(cmdList,_cond);
 		
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);	
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-3);	
 		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 		
 		cleanExprList(exprList);
@@ -765,7 +765,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		int ifsize;
 		ifsize = *(int*)getNode(sizeBlockList,sizeBlockList->nElem-1);
 		//elsesize = *(int*)sizeBlockList->head->next->element;
-		
+		NODELISTPTR _tracker = cmdList->head;
 		//destroyList(sizeBlockList);		
 		//sizeBlockList = initList();
 		if(sizeBlockList->nElem <= 1) {
@@ -781,7 +781,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		}
 		
 		printf("---\nEntrou aqui Ifsize: %d!\n---\n",ifsize);
-		NODELISTPTR _tracker = cmdList->head;
+		_tracker = cmdList->head;
 		  _tracker = cmdList->head;
 		    int u=0;
 		    for(u=0; u < cmdList->nElem-2; u++) {
@@ -977,7 +977,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		strcpy(atrib,"\0");
 		cleanExprList(exprList);
 	}
-	| token_break token_ptevirgula 
+	| token_break token_ptevirgula {
+		NODETREEPTR dummy = allocateTreeNode();
+		setTreeNode(dummy,NULL,F_BREAK);
+		_toList(cmdList,dummy);
+	}
 	| token_continue token_ptevirgula
 	| LOOP	 {
 
@@ -2762,7 +2766,7 @@ CMD_NAO_ASSOC_CHAVE : token_if token_abrep IF_EXP token_fechap token_abrec BLOCO
 				  removeWithoutFreeFromList(exList,exList->nElem-1);
 				
 				  // Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 		      
 		      }

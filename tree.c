@@ -110,11 +110,16 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 void executeTreeList(list l) {
 	if(!l) return;
 	NODELISTPTR aux = l->head;
-	printf("Executando Lista de arvores com %d elementos",l->nElem);
+	printf("Executando Lista de arvores com %d elementos\n",l->nElem);
 	for(int i=0;i<l->nElem; i++) {
+
 		executeNodeTree(aux->element);
+		NODETREEPTR _tmp = aux->element;
+		printf("HASBREAK: %d\n",_tmp->tipoNodeTree);
+		if(_tmp->tipoNodeTree == F_BREAK) hasBreak = 1;
 		aux = aux->next;
 	}
+
 }
 
 void setTreeNode(NODETREEPTR node,void* toSet, int tipo) {
