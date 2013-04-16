@@ -47,6 +47,7 @@ tree bigTree;
 list exList;
 list elseList;
 list sizeBlockList;
+list incList;
 
 list cmdList;
 s_atrib *atribTeste;
@@ -937,6 +938,8 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	| LOOP	 {
 
 		if (_loop){
+		     printf("Inserindo loop na cmdList...\n");
+		     printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem);
 		    _toList(cmdList,_loop);	    
 		}
 		else{
@@ -2935,8 +2938,7 @@ WHILE_LOOP: token_while token_abrep IF_EXP token_fechap {strcpy(atrib,"\0"); cle
 		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
 		  printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
 	            
-	            
-
+	           
 	    }
 ;
 
@@ -3031,29 +3033,62 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		}
 ;
 
-FOR_LOOP : token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
+FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
 
-                strcpy(atrib,"\0");
-                
+              strcpy(atrib,"\0");
+              
+              printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem); 
+              NODELISTPTR _tracker = cmdList->head;
+              
+	          int u;
+	          
+	          for(u=0; u < cmdList->nElem-2; u++) {
+	            _tracker = _tracker->next;	    
+	          }
 
+	          // Comando dentro do for 
+	          auxlist = initList();
+	          auxlist->head = _tracker->next;
+	          auxlist->nElem = 1;
 
+              // Incremento
+	          incList = initList();
+	          incList->head = _tracker;
+	          incList->nElem = 1;
+	         
+	          _tracker = cmdList->head;
+
+	          for (u=0; u < cmdList->nElem-3; u++){
+	            _tracker = _tracker->next;
+	          }
+	          
+	          cmdList->tail = _tracker;
+	          cmdList->nElem = cmdList->nElem-1;
+	           
+	          loop = allocateLoop();
+	          setLoop(loop,getNode(exList,exList->nElem-1),auxlist,NULL,incList,FOR);
+             
+	          _loop = allocateTreeNode();
+	          setTreeNode(_loop,loop,F_LOOP);
+	          
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+	          removeWithoutFreeFromList(exList,exList->nElem-1);			
+	          printf("Numero de Elementos em exList: %d\n",exList->nElem);
+                        
+          
            }
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula U_EXP_LIST token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO 
-	   | token_for token_abrep ATRIBUICAO_LIST token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO 
+	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 ;
 
-ATRIBUICAO_LIST : | ATRIBUICAO ATRIBUICAO_LIST2
+
+
+
+
+COMMAND_LIST : | ATRIBUICAO | EXP
 ;
 
-ATRIBUICAO_LIST2 : | token_virgula ATRIBUICAO ATRIBUICAO_LIST2
-;
-
-COMMAND_LIST : | ATRIBUICAO COMMAND_LIST2 | EXP COMMAND_LIST2
-;
-
-COMMAND_LIST2 : | token_virgula ATRIBUICAO COMMAND_LIST2 | token_virgula  EXP COMMAND_LIST2
-;
 %%
 
 #include "lex.yy.c"
@@ -3125,17 +3160,18 @@ main(){
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
 
-	
-
 	executeTreeList(cmdList);
 
 	printf("\nTerminei de executar\n");
 
-
-	
 	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%f\n",*(float*)(s->valor));
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
+
+	}else{
+    
 	}
+
+
 	
 	
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);

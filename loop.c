@@ -30,7 +30,26 @@ int checkConditionLoop(s_loop *l) {
 
 void executeLoop(s_loop* l) {
 	printf("\n\nExecutando Loop\n");
-	while(checkConditionLoop(l) != 0 && l->commandList->head) {
-		executeTreeList(l->commandList);
+	if (l){
+	    if (l-> tipo == WHILE || l->tipo == DO_WHILE){
+	        while(checkConditionLoop(l) != 0 && l->commandList->head) {
+		        executeTreeList(l->commandList);
+	        }
+	    }else if (l->tipo == FOR){
+
+            printf("Executando o loop for\n");
+            while(checkConditionLoop(l) != 0 && l->commandList->head) {
+                printf("Executando os comandos dentro do for\n");
+		        executeTreeList(l->commandList);
+		        printf("Incrementando os valores\n");
+		        executeTreeList(l->incrementList);
+
+	        }
+	        
+	    }else{
+            printf("LOOP # TIPO NAO RECONHECIDO PELO LOOP\n");
+	    }
+	}else{
+        printf("LOOP # S_LOOP NULO\n");
 	}
 }
