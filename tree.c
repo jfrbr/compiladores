@@ -110,6 +110,16 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 		    executeLoop((s_loop*)node->element);
 		    printf("TERMINEI DE EXECUTAR O LOOP\n");
 		    break;
+		case F_RETURN:
+			{
+				printf("Tem um return com expressao\n");
+				//NODETREEPTR _tnode->element
+
+			break;}
+		case F_SWITCH:
+		    printf("Achei um switch\n");
+		    executeSwitch((s_switch*)node->element);
+		    break;
 		default:
 			break;
 

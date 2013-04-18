@@ -78,6 +78,17 @@ s_fator *executaFator(s_fator* toExecute) {
 						float _tmp = *(float*)v->valor - 1;
 						*(float*)v->valor = _tmp;
 					}
+            	} else if (*(int*)_t == NEGATIVE_VALUE){
+                        if (v->tipo == T_INT){
+                            int _tmp = *(int*)v->valor * -1;
+						    *(int*)v->valor = _tmp;
+                        }else if (v->tipo == T_FLOAT){
+                        	float _tmp = *(float*)v->valor * -1;
+						    *(float*)v->valor = _tmp;
+                        }else if (v->tipo == T_CHAR){
+                            char _tmp = *(char*)v->valor * -1;
+						    *(char*)v->valor = _tmp;
+                         }
             	}
             	//if(*_t) printf("T ok\n");
 

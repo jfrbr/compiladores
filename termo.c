@@ -32,12 +32,13 @@ void *executeTermo(s_termo *toExecute, list operands) {
 
 		b_v = executeNodeTree(b);
 
-
+/*
         if (a_v->parametros){
             if (a_v->parametros->nElem > 0){
                 *v_parameter = *(int*)((NODETREEPTR)(getNode((list)(a_v->parametros),0)));
                 if ( *v_parameter == NEGATIVE_VALUE  ){
                        a_mult = -1;
+                       printf("Achei variavel com valor negativo\n");
                 }
             }
         }
@@ -46,9 +47,10 @@ void *executeTermo(s_termo *toExecute, list operands) {
                 *v_parameter = *(int*)((NODETREEPTR)(getNode((list)(b_v->parametros),0)));
                 if ( *v_parameter == NEGATIVE_VALUE  ){
                        b_mult = -1;
+                       printf("Achei variavel com valor negativo\n");
                 }
             }
-        }
+        }*/
 
 		switch(toExecute->op) {
 
@@ -57,6 +59,9 @@ void *executeTermo(s_termo *toExecute, list operands) {
 					*res = (*(int*)(a_v->valor) * *(int*)(b_v->valor))*a_mult*b_mult;
 					r->tipo = T_INT;
 					r->valor = res;
+					printf("a->valor = %d\n",*(int*)a_v->valor);
+					printf("b->valor = %d\n",*(int*)b_v->valor);
+					printf("r->valor = %d\n",*(int*)r->valor);
 				}
 				else if(a_v->tipo == T_FLOAT && b_v->tipo == T_INT) {
 					*resf = (*(float*)(a_v->valor) * *(int*)(b_v->valor))*a_mult*b_mult;

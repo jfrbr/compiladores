@@ -13,6 +13,7 @@
 #include "atrib.h"
 #include "conditional.h"
 #include "loop.h"
+#include "switch.h"
 
 extern char currentFunction[50];
 extern int find_ok;
@@ -42,16 +43,17 @@ extern list functionStack;
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
-#define P_MAISMAISANT 0
-#define P_MENOSMENOSANT 1
-#define P_MAISMAISAFT 2
-#define P_MENOSMENOSAFT 3
+#define P_MAISMAISANT 2
+#define P_MENOSMENOSANT 3
+#define P_MAISMAISAFT 4
+#define P_MENOSMENOSAFT 5
 
 // Comandos Especiais
 #define F_ATRIB 13
 #define F_CONDITIONAL 14
 #define F_DEC 16
 #define F_LOOP 15
+#define F_SWITCH 32
 
 // Variacoes LOOP
 #define WHILE 0
