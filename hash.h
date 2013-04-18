@@ -19,6 +19,7 @@ extern int find_ok;
 int hasBreak;
 int hasReturn;
 s_fator *retValue;
+extern list functionStack;
 
 #define T_INT 1
 #define T_FLOAT 2

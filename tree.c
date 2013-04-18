@@ -36,9 +36,14 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			printf("To executando um fator %d\n",f->tipo);
 			if(f->tipo == T_VAR) {
 				printf("Executando Variavel aaeHOOOOOOOOOOOOOOOOOO\n");
-				v = hashSearchVar(HashVar,(char*)f->valor,"main");
+
+				v = hashSearchVar(HashVar,(char*)f->valor,currentFunction);
+				if(!v) {
+					printf("Entrei\n");
+					v = hashSearchVar(HashVar,(char*)f->valor,(char*)getNode(functionStack,functionStack->nElem-2));
+				}
 				//s_fator* fteste = allocateFator();
-				printf("tipo = %d\n",v->tipo);
+				printf("tipo = %d %d\n",v->tipo,*(int*)v->valor);
 
 				if(f->parametros && f->parametros->head) {
 					//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
@@ -133,14 +138,14 @@ s_fator* executeTreeList(list l) {
 				break;
 			}
 		    if(_tmp->tipoNodeTree == F_RETURN) {
-		    	printf("\n\n\nPassei por aqui!\n\n\n");
+		    	//printf("\n\n\nPassei por aqui!\n\n\n");
 
 
 		    	if(!_tmp->element) {
 		    		break;
 		    	}
 		    	else {
-		    		printf("Aqui tambem");
+		    		//printf("Aqui tambem");
 		    		//sleep(1);
 		    		retValue = allocateFator();
 		    		r = allocateFator();

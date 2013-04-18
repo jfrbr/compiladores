@@ -59,6 +59,10 @@ s_funcao *function;
 
 s_fator *retValue;
 
+list parnames;
+list parametrosPassados;
+list functionStack;
+
 %}
 
 %token token_numero
@@ -191,25 +195,19 @@ PROG:	BLOCO_GLOBAL token_int_main token_abrep token_fechap token_abrec {strcpy(a
 
 DECFUNC : TIPO token_ident token_abrep {
 	strcpy(currentFunction,ident);
+	parnames = initList();
 }	PARAMETROS_TIPO token_fechap {
 
 
 			char *tipo, *funcname,*varlist,*var,*varname;
 			tipo = strtok(atrib," ");
 
-			int returnType = converType(tipo);
-			
+			int returnType = converType(tipo);			
 			funcname = strtok(NULL,"(");	
-
 			strcpy(currentFunction,funcname);
-
 			varlist = strtok(NULL,")");
-			
-
 			list parameters = initList();
-
 			int* tipo_var = (int*) malloc (sizeof(int));			
-
 			var = strtok(varlist,",");
 			
 			int i=0;
@@ -249,10 +247,22 @@ DECFUNC : TIPO token_ident token_abrep {
 			strcpy(atrib,"\0");
 			strcpy(ident,"\0");
 			//strcpy(currentFunction,"global");
-
+			printf("--\n\nparnames size: %d\n",parnames->nElem);
+			setFunctionParNames(function,parnames);
+			
 
 			} token_abrec BLOCO token_fechac {
 			    strcpy(currentFunction,"global");
+			    printf("Funcao sem parametros é nós!\n");
+			    printf("cmdList size: %d\n",cmdList->nElem);
+			    setFunctionCmdList(function,cmdList);
+			    cmdList = initList();
+			    fatorList = initList();
+			    _size = initList();
+			    *sizeBlock = 0;
+			    sizeBlockList = initList();
+			    
+			    
 			}
 	| TIPO token_ident token_abrep token_fechap {
 		
@@ -332,9 +342,14 @@ DEC_VAR_GLOBAL2: | token_virgula VAR DEC_VAR_GLOBAL2
 
 PARAMETROS_TIPO: TIPO VAR  {
 
-		/*printf("VarTipo: %d\n",tipoVar);
+		char *varname = malloc(50*sizeof(char));
+		printf("VarTipo: %d\n",tipoVar);
 		printf("currentFunction: %s\n",currentFunction);
-		*/
+		printf("--\nIdent: %s\n\n",ident);
+		
+		strcpy(varname,ident);
+		_toList(parnames,varname);
+		
 		s_variavel *var = allocateVar();		
 		setVar(var,ident,NULL,tipoVar,currentFunction,lines);
 		hashInsertVar(HashVar,var);
@@ -346,6 +361,11 @@ PARAMETROS_TIPO2: | token_virgula TIPO VAR  {
 		/*printf("VarTipo: %d\n",tipoVar);
 		printf("currentFunction: %s\n",currentFunction);
 		*/
+		char *varname = malloc(50*sizeof(char));
+		printf("--\nIdent: %s\n\n",ident);
+		strcpy(varname,ident);
+		_toList(parnames,varname);
+		
 		s_variavel *var = allocateVar();		
 		setVar(var,ident,NULL,tipoVar,currentFunction,lines);
 		hashInsertVar(HashVar,var);
@@ -2687,6 +2707,25 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			}
 			  
 			  strcpy(atrib,"\0");
+			  
+			  printf("Chamando uma funcao com %d parametros!\n",parametrosPassados->nElem);
+			
+			fteste = allocateFator();
+			printf("Funcao: %s\n",funcCalled);
+			
+			
+			//exit(1);
+			//float *f = malloc(sizeof(float));
+			//*f = -1 * atof(num_float);
+			char *_funcName = malloc(50*sizeof(char));
+			strcpy(_funcName,funcCalled);
+			
+			setFator(fteste,F_FUNCAO,_funcName,parametrosPassados);
+			
+			nodeTree = allocateTreeNode();
+			setTreeNode(nodeTree,fteste,F_FATOR);
+			
+			_toList(fatorList,nodeTree);
 		}
 		
 
@@ -2733,9 +2772,26 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 		  }
 ;
 
-PARAMETROS: U_EXP_LIST PAR2 | token_string PAR2;
+PARAMETROS: U_EXP_LIST  {
+		parametrosPassados = initList();
+		printf("Chamando uma funcao com parametro\n");
+		if(nodeTree) printf("Tem nodeTree\n");
+		printf("Inserindo parametros na pPassados\n");
+		_toList(parametrosPassados,nodeTree);		
+		
+		fatorList = initList();
+		nodeTree = NULL;
+		
+	} PAR2 | token_string PAR2;
 
-PAR2: | token_virgula U_EXP_LIST PAR2 | token_virgula token_string PAR2;
+PAR2: {printf("\n\nFim dos parametros\n\n");}| token_virgula U_EXP_LIST {
+	  
+	  printf("Inserindo parametros na pPassados\n");
+	  _toList(parametrosPassados,nodeTree);		
+	  fatorList = initList();
+	  nodeTree = NULL;
+	  
+} PAR2 | token_virgula token_string PAR2;
 
 
 
@@ -3464,6 +3520,11 @@ main(){
 	exList = initList();
 	sizeBlockList = initList();
 	_size = initList();
+	
+	functionStack = initList();
+	_toList(functionStack,"main");
+	
+	parnames = initList();
 	atribTeste = allocateAtrib();
 	  
 	atribTree = allocateTreeNode();
@@ -3526,9 +3587,9 @@ main(){
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
-		if(s2) {
+	/*	if(s2) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
-	}
+	}*/
 	
 	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
 	

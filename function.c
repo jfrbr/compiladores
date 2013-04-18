@@ -32,3 +32,7 @@ int checkReturnType(s_funcao *function,int returnType) {
 void setFunctionCmdList(s_funcao *function,list cmdList) {
 	function->cmdList = cmdList;
 }
+
+void setFunctionParNames(s_funcao *function, list parNames) {
+	function->parNames = parNames;
+}
