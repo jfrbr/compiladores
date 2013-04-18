@@ -2956,6 +2956,9 @@ SWITCH: token_switch token_abrep VAR {
 				exit(1);
 			}
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
+
+
+            
 			
 			strcpy(ident,"\0");
 
