@@ -13,6 +13,7 @@
 #include "atrib.h"
 #include "conditional.h"
 #include "loop.h"
+#include "switch.h"
 
 extern char currentFunction[50];
 extern int find_ok;
@@ -50,6 +51,7 @@ s_fator *retValue;
 #define F_CONDITIONAL 14
 #define F_DEC 16
 #define F_LOOP 15
+#define F_SWITCH 32
 
 // Variacoes LOOP
 #define WHILE 0

@@ -109,6 +109,9 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 				//NODETREEPTR _tnode->element
 
 			break;}
+		case F_SWITCH:
+		    printf("Achei um switch\n");
+		    break;
 		default:
 			break;
 
