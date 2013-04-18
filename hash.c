@@ -51,9 +51,12 @@ void hashVarUpdateValue(list *hash,char *nome,char *escopo, void* valor) {
 		aux = ((s_variavel*)(getNode(hash[index],j)));
 		if((strcmp(aux->nome,nome) == 0) && (strcmp(aux->escopo,escopo) == 0)){
 			aux->valor = valor;
+			find_ok = 1;
 			return;
 		}
 	}
+	find_ok = 0;
+	//printf("Nao encontrei variavel %s com escopo %s para atualizar.\n",nome,escopo);
 	return;
 }
 void hashVarUpdateUse(list *hash,char *nome,char *escopo, int uso) {
