@@ -2200,7 +2200,8 @@ FATOR: token_num_float {
 
 	  }
 	  | token_menos VAR {
-		
+
+		printf("Achei variavel com valor negativo...\n");
 		//s_variavel *auxv = hashSearchVar(HashVar,ident,currentFunction);
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
@@ -2221,7 +2222,6 @@ FATOR: token_num_float {
 		
 		_toList(testList,tipo);
 		
-		printf("Tem uma variavel com valor negativo\n");
 		fteste = allocateFator();
 		printf("Variavel: %s\n",ident);
 		char *variavel = malloc(strlen(ident)*sizeof(char));

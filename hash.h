@@ -40,10 +40,10 @@ s_fator *retValue;
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
-#define P_MAISMAISANT 0
-#define P_MENOSMENOSANT 1
-#define P_MAISMAISAFT 2
-#define P_MENOSMENOSAFT 3
+#define P_MAISMAISANT 2
+#define P_MENOSMENOSANT 3
+#define P_MAISMAISAFT 4
+#define P_MENOSMENOSAFT 5
 
 // Comandos Especiais
 #define F_ATRIB 13
