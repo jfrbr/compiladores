@@ -26,9 +26,18 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 
         if ( !strcmp(op_value,"=") ){
 	        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,executeResult->valor);
+            
+	        if (!find_ok){
+	            hashVarUpdateValue(hashVar,toExecute->varname,"global",executeResult->valor);
+	            find_ok = -1;
+	        }
+	        
 	    }else if (!strcmp(op_value,"+=")){
 
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
+            if (!v){
+                v = hashSearchVar(hashVar,toExecute->varname,"global");
+            }
 
             if (v){
 
@@ -63,6 +72,9 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 	    }else if (!strcmp(op_value,"-=")){
 
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
+            if (!v){
+                v = hashSearchVar(hashVar,toExecute->varname,"global");
+            }
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
                     if (v->valor != NULL){
@@ -91,6 +103,9 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 	    }else if (!strcmp(op_value,"*=")){
 
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
+            if (!v){
+                v = hashSearchVar(hashVar,toExecute->varname,"global");
+            }
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
                     if (v->valor != NULL){
@@ -118,6 +133,9 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 	    }else if (!strcmp(op_value,"/=")){
 
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
+                        if (!v){
+                v = hashSearchVar(hashVar,toExecute->varname,"global");
+            }
             if (v){
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
 

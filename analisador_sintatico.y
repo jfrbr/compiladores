@@ -19,6 +19,7 @@ char funcCalled[50];
 int eval;
 int in_for;
 int tipoVar;
+int find_ok;
 extern list HashVar[MAX_HASH_SIZE];
 list HashFunc[MAX_HASH_SIZE];
 
@@ -3464,6 +3465,7 @@ main(){
 	strcpy(num_string,"\0");
 
 	in_for = 0;
+	find_ok = -1;
 
 	yyparse();
 
@@ -3477,6 +3479,8 @@ main(){
 	// Testando condicionais
 	s_variavel *s = hashSearchVar(HashVar,"a","main");
     s_variavel *s2 = hashSearchVar(HashVar,"b","main");
+    s_variavel *s3 = hashSearchVar(HashVar,"c","main");
+//    s_variavel *s4 = hashSearchVar(HashVar,"c","main");
 
 	
 	if(s && s->valor == NULL) {
@@ -3485,8 +3489,6 @@ main(){
 	s_fator *result = allocateFator();
 	result = executeTreeList(cmdList);
 	
-	
-
 	printf("\nTerminei de executar\n");
 
 	if(s) {
@@ -3496,6 +3498,14 @@ main(){
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
 	}
 	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
+
+    if(s3) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s3->valor));
+	}
+/*
+	if(s4) {
+	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s4->valor));
+	}*/
 	
 	//printf("Result: \n\n %d\n",*(int*)result->valor);
 

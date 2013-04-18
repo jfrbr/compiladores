@@ -21,10 +21,18 @@ s_fator *executaFator(s_fator* toExecute) {
 			break;
         case T_VAR:
         {
+        	s_variavel* v;
 
-        	// TODO verificar escopo de funcao
-        	// Se a variavel nao for encontrada (v = NULL), pega da globalx
-        	s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
+        	v = hashSearchVar(HashVar,(char*)toExecute->valor,currentFunction);
+
+        	if (!v){
+                v = hashSearchVar(HashVar,(char*)toExecute->valor,"global");
+                       
+                if (!v){
+                    printf("Variavel nao encontrada na hash. Abortando...\n");
+                    exit(-1);
+                }
+        	}
 
             s_fator* fteste = allocateFator();
             printf("Atipo = %d %d\n",v->tipo,*(int*)v->valor);

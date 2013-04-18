@@ -15,6 +15,7 @@
 #include "loop.h"
 
 extern char currentFunction[50];
+extern int find_ok;
 int hasBreak;
 int hasReturn;
 s_fator *retValue;
