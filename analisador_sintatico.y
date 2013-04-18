@@ -22,6 +22,8 @@ int tipoVar;
 int find_ok;
 extern list HashVar[MAX_HASH_SIZE];
 extern list HashFunc[MAX_HASH_SIZE];
+char _num_inteiro[50];
+char _num_char[50];
 
 list _size;
 list exprList;
@@ -40,6 +42,7 @@ NODETREEPTR u_exp_listTree;
 NODETREEPTR conditionTree;
 NODETREEPTR _cond;
 NODETREEPTR _loop;
+NODETREEPTR _switch;
 
 list fatorList;
 list termoList;
@@ -56,6 +59,7 @@ s_atrib *atribTeste;
 s_conditional *condition;
 s_loop *loop;
 s_funcao *function;
+s_switch *sw;
 
 s_fator *retValue;
 
@@ -1004,6 +1008,16 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		cleanExprList(exprList);
 	}
 	| SWITCH  {
+	    if (_switch){
+		     printf("Inserindo switch na cmdList...\n");
+		     printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem);
+		    _toList(cmdList,_switch);	    
+		}
+		else{
+		    printf("LOOP NULO\nAbortando...");
+		    exit(1);
+		}
+		
 		strcpy(atrib,"\0");
 		cleanExprList(exprList);
 	}
@@ -2989,20 +3003,417 @@ SWITCH: token_switch token_abrep VAR {
 			}
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
 
-
+            sw = allocateSwitch();
+            setSwitch(sw,ident,currentFunction);
             
-			
 			strcpy(ident,"\0");
 
 		}token_fechap token_abrec SWITCH_BLOCK token_fechac;
 
-SWITCH_BLOCK : token_default token_doispontos {strcpy(atrib,"\0");} BLOCO 
-		| token_case token_num_inteiro token_doispontos {strcpy(atrib,"\0");} BLOCO SWITCH_BLOCK2 token_default token_doispontos {strcpy(atrib,"\0");} BLOCO
-		| token_case token_letra token_doispontos {strcpy(atrib,"\0");} BLOCO SWITCH_BLOCK2 token_default token_doispontos {strcpy(atrib,"\0");} BLOCO
+SWITCH_BLOCK : token_default token_doispontos {strcpy(atrib,"\0");} BLOCO{
+            
+            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // Switch
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = NULL; // Default recebe NULL
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+
+        }
+		| token_case token_num_inteiro token_doispontos {strcpy(atrib,"\0");strcpy(_num_inteiro,num_inteiro);} BLOCO{
+		
+				
+		    int* n_int = malloc(sizeof(int));
+		    *n_int = atoi(_num_inteiro);
+
+            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = n_int;
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+		     
+		}SWITCH_BLOCK2 token_default token_doispontos {strcpy(atrib,"\0");} BLOCO
+		{
+
+            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = NULL; // Default recebe NULL
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+		   
+		}
+		| token_case token_letra token_doispontos {strcpy(atrib,"\0");} BLOCO SWITCH_BLOCK2 {
+
+				    char* n_char = malloc(sizeof(char));
+		    *n_char = _num_char[1];
+
+            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = n_char;
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+
+		}token_default token_doispontos {strcpy(atrib,"\0");} BLOCO{
+
+
+		            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = NULL; // Default recebe NULL
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+		}
 ;
 SWITCH_BLOCK2 : 
-		| token_case token_num_inteiro token_doispontos {strcpy(atrib,"\0");} BLOCO SWITCH_BLOCK2
-		| token_case token_letra token_doispontos {strcpy(atrib,"\0");} BLOCO SWITCH_BLOCK2 
+		| token_case token_num_inteiro token_doispontos {strcpy(atrib,"\0");strcpy(_num_inteiro,num_inteiro);} BLOCO SWITCH_BLOCK2{
+		    printf("NUM_INTEIRO = %s\n",_num_inteiro);
+		    int* n_int = malloc(sizeof(int));
+		    *n_int = atoi(_num_inteiro);
+
+            int sw_size = *(int*)sizeBlockList->tail->element;
+		    printf("Tamanho do switch = %d\n",sw_size);
+
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = n_int;
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+		}
+		| token_case token_letra token_doispontos {strcpy(atrib,"\0");strcpy(_num_char,num_char);} BLOCO SWITCH_BLOCK2{
+
+
+		    char* n_char = malloc(sizeof(char));
+		    *n_char = _num_char[1];
+
+            int sw_size = *(int*)sizeBlockList->tail->element;
+
+		    if(sizeBlockList->nElem <= 1) {
+		        sizeBlockList = initList();
+		    }
+		    else {
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      NODELISTPTR _tmp = sizeBlockList->head;
+		      int i=0;
+		      for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+		      //sizeBlockList->head = sizeBlockList->head->next;
+		      _tmp->next = NULL;
+		      sizeBlockList->tail = _tmp;
+		      sizeBlockList->nElem -= 1;
+		    }
+				
+		    NODELISTPTR _tracker = cmdList->head;
+		    // If
+		    if(sw_size == 0) {
+			    printf("Switch ta vazio\n");
+			    auxlist = NULL;
+		    }
+		    else {
+			    _tracker = cmdList->head;
+		        int u=0;
+		        for(u=0; u < cmdList->nElem-sw_size-1; u++) {
+		          _tracker = _tracker->next;	    
+		        }
+		        auxlist = initList();
+		        auxlist->head = _tracker->next;
+		        auxlist->nElem = sw_size;
+		        
+		        _tracker->next = NULL;
+		        cmdList->tail = _tracker;
+		        cmdList->nElem = cmdList->nElem-sw_size;
+ 		    }
+
+             ssb* _ssb = malloc(sizeof(ssb));
+            
+             _ssb->condition = n_char;
+             _ssb->commands = auxlist;
+		
+             addSsb(sw,_ssb);
+
+		     //Como default eh obrigatorio, neste caso seta o valor de _switch 
+		     _switch = allocateTreeNode();
+		     setTreeNode(_switch,sw,F_SWITCH);
+		      		      
+		     // Popping the value of sizeBlock
+		     *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
+		     printf("Valor atual de sizeBlock: %d\n",*sizeBlock);
+
+		}
 ;
 
 /* LOOP */
@@ -3512,10 +3923,9 @@ main(){
 	checkVariables(HashVar);	
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
-	s_variavel *s = hashSearchVar(HashVar,"a","main");
-    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
-    s_variavel *s3 = hashSearchVar(HashVar,"c","main");
-//    s_variavel *s4 = hashSearchVar(HashVar,"c","main");
+	s_variavel *s = hashSearchVar(HashVar,"c","main");
+
+    s_variavel *s2 = hashSearchVar(HashVar,"d","main");
 
 	
 	if(s && s->valor == NULL) {
@@ -3532,6 +3942,7 @@ main(){
 		if(s2) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
 	}
+
 	
 	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
 	

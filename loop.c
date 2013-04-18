@@ -51,7 +51,7 @@ void executeLoop(s_loop* l) {
 
             executeTreeList(l->atribList);
 
-            while(checkConditionLoop(l) != 0 && l->commandList->head) {
+            while(checkConditionLoop(l) != 0 && l->commandList->head && !hasBreak && !hasReturn) {
 		        executeTreeList(l->commandList);
 		        executeTreeList(l->incrementList);
 	        }
@@ -60,7 +60,7 @@ void executeLoop(s_loop* l) {
 	                printf("Executando o loop do while\n");
             do{
                 executeTreeList(l->commandList);
-            }while (checkConditionLoop(l) != 0 && l->commandList->head);
+            }while (checkConditionLoop(l) != 0 && l->commandList->head && !hasBreak && !hasReturn);
 
 	    }else{
             printf("LOOP # TIPO NAO RECONHECIDO PELO LOOP\n");

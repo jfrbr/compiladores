@@ -113,6 +113,7 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			break;}
 		case F_SWITCH:
 		    printf("Achei um switch\n");
+		    executeSwitch((s_switch*)node->element);
 		    break;
 		default:
 			break;
