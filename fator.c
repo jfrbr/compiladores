@@ -10,7 +10,7 @@ s_fator* allocateFator() {
 	else return NULL;
 }
 s_fator *executaFator(s_fator* toExecute) {
-    
+    //printf("Executando um fator aqui %d %d\n",F_FUNCAO,toExecute->tipo);
 	switch(toExecute->tipo) {
 		case T_INT:
 		case T_CHAR:
@@ -87,6 +87,28 @@ s_fator *executaFator(s_fator* toExecute) {
           
             return fteste;
             break; // LOL BREAK :) - lolwut?
+        }
+        case F_FUNCAO:
+        {
+        	printf("Avaliando uma funcao pahnois %s\n",(char*)toExecute->valor);
+        	s_funcao* func = hashSearchFunction(HashFunc,(char*)toExecute->valor);
+        	if(func) {
+        		s_fator *r = executeTreeList(func->cmdList);
+        		printf("Passou\n");
+        		if(retValue) {
+        			printf("Executou com return: %d\n",*(int*)retValue->valor);
+        			r = retValue;
+        			hasReturn = 0;
+        			retValue = NULL;
+        			return r;
+        		}
+
+        	}
+        	//s_fator *r = executeTreeList()
+
+
+
+        	break;
         }
 		default:
 			return NULL;
