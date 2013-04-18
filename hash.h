@@ -36,6 +36,7 @@ s_fator *retValue;
 #define F_BREAK 17
 #define F_CONTINUE 18
 #define F_RETURN 19
+#define F_FUNCAO 20
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1
@@ -63,6 +64,7 @@ s_fator *retValue;
 #define MAX_HASH_SIZE 997
 
 list HashVar[MAX_HASH_SIZE];
+list HashFunc[MAX_HASH_SIZE];
 
 void initHash(list *hash,int hashSize);
 void destroyHash(list *hash,int hashSize);
@@ -81,3 +83,4 @@ int varExists(list *hash,char *nome,char *escopo);
 int functionExists(list *hash,char *nome);
 
 int checkVariables(list* hash);
+

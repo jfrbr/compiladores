@@ -20,7 +20,7 @@ int eval;
 int in_for;
 int tipoVar;
 extern list HashVar[MAX_HASH_SIZE];
-list HashFunc[MAX_HASH_SIZE];
+extern list HashFunc[MAX_HASH_SIZE];
 
 list _size;
 list exprList;
@@ -284,6 +284,10 @@ DECFUNC : TIPO token_ident token_abrep {
 		printf("cmdList size: %d\n",cmdList->nElem);
 		setFunctionCmdList(function,cmdList);
 		cmdList = initList();
+		fatorList = initList();
+		_size = initList();
+		*sizeBlock = 0;
+		sizeBlockList = initList();
 	}
 ;
 
@@ -401,6 +405,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  if(_last->nElem > 1) {
 	  
 	  if(*(int*)getNode(_last,1) != 999) {		
+	  
 		
 		if(*(int*)getNode(_last,1) != FLAG_FUNC) {
 
@@ -438,12 +443,13 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  }
 	  else {
+	  
 		// remove flagFunc
 		int j;
 		 
-		removeFromList(exprList,exprList->nElem-1);		
+		removeWithoutFreeFromList(exprList,exprList->nElem-1);		
 		// Check one by one
-		
+		printf("UEXP_LIST2\n");
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {				
 				printf("Erro na linha %d: Expressao incompativel---\n",lines);
@@ -459,10 +465,11 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  
 	  cleanExprList(exprList);
+	  
 	  if(nodeTree) {
-	    printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    //printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
 	    _toList(cmdList,nodeTree);
-	    printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    //printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
 	    
 	    nodeTree = NULL;
 	    fatorList = initList();
@@ -531,7 +538,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  else {
 		// remove flagFunc
 		int j;
-		removeFromList(exprList,exprList->nElem-1);		
+		removeWithoutFreeFromList(exprList,exprList->nElem-1);		
 		// Check one by one
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {
@@ -1372,6 +1379,7 @@ U_EXP: EXP token_igualigual {
 	setU_Exp(u_exp,"(");	
 	
 	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	
 	//int i=0;
 	/*NODELISTPTR
 	for(i=0; i<fatorList->nElem; i++) {
@@ -1419,7 +1427,7 @@ U_EXP_LIST : U_EXP {
 	     
 	      }
 	      
-	      //printf("UEXP\n");
+	      printf("UEXP_LIST\n");
 	      nodeTree = allocateTreeNode();
 	      
 	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
@@ -1433,6 +1441,7 @@ U_EXP_LIST : U_EXP {
 	      }*/
 	      
 	      appendToTreeNode(nodeTree,fatorList);
+	      
       //	fatorList = initList();
 
 	      /*u_exp_listTree = allocateTreeNode();
@@ -1974,6 +1983,8 @@ FATOR: token_num_float {
 		_toList(testList,flagFunc);
 		
 		strcpy(funcCalled,"\0");
+		
+		
 	  }
 	  
 	  
@@ -2555,7 +2566,7 @@ TO_ATRIB:  U_EXP_LIST {
 		  eval = *(int*)getNode(fRet,0);
 		  
 		  
-		  removeFromList(exprList,exprList->nElem-1);
+		  removeWithoutFreeFromList(exprList,exprList->nElem-1);
 		  
 		  
 		  // Check one by one
@@ -2697,6 +2708,27 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 				}
 			}
 			strcpy(atrib,"\0");
+			
+			printf("Chamando uma funcao sem parametros!\n");
+			
+			fteste = allocateFator();
+			printf("Funcao: %s\n",funcCalled);
+			
+			
+			//exit(1);
+			//float *f = malloc(sizeof(float));
+			//*f = -1 * atof(num_float);
+			char *_funcName = malloc(50*sizeof(char));
+			strcpy(_funcName,funcCalled);
+			
+			setFator(fteste,F_FUNCAO,_funcName,NULL);
+			
+			nodeTree = allocateTreeNode();
+			setTreeNode(nodeTree,fteste,F_FATOR);
+			
+			_toList(fatorList,nodeTree);
+			
+			
 		  }
 ;
 
@@ -3469,7 +3501,7 @@ main(){
 
  //   s_variavel* s = allocateVar();
 
-       
+
  //   setVar(s,"a",1,T_INT,"main",5);
  //   hashInsertVar(HashVar,s);
 	checkVariables(HashVar);	
@@ -3495,6 +3527,13 @@ main(){
 		if(s2) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
 	}
+	
+	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
+	
+	
+/*	s_funcao *func = hashSearchFunction(HashFunc,"f");
+	result = executeTreeList(func->cmdList);
+	
 	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
 	
 	//printf("Result: \n\n %d\n",*(int*)result->valor);

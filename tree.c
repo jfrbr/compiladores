@@ -30,8 +30,10 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 	s_variavel *v;
 	switch(node->tipoNodeTree) {
 		case F_FATOR:
+
 			f = (s_fator*)node->element;
 			r = executaFator(f);
+			printf("To executando um fator %d\n",f->tipo);
 			if(f->tipo == T_VAR) {
 				printf("Executando Variavel aaeHOOOOOOOOOOOOOOOOOO\n");
 				v = hashSearchVar(HashVar,(char*)f->valor,"main");
@@ -103,12 +105,6 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 		    executeLoop((s_loop*)node->element);
 		    printf("TERMINEI DE EXECUTAR O LOOP\n");
 		    break;
-		case F_RETURN:
-			{
-				printf("Tem um return com expressao\n");
-				//NODETREEPTR _tnode->element
-
-			break;}
 		default:
 			break;
 
@@ -139,12 +135,12 @@ s_fator* executeTreeList(list l) {
 		    if(_tmp->tipoNodeTree == F_RETURN) {
 		    	printf("\n\n\nPassei por aqui!\n\n\n");
 
-		    	hasReturn = 1;
+
 		    	if(!_tmp->element) {
 		    		break;
 		    	}
 		    	else {
-		    		printf("\n\n\nAqui tambem\n\n\n");
+		    		printf("Aqui tambem");
 		    		//sleep(1);
 		    		retValue = allocateFator();
 		    		r = allocateFator();
@@ -153,8 +149,11 @@ s_fator* executeTreeList(list l) {
 		    		if(_testeTree) printf("Tambem sou uma arvore do tipo %d\n",_testeTree->tipoNodeTree);
 		    		r = executeNodeTree(_testeTree);
 		    		retValue = r;
+
+		    		//if(retValue) printf("Executou com return: %d\n",*(int*)retValue->valor);
 		    		break;
 		    	}
+		    	hasReturn = 1;
 
 			}
 
