@@ -56,6 +56,8 @@ s_conditional *condition;
 s_loop *loop;
 s_funcao *function;
 
+s_fator *retValue;
+
 %}
 
 %token token_numero
@@ -559,18 +561,38 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 	  }
 	  cleanExprList(exprList);
 	  strcpy(atrib,"\0");
-		
+	  if(nodeTree) {
+	    /*printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    _toList(cmdList,nodeTree);
+	    printf("\n\nNodeTree %d!\n\n",cmdList->nElem);
+	    */
+	    NODETREEPTR dummy = allocateTreeNode();
+	    setTreeNode(dummy,nodeTree,F_RETURN);
+	    _toList(cmdList,dummy);
+	    
+	    nodeTree = NULL;
+	    fatorList = initList();
+	    //NODETREEPTR _teste = getNode(exList,0);
+	    //printf("_teste: %d\n",*(int*)(executeNodeTree(_teste))->valor);
+	    //exit(1);
+	  }
 		//cleanExprList(exprList);
 		
 	}  token_ptevirgula
 	
 	| token_return {
-	
 		
 		strcpy(atrib,"\0");
 		//cleanExprList(exprList);
 		
-	} token_ptevirgula
+	} token_ptevirgula {
+	  
+	  printf("\n\n\nPassei por aqui!\n\n\n");
+	  NODETREEPTR dummy = allocateTreeNode();
+	  setTreeNode(dummy,NULL,F_RETURN);
+	  _toList(cmdList,dummy);
+		
+	}
 	
 	| token_ptevirgula {
 		strcpy(atrib,"\0");
@@ -3460,8 +3482,10 @@ main(){
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
-
-	executeTreeList(cmdList);
+	s_fator *result = allocateFator();
+	result = executeTreeList(cmdList);
+	
+	
 
 	printf("\nTerminei de executar\n");
 
@@ -3471,6 +3495,9 @@ main(){
 		if(s2) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
 	}
+	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
+	
+	//printf("Result: \n\n %d\n",*(int*)result->valor);
 
 	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
 	if(s) {

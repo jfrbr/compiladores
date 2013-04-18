@@ -41,7 +41,7 @@ void executeLoop(s_loop* l) {
 	if (l){
 	    if (l-> tipo == WHILE){
 	                printf("Executando o loop while\n");
-	        while(checkConditionLoop(l) != 0 && l->commandList->head && !hasBreak) {
+	        while(checkConditionLoop(l) != 0 && l->commandList->head && !hasBreak && !hasReturn) {
 	        	printf("\n\nIteracao HASBREAK: %d\n\n",hasBreak);
 		        executeTreeList(l->commandList);
 	        }

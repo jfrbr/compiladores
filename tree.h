@@ -20,7 +20,7 @@ NODETREEPTR allocateTreeNode();
 
 void setTreeNode(NODETREEPTR node,void* toSet,int tipo);
 void appendToTreeNode(NODETREEPTR node,void* toAppend);
-void executeTreeList(list l);
+s_fator* executeTreeList(list l);
 s_fator *executeNodeTree(NODETREEPTR node);
 
 

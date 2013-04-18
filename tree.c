@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include "hash.h"
 
@@ -87,7 +88,7 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			return executeU_Exp((s_u_exp*)node->element,(list)(node->children->head->element));
 			break;
 		case F_U_EXP_LIST:
-		    
+
 			return executeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
 			break;
 		case F_ATRIB:
@@ -102,6 +103,12 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 		    executeLoop((s_loop*)node->element);
 		    printf("TERMINEI DE EXECUTAR O LOOP\n");
 		    break;
+		case F_RETURN:
+			{
+				printf("Tem um return com expressao\n");
+				//NODETREEPTR _tnode->element
+
+			break;}
 		default:
 			break;
 
@@ -109,17 +116,19 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 	return NULL;
 }
 
-void executeTreeList(list l) {
-	if(!l) return;
+s_fator* executeTreeList(list l) {
+	if(!l) return NULL;
 	NODELISTPTR aux = l->head;
+	s_fator *r = NULL;
 	printf("Executando Lista de arvores com %d elementos\n",l->nElem);
-	for(int i=0;i<l->nElem; i++) {
+	for(int i=0;i<l->nElem && hasReturn==0; i++) {
+		printf("Has Return: %d\n",hasReturn);
 
 		NODETREEPTR _tmp = aux->element;
 		printf("HASBREAK: %d\n",_tmp->tipoNodeTree);
 
 		if (aux){
-		    executeNodeTree(aux->element);
+
 		    if(_tmp->tipoNodeTree == F_BREAK) {
 		    	hasBreak = 1;
 		    	break;
@@ -127,12 +136,37 @@ void executeTreeList(list l) {
 		    if(_tmp->tipoNodeTree == F_CONTINUE) {
 				break;
 			}
+		    if(_tmp->tipoNodeTree == F_RETURN) {
+		    	printf("\n\n\nPassei por aqui!\n\n\n");
+
+		    	hasReturn = 1;
+		    	if(!_tmp->element) {
+		    		break;
+		    	}
+		    	else {
+		    		printf("\n\n\nAqui tambem\n\n\n");
+		    		//sleep(1);
+		    		retValue = allocateFator();
+		    		r = allocateFator();
+
+		    		NODETREEPTR _testeTree = ((NODETREEPTR)(aux->element))->element;
+		    		if(_testeTree) printf("Tambem sou uma arvore do tipo %d\n",_testeTree->tipoNodeTree);
+		    		r = executeNodeTree(_testeTree);
+		    		retValue = r;
+		    		break;
+		    	}
+
+			}
+
+		    executeNodeTree(aux->element);
 		    aux = aux->next;
 		}else{
             //printf("TREE LIST # AUX NULO\n");
 		}
 
 	}
+	return r;
+
 
 }
 

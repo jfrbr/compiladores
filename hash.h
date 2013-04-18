@@ -16,6 +16,8 @@
 
 extern char currentFunction[50];
 int hasBreak;
+int hasReturn;
+s_fator *retValue;
 
 #define T_INT 1
 #define T_FLOAT 2
@@ -33,6 +35,7 @@ int hasBreak;
 #define F_U_EXP_LIST 12
 #define F_BREAK 17
 #define F_CONTINUE 18
+#define F_RETURN 19
 
 // Variacoes de variavel
 #define NEGATIVE_VALUE 1

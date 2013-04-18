@@ -22,7 +22,8 @@ s_fator *executaFator(s_fator* toExecute) {
         case T_VAR:
         {
 
-
+        	// TODO verificar escopo de funcao
+        	// Se a variavel nao for encontrada (v = NULL), pega da global
         	s_variavel* v = hashSearchVar(HashVar,(char*)toExecute->valor,"main");
 
             s_fator* fteste = allocateFator();
