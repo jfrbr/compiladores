@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "list.h"
 #include "parser.h"
-
+#include "hash.h"
 
 int converType(char* type){
 
@@ -191,3 +191,23 @@ void checkSpecialChars(char *str,int len) {
 		}
 	}
 }
+
+// This function will check for the type of data being inserted in a scanf
+int checkDataScanf(char *str,int len) {
+	for(int i=0; i<len; i++) {
+		if(str[i] == '%') {
+			switch(str[i+1]) {
+				case 'd':
+					return T_INT;
+					break;
+				case 'c':
+					return T_CHAR;
+					break;
+				case 'f':
+					return T_FLOAT;
+					break;
+			}
+		}
+	}
+}
+

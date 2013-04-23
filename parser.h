@@ -17,3 +17,4 @@ int converType(char* type);
 int returnAtualVarType();
 
 void checkSpecialChars(char *str,int len);
+int checkDataScanf(char *str,int len);

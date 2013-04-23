@@ -48,6 +48,8 @@ extern list functionStack;
 #define P_MAISMAISAFT 4
 #define P_MENOSMENOSAFT 5
 
+#define RETURN_VAR_NAME 6
+
 // Comandos Especiais
 #define F_ATRIB 13
 #define F_CONDITIONAL 14

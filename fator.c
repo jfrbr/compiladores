@@ -32,6 +32,7 @@ s_fator *executaFator(s_fator* toExecute) {
         		if(functionStack->nElem > 1) {
         			printf("Entrei\n");
         			v = hashSearchVar(HashVar,(char*)toExecute->valor,(char*)getNode(functionStack,functionStack->nElem-2));
+        			//if((char*)getNode(functionStack,functionStack->nElem-2)) debug();
         		}
         		else {
 					v = hashSearchVar(HashVar,(char*)toExecute->valor,"global");
@@ -90,6 +91,13 @@ s_fator *executaFator(s_fator* toExecute) {
 						    *(char*)v->valor = _tmp;
                          }
             	}
+            	/*else if(*(int*)_t == RETURN_VAR_NAME) {
+            		printf("Aqui!\n");
+                    setFator(fteste,v->tipo,v->nome,toExecute->parametros);
+                    return fteste;
+
+            	}*/
+
             	//if(*_t) printf("T ok\n");
 
             }
@@ -108,7 +116,7 @@ s_fator *executaFator(s_fator* toExecute) {
         	s_funcao* func = hashSearchFunction(HashFunc,(char*)toExecute->valor);
 
         	if(func) {
-        		if(!func->parametros && strcmp(func->nome,"printf")!=0) {
+        		if(!func->parametros && strcmp(func->nome,"printf")!=0 && strcmp(func->nome,"scanf")!=0) {
 					s_fator *r = executeTreeList(func->cmdList);
 					printf("Passou\n");
 					if(retValue) {
@@ -130,6 +138,7 @@ s_fator *executaFator(s_fator* toExecute) {
         			strcpy(_fname,(char*)toExecute->valor);
         			_toList(functionStack,_fname);
 
+        			// PRINTF
         			if(strcmp(_fname,"printf")==0) {
         				printf("Printf\n");
         				printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
@@ -151,9 +160,97 @@ s_fator *executaFator(s_fator* toExecute) {
 
 
 						printf(_formatString,*(int*)_r->valor);
-						exit(1);
-        				//return NULL;
+						//exit(1);
+
+						if(functionStack->nElem > 1) {
+												strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
+											}
+											else {
+												strcpy(currentFunction,"main");
+											}
+						removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
+        				return NULL;
         			}
+
+        			// SCANF
+        			if(strcmp(_fname,"scanf")==0) {
+        				printf("Scanf\n");
+        				printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
+        				char *_formatString;
+        				int len = strlen((char*)toExecute->parametros->head->element);
+        				_formatString = calloc(len+1,sizeof(char));
+        				strcpy(_formatString,(char*)toExecute->parametros->head->element);
+
+        				//checkSpecialChars(_formatString,len);
+        				printf("String a ser buscada: %s\n",_formatString);
+
+        				//int *_int,*_float,*_char;
+
+        				/* NEM TENTE ENTENDER ISSO AQUI */
+        				// Agora decidir o valor a substituir
+            			NODELISTPTR _parTracker = toExecute->parametros->head->next;
+            			NODETREEPTR _r;
+            			_r = _parTracker->element;
+
+            			list operands = _r->children->head->element;
+            			_r = operands->head->element;
+            			s_fator *_f = _r->element;
+
+						printf("Valor de _f: %s\n",(char*)_f->valor);
+						s_variavel *v = hashSearchFunction(HashVar,(char*)_f->valor);
+						if(!v) {
+							printf("Variavel nao Encontrada!\n");
+							exit(1);
+						}
+						printf("A Variavel e do tipo: %d\n",v->tipo);
+						int _tipoDesejado = checkDataScanf(_formatString,len);
+						printf("O Dado que se quer inserir e do tipo: %d\n",checkDataScanf(_formatString,len));
+
+						if(v->tipo != _tipoDesejado) {
+							printf("Este dado nao pode ser inserido nessa variavel\n");
+							exit(1);
+						}
+
+						/* A PARTE DAS ATRIBUICOES E AQUI */
+						/* todo ADICIONAR OS OUTROS TIPOS */
+
+        				int *_int,*_float,*_char;
+        				if(_tipoDesejado == T_INT) {
+        					int _tmp;
+
+        					// Restore stdin to keyboard
+        					//int keep
+        					FILE *terminal;
+        					if(stdin) {
+        						printf("Stdin\n");
+        						terminal = fopen("/dev/tty", "rw");
+        					}
+
+        					fscanf(terminal,"%d",&_tmp);
+        					fclose(terminal);
+
+        					//stdin = _prevStdin;
+
+        					_int = malloc(sizeof(int));
+        					*_int = _tmp;
+        					setVar(v,v->nome,_int,v->tipo,v->escopo,v->lineDeclared);
+
+        					printf("Newvar: %d\n",*(int*)v->valor);
+        				}
+
+						//printf(_formatString,*(int*)_r->valor);
+						//exit(1);
+
+        				if(functionStack->nElem > 1) {
+        										strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
+        									}
+        									else {
+        										strcpy(currentFunction,"main");
+        									}
+        				removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
+        				return NULL;
+        			}
+
 
         			printf("A funcao tem %d parametros\n",func->parametros->nElem);
         			printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
@@ -204,6 +301,7 @@ s_fator *executaFator(s_fator* toExecute) {
 					else {
 						strcpy(currentFunction,"main");
 					}
+					removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
         			//exit(2);
         		}
 
