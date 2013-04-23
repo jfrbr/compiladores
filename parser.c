@@ -173,3 +173,21 @@ int returnAtualVarType(){
 
 }
 
+// This function will check for characters such as \n in strings and get them to occupy a single byte
+void checkSpecialChars(char *str,int len) {
+	for(int i=0; i<len; i++) {
+		if(str[i] == '\\') {
+			switch(str[i+1]) {
+				case 'n':
+					str[i] = '\n';
+					break;
+			}
+			for(int j = i+1; j<len; j++)
+				str[j] = str[j+1];
+		}
+		if(str[i] == '"') {
+			for(int j = i; j<len; j++)
+							str[j] = str[j+1];
+		}
+	}
+}

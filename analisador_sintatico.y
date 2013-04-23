@@ -2631,6 +2631,7 @@ TO_ATRIB:  U_EXP_LIST {
 	  | token_string;
 
 CHAMADA_FUNCAO : token_ident token_abrep {
+
 			char *funcname;
 			funcname = strtok(atrib,"(");
 			strcpy(funcCalled,funcname);
@@ -2641,7 +2642,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			
 			PARAMETROS token_fechap {
 			
-				
+				debug();
 				char *funcname,*parlist,*tmpparlist;
 				
 				int nParam=1;
@@ -2661,6 +2662,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 				exit(2);
 			}
 			else {
+				
 				s_funcao *aux = hashSearchFunction(HashFunc,funcCalled);
 				if(checkArity(aux,nParam) != 1) {
 					printf("Erro na linha %d: Funcao sendo chamada com numero incorreto de parametros\n",lines);
@@ -2668,6 +2670,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 				}
 				// Verifica se a lista de parametros esta com os tipos corretos
 				else {
+					
 					// Casos especiais: printf, scanf, max, min - nao verificar os parametros
 					if(strcmp(funcCalled,"printf")!=0 && strcmp(funcCalled,"scanf")!=0 && strcmp(funcCalled,"max")!=0 && strcmp(funcCalled,"min")!=0) {
 					
@@ -2717,6 +2720,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 						
 					}
 					}
+					printf("Entrei!\n");
 				}
 			}
 			  
@@ -2734,6 +2738,7 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			char *_funcName = malloc(50*sizeof(char));
 			strcpy(_funcName,funcCalled);
 			
+			if(parametrosPassados) printf("PARAMETROS: %d\n\n",parametrosPassados->nElem);
 			setFator(fteste,F_FUNCAO,_funcName,parametrosPassados);
 			
 			nodeTree = allocateTreeNode();
@@ -2796,7 +2801,22 @@ PARAMETROS: U_EXP_LIST  {
 		fatorList = initList();
 		nodeTree = NULL;
 		
-	} PAR2 | token_string PAR2;
+	} PAR2 | token_string {
+	parametrosPassados = initList();
+	printf("A string e: %s %d\n",num_string,strlen(num_string));
+	
+	// Criando uma string pra inserir na pPassados
+	char *parString = calloc(strlen(num_string)+1,sizeof(char));
+	strcpy(parString,num_string);
+	printf("A string e: %s %d\n",parString,strlen(parString));
+	//s_fator *f_string = allocateFator();
+	//setFator(f_string,T_STRING,parString,NULL);
+	_toList(parametrosPassados,parString);
+	//fatorList = initList();
+	//	nodeTree = NULL;
+	//	debug();
+	
+	} PAR2;
 
 PAR2: {printf("\n\nFim dos parametros\n\n");}| token_virgula U_EXP_LIST {
 	  
@@ -3984,9 +4004,9 @@ main(){
 	checkVariables(HashVar);	
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
-	s_variavel *s = hashSearchVar(HashVar,"c","main");
+	s_variavel *s = hashSearchVar(HashVar,"a","main");
 
-    s_variavel *s2 = hashSearchVar(HashVar,"d","main");
+    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
 
 	
 	if(s && s->valor == NULL) {

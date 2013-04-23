@@ -15,3 +15,5 @@ extern char num_boolean[10];
 
 int converType(char* type);
 int returnAtualVarType();
+
+void checkSpecialChars(char *str,int len);

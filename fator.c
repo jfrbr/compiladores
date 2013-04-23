@@ -104,10 +104,11 @@ s_fator *executaFator(s_fator* toExecute) {
 
 
         	printf("Avaliando uma funcao pahnois %s\n",(char*)toExecute->valor);
+
         	s_funcao* func = hashSearchFunction(HashFunc,(char*)toExecute->valor);
 
         	if(func) {
-        		if(!func->parametros) {
+        		if(!func->parametros && strcmp(func->nome,"printf")!=0) {
 					s_fator *r = executeTreeList(func->cmdList);
 					printf("Passou\n");
 					if(retValue) {
@@ -118,17 +119,50 @@ s_fator *executaFator(s_fator* toExecute) {
 						return r;
 					}
         		}
-        		else {
+        		else { // FUNÇÃO COM PARAMETROS
+
+        			printf("Entrou aqui!\n");
         			char *_fname = malloc(50*sizeof(char));
+
+
 
         			strcpy(currentFunction,(char*)toExecute->valor);
         			strcpy(_fname,(char*)toExecute->valor);
         			_toList(functionStack,_fname);
+
+        			if(strcmp(_fname,"printf")==0) {
+        				printf("Printf\n");
+        				printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
+        				char *_formatString;
+        				int len = strlen((char*)toExecute->parametros->head->element);
+        				_formatString = calloc(len+1,sizeof(char));
+        				strcpy(_formatString,(char*)toExecute->parametros->head->element);
+
+        				checkSpecialChars(_formatString,len);
+        				printf("String a ser impressa: %s\n",_formatString);
+
+        				int *_int,*_float,*_char;
+
+        				// Agora decidir o valor a imprimir
+            			NODELISTPTR _parTracker = toExecute->parametros->head->next;
+            			s_fator *_r = allocateFator();
+            			_r = executeNodeTree(_parTracker->element);
+						printf("Valor de _r: %d\n",*(int*)_r->valor);
+
+
+						printf(_formatString,*(int*)_r->valor);
+						exit(1);
+        				//return NULL;
+        			}
+
         			printf("A funcao tem %d parametros\n",func->parametros->nElem);
         			printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
-        			// Agora precisa realizar as atribuicoes dos parametros nas variaveis
+					// Agora precisa realizar as atribuicoes dos parametros nas variaveis
+
         			NODELISTPTR _tracker = func->parNames->head, _typeTracker = func->parametros->head;
         			NODELISTPTR _parTracker = toExecute->parametros->head;
+
+
         			for(int i=0; i<func->parametros->nElem; i++) {
         				printf("funcparname[%d]: %s\n",i,(char*)_tracker->element);
         				printf("Conversao a ser feita: %d\n",*(int*)_typeTracker->element);
