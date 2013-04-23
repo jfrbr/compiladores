@@ -245,7 +245,9 @@ s_fator *executaFator(s_fator* toExecute) {
 						/* A PARTE DAS ATRIBUICOES E AQUI */
 						/* todo ADICIONAR OS OUTROS TIPOS */
 
-        				int *_int,*_float,*_char;
+        				int *_int;
+        				float *_float;
+        				char *_char;
         				if(_tipoDesejado == T_INT) {
         					int _tmp;
 
@@ -285,6 +287,7 @@ s_fator *executaFator(s_fator* toExecute) {
 
         					_float = malloc(sizeof(float));
         					*_float = _tmp;
+        					printf("TMP: %f\n",*_float);
         					setVar(v,v->nome,_float,v->tipo,v->escopo,v->lineDeclared);
 
         					printf("Newvar: %f\n",*(float*)v->valor);
