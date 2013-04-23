@@ -4004,15 +4004,17 @@ main(){
 	checkVariables(HashVar);	
 		//executeNodeTree((NODETREEPTR)cmdList->head->element);
 	// Testando condicionais
-	s_variavel *s = hashSearchVar(HashVar,"a","main");
-
+	s_variavel *s = hashSearchVar(HashVar,"f","main");
+   
     s_variavel *s2 = hashSearchVar(HashVar,"b","main");
 
 	
 	if(s && s->valor == NULL) {
 	  printf("Variavel a inicializada, mas ainda sem valor\n");
 	}
+	
 	s_fator *result = allocateFator();
+	
 	result = executeTreeList(cmdList);
 	
 	printf("\nTerminei de executar\n");
@@ -4020,13 +4022,8 @@ main(){
 	if(s) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
 	}
-	/*	if(s2) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s2->valor));
-
-	}*/
 	
 	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
-	
 	
 /*	s_funcao *func = hashSearchFunction(HashFunc,"f");
 	result = executeTreeList(func->cmdList);
@@ -4035,59 +4032,7 @@ main(){
 
     if(s3) {
 	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s3->valor));
-	}
-/*
-	if(s4) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s4->valor));
 	}*/
-	
-	//printf("Result: \n\n %d\n",*(int*)result->valor);
-
-	/*executeNodeTree((NODETREEPTR)cmdList->head->element);
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}*/
-	/*executeNodeTree(_cond);
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}*/
-/*	
-	executeTreeList(cmdList);
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}*/
-	// Testando Fator
-//	printf("Fator: %d, %d\n",fteste->tipo,*(int*)executaFator(fteste));
-	
-	//printf("Fator: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),0))));
-/*	printf("Fator2: %d\n",*(int*)(executeNodeTree(getNode((list)(nodeTree->children->head->element),1))));
-	printf("Fator3: %d\n",((list)(nodeTree->children->head->element))->nElem);
-*/	
-
-	  
-//	printf("Fator: %f\n",*(float*)((s_fator*)(executeNodeTree(expTree)))->valor);
-/*	printf("Fator: %d\n",nodeTree->tipoNodeTree);
-	if((executeNodeTree(nodeTree))) {
-	  printf("Valor nulo\n");
-	} printf("Fator: %d\n",*(int*)((s_fator*)(executeNodeTree(nodeTree)))->valor);
-	printf("Entrou!\n");
-	// Testando Variavel:*/
-/*	s_variavel *s = hashSearchVar(HashVar,"a","main");
-	if(s && s->valor == NULL) {
-	  printf("Variavel a inicializada, mas ainda sem valor\n");
-	}
-	printf("cmdList nelem: %d\n",cmdList->nElem);
-	if((NODETREEPTR)cmdList->head->element) {
-	  printf("Tree %d\n",((NODETREEPTR)cmdList->head->element)->tipoNodeTree);
-	}
-	//printf("Atrib: %s %s %d\n",atribTeste->varname,atribTeste->op,*(int*)((s_fator*)(executeNodeTree(cmdList->head->element)))->valor);
-	
-	executeNodeTree((NODETREEPTR)cmdList->head->next->element);
-	
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor: %d\n",*(int*)(s->valor));
-	}*/
-	
 	
 }
 
