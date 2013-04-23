@@ -4,13 +4,6 @@
 #include "function.h"
 #include "hash.h"
 
-
-
-/*void hashInsertVar(s_variavel **hash,s_variavel *var) {
-  int i = sum_ascii(var->nome)%MAX_HASH_SIZE;
-  hash[i] = var;
-}*/
-
 void initHash(list *hash,int hashSize) {
 	for(int i=0; i<hashSize; i++) {
 		hash[i] = initList();
@@ -133,29 +126,3 @@ int checkVariables(list* hash){
 	}
 
 }
-
-/*int main() {
-  s_variavel *teste = allocateVar(),*teste2=allocateVar();
-  list genericHashVar[MAX_HASH_SIZE],hashFunction[MAX_HASH_SIZE];
-
-  for(int i=0; i<MAX_HASH_SIZE; i++) {
-	  genericHashVar[i] = initList();
-	  hashFunction[i] = initList();
-  }
-
-  setVar(teste,"Teste",NULL,T_FLOAT,"main");
-  setVar(teste2,"Tdsue",NULL,T_FLOAT,"main");
-
-  hashInsertVar(genericHashVar,teste);
-  hashInsertVar(genericHashVar,teste2);
-
-  s_funcao *bolada = allocateFunction();
-  setFunction(bolada,"Bingo",2,T_FLOAT,NULL);
-
-  hashInsertFunction(hashFunction,bolada);
-
-  //printf("Teste: %d, isFloat: %s\n",sum_ascii(((s_variavel*)(getNode(genericHashVar[517],1)->element))->nome),((s_variavel*)(getNode(genericHashVar[517],1)->element))->nome);
-  printf("Search teste: %s\n",hashSearchFunction(hashFunction,"Bingo")->nome);
-
-}
-*/

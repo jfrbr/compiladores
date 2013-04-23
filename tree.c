@@ -4,9 +4,6 @@
 
 tree initTree() {
 	tree aux = (tree)malloc(sizeof(struct tree));
-	/*aux->head=NULL;
-	aux->tail=NULL;
-	aux->nElem = 0;*/
 	if(aux) return aux;
 	else {
 		printf("Nao foi possivel alocar arvore");
@@ -15,13 +12,11 @@ tree initTree() {
 
 }
 NODETREEPTR allocateTreeNode() {
-
 		NODETREEPTR aux;
 		aux = (NODETREEPTR)malloc(sizeof(struct nodeTree));
 		aux->children = initList();
 		if (aux) return aux;
 		else return NULL;
-
 }
 
 s_fator *executeNodeTree(NODETREEPTR node) {
@@ -30,25 +25,18 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 	s_variavel *v;
 	switch(node->tipoNodeTree) {
 		case F_FATOR:
-
+			// Daqui pra baixo nao garanto nada
 			f = (s_fator*)node->element;
 			r = executaFator(f);
-			printf("To executando um fator %d\n",f->tipo);
-			if(f->tipo == T_VAR) {
-				printf("Executando Variavel aaeHOOOOOOOOOOOOOOOOOO\n");
 
+			if(f->tipo == T_VAR) {
 				v = hashSearchVar(HashVar,(char*)f->valor,currentFunction);
 				if(!v) {
-					printf("Entrei\n");
 					v = hashSearchVar(HashVar,(char*)f->valor,(char*)getNode(functionStack,functionStack->nElem-2));
 				}
-				//s_fator* fteste = allocateFator();
-				printf("tipo = %d %d\n",v->tipo,*(int*)v->valor);
 
 				if(f->parametros && f->parametros->head) {
-					//printf("'E nois Aqui: %d\n",*(int*)(toExecute->parametros->head->element));
 					int *_t = getNode(f->parametros,0);
-					printf("'E nois Aqui: %d\n",*(int*)_t);
 					if(*(int*)_t == P_MAISMAISAFT) {
 						if(r->tipo == T_INT) {
 							int _tmp = *(int*)r->valor + 1;
@@ -76,12 +64,8 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 							*(float*)r->valor = _tmp;
 						}
 					}
-					//if(*_t) printf("T ok\n");
-
 				}
-
 			}
-			//return executaFator((s_fator*)node->element);
 			return r;
 			break;
 		case F_TERMO:
@@ -91,11 +75,9 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			return executeExp((s_exp*)node->element,(list)(node->children->head->element));
 			break;
 		case F_U_EXP:
-
 			return executeU_Exp((s_u_exp*)node->element,(list)(node->children->head->element));
 			break;
 		case F_U_EXP_LIST:
-
 			return executeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
 			break;
 		case F_ATRIB:
@@ -108,16 +90,11 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 			break;
 		case F_LOOP:
 		    executeLoop((s_loop*)node->element);
-		    printf("TERMINEI DE EXECUTAR O LOOP\n");
 		    break;
 		case F_RETURN:
 			{
-				printf("Tem um return com expressao\n");
-				//NODETREEPTR _tnode->element
-
-			break;}
+			break;} // LOL {} break :)
 		case F_SWITCH:
-		    printf("Achei um switch\n");
 		    executeSwitch((s_switch*)node->element);
 		    break;
 		default:
@@ -131,13 +108,8 @@ s_fator* executeTreeList(list l) {
 	if(!l) return NULL;
 	NODELISTPTR aux = l->head;
 	s_fator *r = NULL;
-	printf("Executando Lista de arvores com %d elementos\n",l->nElem);
 	for(int i=0;i<l->nElem && hasReturn==0; i++) {
-		printf("Has Return: %d\n",hasReturn);
-
 		NODETREEPTR _tmp = aux->element;
-		printf("HASBREAK: %d\n",_tmp->tipoNodeTree);
-
 		if (aux){
 
 		    if(_tmp->tipoNodeTree == F_BREAK) {
@@ -148,24 +120,16 @@ s_fator* executeTreeList(list l) {
 				break;
 			}
 		    if(_tmp->tipoNodeTree == F_RETURN) {
-		    	//printf("\n\n\nPassei por aqui!\n\n\n");
-
-
-		    	if(!_tmp->element) {
+				if(!_tmp->element) {
 		    		break;
 		    	}
 		    	else {
-		    		//printf("Aqui tambem");
-		    		//sleep(1);
 		    		retValue = allocateFator();
 		    		r = allocateFator();
 
 		    		NODETREEPTR _testeTree = ((NODETREEPTR)(aux->element))->element;
-		    		if(_testeTree) printf("Tambem sou uma arvore do tipo %d\n",_testeTree->tipoNodeTree);
 		    		r = executeNodeTree(_testeTree);
 		    		retValue = r;
-
-		    		//if(retValue) printf("Executou com return: %d\n",*(int*)retValue->valor);
 		    		break;
 		    	}
 		    	hasReturn = 1;
@@ -175,13 +139,10 @@ s_fator* executeTreeList(list l) {
 		    executeNodeTree(aux->element);
 		    aux = aux->next;
 		}else{
-            //printf("TREE LIST # AUX NULO\n");
+            printf("TREE LIST # AUX NULO\n");
 		}
-
 	}
 	return r;
-
-
 }
 
 void setTreeNode(NODETREEPTR node,void* toSet, int tipo) {

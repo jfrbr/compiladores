@@ -9,42 +9,28 @@ s_atrib *allocateAtrib() {
 }
 
 void executeAtrib(s_atrib *toExecute,list *hashVar) {
-
-    printf("EXECUTE ATRIB\n");
 	char op_value[3];
-    
     if (toExecute){
         strcpy(op_value, toExecute->op);
     }else{
         printf("ATRIB # S_ATRIB NULO\n");
         exit(1);
     }
-
-    printf("OP = %s\n",op_value);
 	s_fator *executeResult = executeNodeTree(toExecute->toatrib);
-	
 	if (executeResult){
-
         if ( !strcmp(op_value,"=") ){
 	        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,executeResult->valor);
-            
 	        if (!find_ok){
 	            hashVarUpdateValue(hashVar,toExecute->varname,"global",executeResult->valor);
 	            find_ok = -1;
 	        }
-	        
 	    }else if (!strcmp(op_value,"+=")){
-
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
             if (!v){
                 v = hashSearchVar(hashVar,toExecute->varname,"global");
             }
-
             if (v){
-
                 if (v->tipo == T_INT || v->tipo == T_CHAR){
-
-
                     if (v->valor != NULL){
                         int* int_value = malloc(sizeof(int));
                         *int_value = (*(int*)v->valor)+(*(int*)executeResult->valor);
@@ -54,11 +40,8 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
                         printf("Atribuindo valor a variavel nao inicializada.\n");
                         exit(1);
                     }
-
                 }else if (v->tipo == T_FLOAT){
-
                     if (v->valor != NULL){
-                
                         float* float_value = malloc(sizeof(float));
                         *float_value = (*(float*)v->valor)+ (*(float*)executeResult->valor);
                         hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,float_value);
@@ -71,7 +54,6 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
                 printf("ATRIB # Nao achei variavel na hash.\n");
             }
 	    }else if (!strcmp(op_value,"-=")){
-
             s_variavel *v = hashSearchVar(hashVar,toExecute->varname,currentFunction);
             if (!v){
                 v = hashSearchVar(hashVar,toExecute->varname,"global");
@@ -170,10 +152,8 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 }
 
 void setAtrib(s_atrib *t, char *op, char *varname, NODETREEPTR toatrib, char *stringToAtrib) {
-
 	strcpy(t->op,op);
 	debug();
 	strcpy(t->varname,varname);
 	t->toatrib = toatrib;
-	//strcpy(t->stringToAtrib,stringToAtrib);
 }
