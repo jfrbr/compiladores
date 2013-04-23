@@ -17,6 +17,7 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
         strcpy(op_value, toExecute->op);
     }else{
         printf("ATRIB # S_ATRIB NULO\n");
+        exit(1);
     }
 
     printf("OP = %s\n",op_value);

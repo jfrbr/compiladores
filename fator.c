@@ -116,7 +116,7 @@ s_fator *executaFator(s_fator* toExecute) {
         	s_funcao* func = hashSearchFunction(HashFunc,(char*)toExecute->valor);
 
         	if(func) {
-        		if(!func->parametros && strcmp(func->nome,"printf")!=0 && strcmp(func->nome,"scanf")!=0) {
+        		if(!func->parametros && strcmp(func->nome,"printf")!=0 && strcmp(func->nome,"scanf")!=0 && strcmp(func->nome,"max")!=0 && strcmp(func->nome,"min")!=0) {
 					s_fator *r = executeTreeList(func->cmdList);
 					printf("Passou\n");
 					if(retValue) {
@@ -131,8 +131,6 @@ s_fator *executaFator(s_fator* toExecute) {
 
         			printf("Entrou aqui!\n");
         			char *_fname = malloc(50*sizeof(char));
-
-
 
         			strcpy(currentFunction,(char*)toExecute->valor);
         			strcpy(_fname,(char*)toExecute->valor);
@@ -153,21 +151,30 @@ s_fator *executaFator(s_fator* toExecute) {
         				int *_int,*_float,*_char;
 
         				// Agora decidir o valor a imprimir
+        				
             			NODELISTPTR _parTracker = toExecute->parametros->head->next;
-            			s_fator *_r = allocateFator();
+            			
+            			s_fator* _r = allocateFator();
             			_r = executeNodeTree(_parTracker->element);
-						printf("Valor de _r: %d\n",*(int*)_r->valor);
-
-
-						printf(_formatString,*(int*)_r->valor);
+            			
+            			if (_r->tipo == T_INT){
+    						printf("Valor de _r: %d\n",*(int*)_r->valor);
+    						printf(_formatString,*(int*)_r->valor);
+    					}else if (_r->tipo == T_FLOAT){
+    						printf("Valor de _r: %f\n",*(float*)_r->valor);
+    						printf(_formatString,*(float*)_r->valor);
+    					}else if (_r->tipo == T_CHAR){
+    						printf("Valor de _r: %c\n",*(char*)_r->valor);
+    						printf(_formatString,*(char*)_r->valor);
+    					}
 						//exit(1);
 
 						if(functionStack->nElem > 1) {
-												strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
-											}
-											else {
-												strcpy(currentFunction,"main");
-											}
+						    strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
+						}
+						else {
+							strcpy(currentFunction,"main");
+						}
 						removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
         				return NULL;
         			}
@@ -260,6 +267,48 @@ s_fator *executaFator(s_fator* toExecute) {
         					setVar(v,v->nome,_int,v->tipo,v->escopo,v->lineDeclared);
 
         					printf("Newvar: %d\n",*(int*)v->valor);
+        				}else if(_tipoDesejado == T_FLOAT) {
+        					float _tmp;
+
+        					// Restore stdin to keyboard
+        					//int keep
+        					FILE *terminal;
+        					if(stdin) {
+        						printf("Stdin\n");
+        						terminal = fopen("/dev/tty", "rw");
+        					}
+
+        					fscanf(terminal,"%f",&_tmp);
+        					fclose(terminal);
+
+        					//stdin = _prevStdin;
+
+        					_float = malloc(sizeof(float));
+        					*_float = _tmp;
+        					setVar(v,v->nome,_float,v->tipo,v->escopo,v->lineDeclared);
+
+        					printf("Newvar: %f\n",*(float*)v->valor);
+        				}else if(_tipoDesejado == T_CHAR) {
+        					char _tmp;
+
+        					// Restore stdin to keyboard
+        					//int keep
+        					FILE *terminal;
+        					if(stdin) {
+        						printf("Stdin\n");
+        						terminal = fopen("/dev/tty", "rw");
+        					}
+
+        					fscanf(terminal,"%c",&_tmp);
+        					fclose(terminal);
+
+        					//stdin = _prevStdin;
+
+        					_char = malloc(sizeof(char));
+        					*_char = _tmp;
+        					setVar(v,v->nome,_char,v->tipo,v->escopo,v->lineDeclared);
+
+        					printf("Newvar: %c\n",*(char*)v->valor);
         				}
 
 						//printf(_formatString,*(int*)_r->valor);
@@ -274,7 +323,155 @@ s_fator *executaFator(s_fator* toExecute) {
         				removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
         				return NULL;
         			}
+                    if (strcmp(_fname,"min") == 0){
 
+                        printf("Achei uma funcao de minimo!\n");
+                        printf("Elementos = %d\n",toExecute->parametros->nElem);
+                        if (toExecute->parametros->nElem != 2){
+                            printf("Quantidade de parametros errada na funcao de minimo\nAbortando...");
+                            exit(1);
+                        }
+                        NODETREEPTR a,b;
+                        
+                		a = ((NODETREEPTR)(getNode((list)(toExecute->parametros),0)));
+		                b = ((NODETREEPTR)(getNode((list)(toExecute->parametros),1)));
+		                
+                		s_fator *a_v,*b_v, *r = malloc(sizeof(s_fator));
+                		a_v = executeNodeTree(a);
+                		b_v = executeNodeTree(b);
+
+                		if ( a_v->tipo == T_INT && b_v->tipo == T_INT){
+
+                		    if (*(int*)a_v->valor < *(int*)b_v->valor){
+                		        int *res = malloc(sizeof(int));
+                		        *res = *(int*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_INT;
+                		     }
+                		    else{
+                		        int *res = malloc(sizeof(int));
+                		        *res = *(int*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_INT;
+                		    }
+                		}else if (a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
+
+                		    if (*(float*)a_v->valor < *(float*)b_v->valor){
+                		        float *res = malloc(sizeof(float));
+                		        *res = *(float*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_FLOAT;
+                		     }
+                		    else{
+                		        float *res = malloc(sizeof(float));
+                		        *res = *(float*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_FLOAT;
+                		    }
+
+                		}else if (a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+
+                		    if (*(char*)a_v->valor < *(char*)b_v->valor){
+                		        char *res = malloc(sizeof(float));
+                		        *res = *(float*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_CHAR;
+                		     }
+                		    else{
+                		        char *res = malloc(sizeof(float));
+                		        *res = *(char*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_CHAR;
+                		    }
+
+                		}
+
+                		if(functionStack->nElem > 1) {
+        				    strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
+        				}
+        				else {
+        					strcpy(currentFunction,"main");
+        				}
+        				
+        				removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
+                        
+                        return r;
+
+                    }
+
+                    if (strcmp(_fname,"max") == 0){
+
+                        printf("Achei uma funcao de maximo!\n");
+                        if (toExecute->parametros->nElem != 2){
+                            printf("Quantidade de parametros errada na funcao de minimo\nAbortando...");
+                            exit(1);
+                        }
+                        NODETREEPTR a,b;
+                        
+                		a = ((NODETREEPTR)(getNode((list)(toExecute->parametros),0)));
+		                b = ((NODETREEPTR)(getNode((list)(toExecute->parametros),1)));
+		                
+                		s_fator *a_v,*b_v, *r = malloc(sizeof(s_fator));
+                		a_v = executeNodeTree(a);
+                		b_v = executeNodeTree(b);
+
+                		if ( a_v->tipo == T_INT && b_v->tipo == T_INT){
+
+                		    if (*(int*)a_v->valor > *(int*)b_v->valor){
+                		        int *res = malloc(sizeof(int));
+                		        *res = *(int*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_INT;
+                		     }
+                		    else{
+                		        int *res = malloc(sizeof(int));
+                		        *res = *(int*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_INT;
+                		    }
+                		}else if (a_v->tipo == T_FLOAT && b_v->tipo == T_FLOAT) {
+
+                		    if (*(float*)a_v->valor > *(float*)b_v->valor){
+                		        float *res = malloc(sizeof(float));
+                		        *res = *(float*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_FLOAT;
+                		     }
+                		    else{
+                		        float *res = malloc(sizeof(float));
+                		        *res = *(float*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_FLOAT;
+                		    }
+
+                		}else if (a_v->tipo == T_CHAR && b_v->tipo == T_CHAR) {
+
+                		    if (*(char*)a_v->valor > *(char*)b_v->valor){
+                		        char *res = malloc(sizeof(float));
+                		        *res = *(float*)a_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_CHAR;
+                		     }
+                		    else{
+                		        char *res = malloc(sizeof(float));
+                		        *res = *(char*)b_v->valor;
+                		        r->valor = res;
+                		        r->tipo = T_CHAR;
+                		    }
+
+                		}
+
+                		if(functionStack->nElem > 1) {
+        				    strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
+        				}
+        				else {
+        					strcpy(currentFunction,"main");
+        				}
+        				
+        				removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
+                        
+                        return r;
+                    }
 
         			printf("A funcao tem %d parametros\n",func->parametros->nElem);
         			printf("Foram passados %d parametros\n",toExecute->parametros->nElem);
