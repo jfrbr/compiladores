@@ -1407,7 +1407,7 @@ U_EXP: EXP token_igualigual {
       | EXP {
     
 	
-	printf("EXP\n");
+	printf("EXP %d\n",fatorList->nElem);
 	nodeTree = allocateTreeNode();
 	
 	s_u_exp *u_exp = allocateU_Exp();
@@ -1462,20 +1462,7 @@ U_EXP_LIST : U_EXP {
 	     
 	      }
 	      
-	      printf("UEXP_LIST\n");
-	      nodeTree = allocateTreeNode();
 	      
-	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
-	      setU_Exp_List(u_exp_list,"(");	
-	      
-	      setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
-	      //int i=0;
-	      /*NODELISTPTR
-	      for(i=0; i<fatorList->nElem; i++) {
-		      
-	      }*/
-	      
-	      appendToTreeNode(nodeTree,fatorList);
 	      
       //	fatorList = initList();
 
@@ -1491,7 +1478,39 @@ U_EXP_LIST : U_EXP {
 	    } U_EXP_LIST2
 ;
 
-U_EXP_LIST2 : | token_ecomecom {
+U_EXP_LIST2 : {
+	      
+	      printf("UEXP_LIST_ACABOU\n");
+	      nodeTree = allocateTreeNode();
+	      
+	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
+	      setU_Exp_List(u_exp_list,"(");	
+	      
+	      setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
+	      //int i=0;
+	      /*NODELISTPTR
+	      for(i=0; i<fatorList->nElem; i++) {
+		      
+	      }*/
+	      
+	      printf("Fator List: %d\n",fatorList->nElem);
+	      appendToTreeNode(nodeTree,fatorList);
+	      // Aqui precisa retirar o ultimo elemento, nao necessariamente zerar a lista
+	      if(fatorList->nElem == 1) {
+		fatorList = initList();
+	      }
+	      else {
+		NODELISTPTR _tracker = fatorList->head;
+		int u=0;
+		for(u = 0; u < fatorList->nElem-1; u++) _tracker = _tracker->next;
+		_tracker->next = NULL;
+		fatorList->nElem--;
+	      }
+	      _toList(fatorList,nodeTree);
+	      
+	      } 
+	      
+	      | token_ecomecom {
 			char *ecomecom = malloc(2*sizeof(char));
 			strcpy(ecomecom,"&&");
 			_toList(testList,ecomecom);
@@ -1941,21 +1960,22 @@ FATOR: token_num_float {
 		}
 		
 		printf("UEXPPAR\n");
-	      nodeTree = allocateTreeNode();
+		printf("Aqui %d!\n",fatorList->nElem);
+	      //nodeTree = allocateTreeNode();
 	      
-	      s_u_exp_list *u_exp_list = allocateU_Exp_List();
-	      setU_Exp_List(u_exp_list,"(");	
+	      //s_u_exp_list *u_exp_list = allocateU_Exp_List();
+	      //setU_Exp_List(u_exp_list,"(");	
 	      
-	      setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
+	      //setTreeNode(nodeTree,u_exp_list,F_U_EXP_LIST);
 	      //appendToTreeNode(nodeTree,fatorList);
 	      //_toList(fatorList,nodeTree);
 	      
 	      //fteste = (s_fator*)(executeNodeTree(nodeTree));
 	      
-	      if(fatorList->nElem > 2) {
+	      /*if(fatorList->nElem > 1) {
 		int u=0;
 		NODELISTPTR _tracker = fatorList->head;
-		for(u=0; u < fatorList->nElem-3; u++) {
+		for(u=0; u < fatorList->nElem-2; u++) {
 		  _tracker = _tracker->next;	    
 		}
 		auxlist = initList();
@@ -1965,13 +1985,14 @@ FATOR: token_num_float {
 		_tracker->next = NULL;
 		fatorList->tail = _tracker;
 		fatorList->nElem = fatorList->nElem-2;
-		appendToTreeNode(nodeTree,auxlist);
+		//appendToTreeNode(nodeTree,auxlist);
 	      }
 	      else {		
-		appendToTreeNode(nodeTree,fatorList);
+		printf("Aqui!\n");
+		//appendToTreeNode(nodeTree,fatorList);
 		fatorList = initList();	
-	      }
-		_toList(fatorList,nodeTree);
+	      }*/
+		//_toList(fatorList,nodeTree);
 	      
 	      //printf("fteste->valor %d %d %d\n",*(int*)fteste->valor,fatorList->nElem,((NODETREEPTR)(fatorList->head->element))->tipoNodeTree);
 	      //nodeTree = allocateTreeNode();
