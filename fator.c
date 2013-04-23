@@ -197,11 +197,35 @@ s_fator *executaFator(s_fator* toExecute) {
             			s_fator *_f = _r->element;
 
 						printf("Valor de _f: %s\n",(char*)_f->valor);
-						s_variavel *v = hashSearchFunction(HashVar,(char*)_f->valor);
+						/*s_variavel *v = hashSearchFunction(HashVar,(char*)_f->valor);
 						if(!v) {
 							printf("Variavel nao Encontrada!\n");
 							exit(1);
+						}*/
+
+						s_variavel *v = hashSearchVar(HashVar,(char*)_f->valor,currentFunction);
+
+						if (!v){
+							// Procurar um nivel acima, se existir
+							//printf("Entrei\n");
+							if(functionStack->nElem > 1) {
+								printf("Entrei\n");
+								v = hashSearchVar(HashVar,(char*)_f->valor,(char*)getNode(functionStack,functionStack->nElem-2));
+								//if((char*)getNode(functionStack,functionStack->nElem-2)) debug();
+							}
+							else {
+								v = hashSearchVar(HashVar,(char*)_f->valor,"global");
+
+								if (!v){
+									printf("Variavel nao encontrada na hash. Abortando...\n");
+									exit(-1);
+								}
+							}
 						}
+
+
+
+
 						printf("A Variavel e do tipo: %d\n",v->tipo);
 						int _tipoDesejado = checkDataScanf(_formatString,len);
 						printf("O Dado que se quer inserir e do tipo: %d\n",checkDataScanf(_formatString,len));
