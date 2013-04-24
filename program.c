@@ -24,3 +24,6 @@ void setPrograma(s_programa *p,char *progName,list *hashVar,list *hashFunc,list 
 void executaPrograma(s_programa *p) {
 	executeTreeList(p->cmdList);
 }
+void imprimePrograma(s_programa *p){
+    printTreeList(p->cmdList,1);
+}

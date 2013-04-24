@@ -12,5 +12,6 @@ struct {
 s_u_exp *allocateU_Exp();
 void *executeU_Exp(s_u_exp *toExecute,list operands);
 void setU_Exp(s_u_exp *t, char *op);
+void imprimeU_Exp(s_u_exp *toExecute,list operands);
 
 #endif /* U_EXP_H_ */

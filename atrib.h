@@ -13,5 +13,6 @@ struct {
 s_atrib *allocateAtrib();
 void executeAtrib(s_atrib *toExecute,list *hashVar);
 void setAtrib(s_atrib *t, char *op, char *varname, /*char *escopo,*/ NODETREEPTR toatrib, char *stringToAtrib);
+void imprimeAtrib(s_atrib *t);
 
 #endif /* ATRIB_H_ */

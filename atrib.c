@@ -159,3 +159,18 @@ void setAtrib(s_atrib *t, char *op, char *varname, NODETREEPTR toatrib, char *st
 	strcpy(t->varname,varname);
 	t->toatrib = toatrib;
 }
+
+void imprimeAtrib(s_atrib *t){
+
+    if (!t){
+        printf("Atrib nulo. Abortando...\n");
+        exit(1);
+    }
+
+    printf("%s %s ",t->varname,t->op);
+
+    printNodeTree(t->toatrib);
+
+    printf("|");
+    
+}

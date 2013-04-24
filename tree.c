@@ -152,3 +152,61 @@ void setTreeNode(NODETREEPTR node,void* toSet, int tipo) {
 void appendToTreeNode(NODETREEPTR node,void* toAppend) {
 	_toList(node->children,toAppend);
 }
+
+void printNodeTree(NODETREEPTR node){
+
+    if (!node){
+        printf("Node vazio. Abortando...\n");
+        exit(1);
+    }
+    
+	switch(node->tipoNodeTree) {
+		case F_FATOR:
+			imprimeFator((s_fator*)node->element);
+			break;
+		case F_TERMO:
+			imprimeTermo((s_termo*)node->element,(list)(node->children->head->element));
+			break;
+		case F_EXP:
+		    imprimeExp((s_exp*)node->element,(list)(node->children->head->element));
+			break;
+		case F_U_EXP:
+            imprimeU_Exp((s_u_exp*)node->element,(list)(node->children->head->element));
+			break;
+		case F_U_EXP_LIST:
+
+			imprimeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
+			break;
+		case F_ATRIB:
+			imprimeAtrib((s_atrib*)node->element);
+			break;
+		case F_CONDITIONAL:
+			imprimeConditional((s_conditional*)node->element);
+			break;
+		case F_LOOP:
+		    imprimeLoop((s_loop*)node->element);
+		    break;
+		case F_RETURN:
+			{
+			break;} // LOL {} break :)
+		case F_SWITCH:
+		    imprimeSwitch((s_switch*)node->element);
+		    break;
+		default:
+			break;
+	}
+}
+
+void printTreeList(list l,int flag) {
+
+	if(!l) return;
+	NODELISTPTR aux = l->head;
+	
+	for(int i=0;i<l->nElem; i++) {
+		NODETREEPTR _tmp = aux->element;
+		printNodeTree(aux->element);
+		aux = aux->next;
+        if (flag) printf("\n");
+        else printf(" ");
+    }
+}

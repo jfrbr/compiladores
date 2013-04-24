@@ -8,6 +8,7 @@ s_termo *allocateTermo() {
 }
 
 void *executeTermo(s_termo *toExecute, list operands) {
+
 	if(operands->nElem == 1) {
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
 	}
@@ -148,4 +149,19 @@ void *executeTermo(s_termo *toExecute, list operands) {
 
 void setTermo(s_termo *t, char op) {
 	t->op = op;
+}
+
+void imprimeTermo(s_termo *toExecute,list operands){
+	if(operands->nElem == 1) {
+		printNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
+	}
+	else {
+		NODETREEPTR a,b;
+		a = ((NODETREEPTR)(getNode((list)(operands),0)));
+		b = ((NODETREEPTR)(getNode((list)(operands),1)));
+
+		printNodeTree(a);
+		printf(" %c ",toExecute->op);
+		printNodeTree(b);
+    }
 }

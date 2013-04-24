@@ -422,26 +422,50 @@ void setFator(s_fator *f, int tipo,void *valor,list parList) {
 	f->valor = valor;
 	f->parametros = parList;
 }
-void imprimeFator(s_fator *f){
+void imprimeFator(s_fator *toExecute){
 
-	if (!f){
+    int* _t;
+    
+	if (!toExecute){
 		printf("Fator nulo\n");
 	}
-	switch (f->tipo){
+
+    if(toExecute->parametros && toExecute->parametros->head){
+         _t = getNode(toExecute->parametros,0);
+    }
+	
+	switch (toExecute->tipo){
 	case T_INT:
-		printf("%d",*(int*)f->valor);
+		printf("%d",*(int*)toExecute->valor);
 		break;
 	case T_FLOAT:
-		printf("%f",*(float*)f->valor);
+		printf("%f",*(float*)toExecute->valor);
 		break;
 	case T_CHAR:
-		printf("%c",*(char*)f->valor);
+		printf("%c",*(char*)toExecute->valor);
 		break;
 	case T_VAR:
-		printf("%s",(char*)f->valor);
+		if(*(int*)_t == P_MAISMAISANT){
+            printf("++%s",(char*)toExecute->valor);
+            break;
+	    }else if(*(int*)_t == P_MENOSMENOSANT) {
+		    printf("--%s",(char*)toExecute->valor);
+		    break;
+        }
+        else if (*(int*)_t == NEGATIVE_VALUE){
+            printf("-%s",(char*)toExecute->valor);
+            break;
+        }else if(*(int*)_t == P_MAISMAISAFT) {
+            printf("%s++",(char*)toExecute->valor);
+            break;
+		}else if(*(int*)_t == P_MENOSMENOSAFT) {
+		    printf("%s--",(char*)toExecute->valor);
+		    break;
+		}
+		printf("%s", (char*) toExecute->valor);
 		break;
 	case F_FUNCAO:
-		printf("%s",(char*)f->valor);
+		printf("%s",(char*)toExecute->valor);
 		break;
 	}
 }
