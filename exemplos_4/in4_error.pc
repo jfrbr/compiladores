@@ -1,0 +1,9 @@
+int main(){
+	
+	
+	int v[10];
+	v[0] = 1;  //Erro: operadores de acesso nao foram implementados na PC
+
+
+	return 0;
+}

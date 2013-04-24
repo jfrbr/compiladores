@@ -1,0 +1,9 @@
+int main(){
+	
+	string a;
+	string b;
+
+	a = b; // operacoes com string nao foram implementadas na PC
+	
+	return 0;
+}
