@@ -2650,72 +2650,48 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 		        cmdList->tail = _tracker;
 		        cmdList->nElem = cmdList->nElem-forsize-2;
 		    }
-
 		      loop = allocateLoop();
 	          setLoop(loop,getNode(exList,exList->nElem-1),auxlist,atribList,incList,FOR);
-             
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
 	          removeWithoutFreeFromList(exList,exList->nElem-1);				          
         }
 	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO {
-	   
-              
-              printf("ELEMENTOS EM CMD LIST = %d\n",cmdList->nElem); 
               NODELISTPTR _tracker = cmdList->head;
-              
 	          int u;
-	          
 	          for(u=0; u < cmdList->nElem-3; u++) {
 	            _tracker = _tracker->next;	    
 	          }
-
               // Lista de atribuicoes
               atribList = initList();
               atribList->head = _tracker;
-              atribList->nElem = 1;	 
-                       
+              atribList->nElem = 1;	                        
 	           // Incremento
 	          _tracker = _tracker->next;
-	          
               incList = initList();
 	          incList->head = _tracker;
 	          incList->nElem = 1;
-
 	          _tracker = _tracker->next;
-	          
 	          // Comando dentro do for 
 	          auxlist = initList();
 	          auxlist->head = _tracker;
 	          auxlist->nElem = 1;
-
               // Tirando os elementos da cmdList
-              
 	          _tracker = cmdList->head;
-
 	          for (u=0; u < cmdList->nElem-4; u++){
 	            _tracker = _tracker->next;
 	          }
-	          
 	          cmdList->tail = _tracker;
 	          cmdList->nElem = cmdList->nElem-3;
-	           
 	          loop = allocateLoop();
 	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
-             
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
-	        	          
 	   }
 	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 	   {
-	   
-	        printf("for com bloco\n");
-	        
 		    int forsize;
 		    forsize = *(int*)sizeBlockList->head->element;
-		    //elsesize = *(int*)sizeBlockList->head->next->element;
-		
 		    if(sizeBlockList->nElem <= 1) {
 		      sizeBlockList = initList();
 		    }
@@ -2723,14 +2699,8 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 		      sizeBlockList->head = sizeBlockList->head->next;
 		      sizeBlockList->nElem -= 1;
 		    }
-
-		    printf("forsize = %d\n",forsize);
-
-
 		    NODELISTPTR _tracker;
-
-		    if(forsize == 0) {
-			    printf("For ta vazio\n");
+		    if(forsize == 0) {			    
 			    auxlist = NULL;
 		    }
 		    else {
@@ -2743,36 +2713,25 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 		        atribList = initList();
 		        atribList->head = _tracker;
 		        atribList->nElem = 1;
-
                 _tracker = _tracker->next;
-                
 		        // Incremento
 		        incList = initList();
 		        incList->head = _tracker;
                 incList->nElem = 1;
-
 		        // Comandos a serem executados
 		        auxlist = initList();
 		        auxlist->head = _tracker->next;
 		        auxlist->nElem = forsize;
-
     	        _tracker = cmdList->head;
-
 	            for (u=0; u < cmdList->nElem-forsize-3; u++){
 	                _tracker = _tracker->next;
 	            }
-	          		        
-		        _tracker->next = NULL;
-		        
+		        _tracker->next = NULL;   
 		        cmdList->tail = _tracker;
-		        cmdList->nElem = cmdList->nElem-forsize-2;
-
-		        printf("CMD LIST NELEM%d\n",cmdList->nElem);
+		        cmdList->nElem = cmdList->nElem-forsize-2;		        
 		    }
-
 		      loop = allocateLoop();
 	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
-             
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
 	   
@@ -2840,47 +2799,12 @@ main(){
 
 	in_for = 0;
 	find_ok = -1;
-
+	
+	/* AQUI VAI TER QUE ENTRAR O MENU! */
 	yyparse();
 
- //   s_variavel* s = allocateVar();
-
-
- //   setVar(s,"a",1,T_INT,"main",5);
- //   hashInsertVar(HashVar,s);
-	checkVariables(HashVar);	
-//executeNodeTree((NODETREEPTR)cmdList->head->element);
-	// Testando condicionais
-	s_variavel *s = hashSearchVar(HashVar,"f","main");
-   
-    s_variavel *s2 = hashSearchVar(HashVar,"b","main");
-
-	
-	if(s && s->valor == NULL) {
-	  printf("Variavel a inicializada, mas ainda sem valor\n");
-	}
-	
-	s_fator *result = allocateFator();
-	
-	result = executeTreeList(cmdList);
-	
-	printf("\nTerminei de executar\n");
-
-	if(s) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s->valor));
-	}
-	
-	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
-	
-/*	s_funcao *func = hashSearchFunction(HashFunc,"f");
-	result = executeTreeList(func->cmdList);
-	
-	if(retValue) printf("Retvalue foi setada %d\n",*(int*)retValue->valor);
-
-    if(s3) {
-	  printf("Variavel a inicializada, mas ainda sem valor, valor :%d\n",*(int*)(s3->valor));
-	}*/
-	
+ 	checkVariables(HashVar);		
+	result = executeTreeList(cmdList);	
 }
 
 /* rotina chamada por yyparse quando encontra erro */
