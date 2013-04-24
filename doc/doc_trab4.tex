@@ -58,11 +58,11 @@ os trabalhos anteriores foram incorporados nesta parte de tal forma que executar
 Para facilitar a execução do código é criado um menu contendo as seguintes opções:
 
 \begin{enumerate}
- \item Compilar um programa: construir a árvore de execução, referenciada no código por cmdList.
+ \item Compilar um programa: construir a árvore de execução e ligá-la a uma struct s\_programa.
  \item Imprimir Árvore de Execução: basta imprimir cada nó da cmdList vasculhando também as árvores internas do nó
- \item Executar Programa: basta executar a cmdList. 
+ \item Executar Programa: basta executar a cmdList de um Programa. 
  \item Listar programas compilados
- \item Listar programas no diretório corrente(que podem ser compilados)
+ \item Listar programas no diretório corrente e subdiretórios (que podem ser compilados)
  \item Sair
 \end{enumerate}
 
@@ -88,10 +88,11 @@ A lista de parâmetros na chamada de função guarda os parâmetros passados pel
 é para explicitar que uma variável está com o valor negativo. 
 O \textbf{tipo} serve para identificar qual typecast deve ser feito para capturar o valor correspondente a variável.\\
 Esta manipulação é feita na função de execução. O caso de inteiro, char e float basta retornar o s\_fator correspondente. Porém, para a chamada de função e variável existem
-considerações.
+considerações. O s\_fator a ser retornado nesse caso deve ser a versão avaliada destes fatores, isto é, o valor da variável ou o valor de retorno da função.
 \subsection{Termo}
 
 O termo fica um nível acima na árvore do Fator. É composta apenas por um sinal de operação que pode ser '*','/' e '\%'. Realiza operações sobre os fatores que estão abaixo dele na árvore.
+No caso de não haver este nível na árvore, o Termo possuirá apenas um filho Fator, neste caso, a função executeTermo retornará este filho executado.
 
 \begin{lstlisting}
  struct {
@@ -99,10 +100,12 @@ O termo fica um nível acima na árvore do Fator. É composta apenas por um sina
 } typedef s_termo
 \end{lstlisting}
 
-A função de execução do termo opera sobre os dois Termos abaixo dele na árvore. O operador aplicado sobre eles está na própria estrutura.
+A função de execução do termo opera sobre os dois Fatores abaixo dele na árvore ou retorna a avaliação de seu único filho, quando for o caso. 
+O operador aplicado sobre eles está na própria estrutura.
 
 \subsection{EXP}
-Basicamente, igual ao termo, porém os operadores são outros: '+','-'. Isto é feito para resolver o caso da precedência de operadores. Como a árvore é executada de baixo para cima as operações de multiplicação, divisão e mod serão executadas primeiro do que as de soma e subtração.
+Basicamente, igual ao termo, porém os operadores são outros: '+','-'. Isto é feito para resolver o caso da precedência de operadores. Como a árvore é executada da folha para a raíza as operações de multiplicação, divisão e mod serão executadas primeiro do que as de soma e subtração.
+No caso de não haver esse nível, a execução é tratada do mesmo modo que no Termo, sendo retornado o filho executado deste nó.
 
 \begin{lstlisting}
 struct {
@@ -144,7 +147,9 @@ struct  {
   int used;
 } typedef s_variavel;
 \end{lstlisting}
-
+É bom distinguir que existe uma diferença entre a variável que esteja nesta forma da variável que está na forma de fator. Aqui, elas estão na
+hashVar e possuem todos os dados disponíveis à disposição, enquanto que na forma de fator, apenas o nome e o tipo da variável são conhecidos. Assim,
+quando uma variável estiver sendo executada, seu valor deve ser buscado na hash.
 \subsection{Function}
 
 Estrutura reutilizada do terceiro trabalho para tratar as funções presentes no código. A sua estrutura é a seguinte:
@@ -175,7 +180,7 @@ struct {
 \end{lstlisting}
 
 Composta por um operador que pode ser '=','+=','-=','*=' e '/='. O nome da variável que receberá o valor do resultado da avaliação(feito pela função \textbf{executeNodeTree}) do nó toatrib. Foi criado o
-stringToAtrib o tipo string de dados. 
+stringToAtrib para o tipo string de dados, porém ele não foi implementado. 
 
 \subsection{Conditional}
 
@@ -189,7 +194,9 @@ struct {
 } typedef s_conditional;
 \end{lstlisting}
 
-Composta pelo nó da condição e duas listas: execução do if e execução do else. 
+Composta pelo nó da condição e duas listas: execução do if e execução do else. Nem sempre estas listas estarão preenchidas, pois existem casos de Ifs
+não-associados ou mesmo blocos vazios. A definição do tamanho dos blocos foi a maior dificuldade deste trabalho, especialmente nos casos em que havia
+blocos e comandos aninhados, sendo muitas vezes a causa de Seg Faults difíceis de detectar. Implementamos uma espécie de pilha para isso, porém ela não é infalível. 
 
 \subsection{Loop}
 
@@ -212,8 +219,10 @@ for ( atribList; condition; incrementList){
   commandList
 }
 \end{lstlisting}
-
-Na função de execução do comando de loop for basta executar primeiro a lista de atribuição e depois ficar executando a de comandos e a de incremente, nesta ordem. No caso do while e do while, tem-se apenas que checar a condição de término do loop.
+Apenas um comando do tipo For possui a incrementList e a atribList, que são ``auxiliares'' em sua execução.
+Na função de execução do comando de loop for basta executar primeiro a lista de atribuição, depois repetidamente checar a condição de parada, executar as listas de comandos e incremento, nesta ordem. 
+No caso do while e \textbf{do while}, tem-se apenas que checar a condição de término do loop, lembrando que o \textbf{do while} deve executar ao menos
+uma vez antes que as condições de parada sejam verificadas.
 
 \subsection{Switch}
 
@@ -247,7 +256,7 @@ struct nodeTree {
 };
 \end{lstlisting}
 
-Possui duas funções bem importantes: \textbf{executeNodeTree} e a \textbf{executeTreeList}. A primeira está exemplificada abaixo para demonstrar a recursividade. A segunda é simplesmente percorrer a lista executando a primeira função.
+Possui duas funções bem importantes: \textbf{executeNodeTree} e a \textbf{executeTreeList}. A primeira está exemplificada abaixo para demonstrar a recursividade. A segunda é simplesmente percorrer a lista executando a primeira função, verificando eventuais comandos de break, continue e return.
 
 \begin{lstlisting}
 s_fator *executeNodeTree(NODETREEPTR node) {
@@ -335,23 +344,41 @@ s_fator *executeNodeTree(NODETREEPTR node) {
 }
 \end{lstlisting}
 
+Observa-se que esta função atua como uma espécie de ``controlador'', gerenciando que função deve ser chamada pelo programa para executar um node. Isto
+permite que ela seja usada em qualquer ponto do programa, desde que esteja atuando sobre nodetrees. Assim, o programa foi feito visando obter uma organização
+em que os comandos sempre poderiam ser representados por árvores ou listas de árvores e a função a ser chamada para executar seria sempre a mesma, independente
+do tipo de dados que se deve processar. Não é um exagero dizer que esta função é o ``cérebro'' do interpretador.
 \section{cmdList}
 
-Esta é a lista principal do programa. É composta por nós de árvore genéricos. Toda vez que um programa é executa a lista é percorrida executando todos as árvores.
+Esta é a lista principal do programa. É composta por nós de árvore genéricos. Toda vez que um programa é executa a lista é percorrida executando todos as árvores, porém
+seu comportamento pode ser alterado por flags de Break, Continue e Return. Estas flags foram definidas de maneira global para permitir que se propagassem
+em cascata (especialmente o return, cujo efeito deve atingir toda a função).
 
-\section{Funções}
+\section{Programa}
+Por fim, temos a estrutura de mais alto nível. A struct s\_programa contém uma commandList e suas hashes de função e variável. Cada novo programa redefine
+as variaveis globais HashVar e HashFunc para montar sua struct de execução. Foi feito deste modo para que não fosse necessário modificar o código que já
+estava pronto, porém atuava sobre um único programa principal. Após a compilação de um programa, o buffer do Bison é limpo e a variavel lines, zerada.
+Caso a compilação tenha sido bem-sucedida, o programa é inserido na lista de programas do interpretador, podendo ser acessado pelo seu nome. Uma compilação
+mal-sucedida gera um erro e o usuário é remetido de volta ao menu.
+
+Para a execução, o programa precisa apontar os ponteiros globais HashVar e HashFunc para suas proprias Hashes, evitando a situação de um programa
+ter acesso a variáveis e funções de outro já compilado, ao mesmo tempo em que diz ao interpretador quais variáveis estão disponíveis.
+
+\section{Funções Nativas}
 Existem algumas funções pré-definidas na linguagem. Estas podem ser usadas para melhor codificação na linguagem PC.
 \subsection{printf}
 Assim como em C, na PC existe uma função para imprimir dados na tela. Esta função possui aridade 2 e aceita a dados inteiros(\%d), float(\%f) e char (\%c). Nos exemplos,
-pode ter vários exemplos de uso.
+pode-se ver vários exemplos de uso. Como a aridade de printf é fixa, sempre que se quiser imprimir apenas uma string, deve-se usar um parametro dummy como
+segundo parâmetro. Isto foi demonstrado nos exemplos.
 \subsection{scanf}
 Assim como em C, também é necessário uma função para entrada de dados. Porém, na PC existe uma diferença. Para indicar a variável em que será inserido o valor não é preciso 
-utilizar o \&, basta inserir o nome da variável normalmente.
+utilizar o \& para indiciar o endereço da variável, basta inserir o nome da variável normalmente.
 \subsection{max}
-Essa função retorna o maior valor entre dois inteiros, dois float ou dois chars. Existe a restrição de tipos, ou seja, não pode passar como parâmetro um inteiro e um float. Apenas inteiro com inteiro, e assim respectivamente.
+Essa função retorna o maior valor entre dois inteiros, dois float ou dois chars. Existe a restrição de tipos, ou seja, não é permitido passar como parâmetro um inteiro e um float. Apenas inteiro com inteiro, e assim sucessivamente.
 \subsection{min}
-Análoga a função acima só que o retorno é o valor mínimo entre as variáveis.
+Análoga à função acima, com a diferença de que o retorno é o valor mínimo entre as variáveis.
 \section{Exemplos}
+
 Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
 situações erradas.
 \end{document}
