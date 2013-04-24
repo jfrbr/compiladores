@@ -25,8 +25,13 @@ s_fator *executaFator(s_fator* toExecute) {
         	if (!v){
         		// Procurar um nivel acima, se existir
         		if(functionStack->nElem > 1) {
-        			v = hashSearchVar(HashVar,(char*)toExecute->valor,(char*)getNode(functionStack,functionStack->nElem-2));
 
+        			v = hashSearchVar(HashVar,(char*)toExecute->valor,(char*)getNode(functionStack,functionStack->nElem-2));
+        			if(!v) v = hashSearchVar(HashVar,(char*)toExecute->valor,"global");
+        			if (!v){
+        									printf("Variavel nao encontrada na hash. Abortando...\n");
+        									exit(-1);
+        								}
         		}
         		else {
 					v = hashSearchVar(HashVar,(char*)toExecute->valor,"global");
@@ -178,6 +183,7 @@ s_fator *executaFator(s_fator* toExecute) {
 						int _tipoDesejado = checkDataScanf(_formatString,len);
 
 						if(v->tipo != _tipoDesejado) {
+							//printf("v: %s %s %d %d\n",v->nome,_formatString,v->tipo,_tipoDesejado);
 							printf("Este dado nao pode ser inserido nessa variavel\n");
 							exit(1);
 						}
@@ -242,6 +248,7 @@ s_fator *executaFator(s_fator* toExecute) {
                             printf("Quantidade de parametros errada na funcao de minimo\nAbortando...");
                             exit(1);
                         }
+
                         NODETREEPTR a,b;
                 		a = ((NODETREEPTR)(getNode((list)(toExecute->parametros),0)));
 		                b = ((NODETREEPTR)(getNode((list)(toExecute->parametros),1)));
@@ -370,10 +377,13 @@ s_fator *executaFator(s_fator* toExecute) {
                         return r;
                     }
 
+
         			// Agora precisa realizar as atribuicoes dos parametros nas variaveis
 
         			NODELISTPTR _tracker = func->parNames->head, _typeTracker = func->parametros->head;
         			NODELISTPTR _parTracker = toExecute->parametros->head;
+
+
 
         			// Welcome to the Jungle!
         			for(int i=0; i<func->parametros->nElem; i++) {
@@ -385,6 +395,8 @@ s_fator *executaFator(s_fator* toExecute) {
         				_typeTracker = _typeTracker->next;
 
         			}
+
+
         			_tracker = func->parNames->head;
         			for(int i=0; i<func->parametros->nElem; i++) {
         				s_variavel *_tmpv = hashSearchVar(HashVar,(char*)_tracker->element,(char*)toExecute->valor);
@@ -392,12 +404,7 @@ s_fator *executaFator(s_fator* toExecute) {
 					}
         			s_fator *r = executeTreeList(func->cmdList);
 
-					if(retValue) {
-						r = retValue;
-						hasReturn = 0;
-						retValue = NULL;
-						return r;
-					}
+
 					if(functionStack->nElem > 1) {
 						strcpy(currentFunction,(char*)getNode(functionStack,functionStack->nElem-2));
 					}
@@ -405,6 +412,14 @@ s_fator *executaFator(s_fator* toExecute) {
 						strcpy(currentFunction,"main");
 					}
 					removeWithoutFreeFromList(functionStack,functionStack->nElem-1);
+					if(retValue) {
+						r = retValue;
+						hasReturn = 0;
+						retValue = NULL;
+						return r;
+					}
+
+
         		}
 
         	}

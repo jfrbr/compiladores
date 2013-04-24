@@ -1,13 +1,30 @@
+int isPrime(int x) {
+  if(x == 0 || x == 1) return 0;
+  if(x == 2) return 1;
+  int i;
+  for(i = 0 ; i < x; i++) {
+    if((x % i) == 0) return 0;
+  }
+  return 1;
+
+}
+
+
 
 int main() {
-	int i,limite;
-	printf("Digite o Limite: ",0);
-	scanf("%d",limite);
-	for(i = 0; i < limite; i++) {
-		if(i % 3 == 0)
-		  printf("%d é múltiplo de 3\n",i);
-		else
-		  printf("%d nao é múltiplo de 3\n",i);
+	int test;
+	printf("Insira o valor a ser testado\n",0);
+	scanf("%d",test);
+	int b;
+	b = isPrime(test);
+	switch(b) {
+	  case 1:
+	    printf("O numero %d e primo\n",0);
+	    break;
+	  case 0:
+	    printf("O numero %d nao e primo\n",0);
+	    break;
+	  default:
+	    break;
 	}
-	printf("AQUI É O COMANDÃO!\n",0);
 }
