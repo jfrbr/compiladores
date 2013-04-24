@@ -120,9 +120,62 @@ int checkVariables(list* hash){
 				s_variavel* v = getNode(l,j);
 				if (v->used == NOT_USING){
 					 printf("Erro semantico: A variavel %s/%s nao foi utilizada (declarada na linha %d)\n",v->nome,v->escopo,v->lineDeclared);
+					 return 0;
 				}
 			}
 		}
 	}
+	return 1;
 
+}
+
+void initStdFunctions() {
+		cmdList = initList();
+		exprList = initList();
+		testList = initList();
+		fatorList = initList();
+		termoList = initList();
+		auxlist = initList();
+		exList = initList();
+		sizeBlockList = initList();
+		_size = initList();
+
+
+		functionStack = initList();
+		_toList(functionStack,"main");
+
+		//parnames = initList();
+		atribTeste = allocateAtrib();
+
+		atribTree = allocateTreeNode();
+
+		s_funcao* print = allocateFunction();
+		setFunction(print,"printf",2,T_VOID,NULL,NULL);
+
+		s_funcao* scan = allocateFunction();
+		setFunction(scan,"scanf",2,T_INT,NULL,NULL);
+
+		s_funcao* max = allocateFunction();
+		setFunction(max,"max",2,T_INT,NULL,NULL);
+
+		s_funcao* min = allocateFunction();
+		setFunction(min,"min",2,T_INT,NULL,NULL);
+
+		s_funcao* _main = allocateFunction();
+		setFunction(_main,"main",0,T_INT,NULL,NULL);
+
+		hashInsertFunction(HashFunc,print);
+		hashInsertFunction(HashFunc,scan);
+		hashInsertFunction(HashFunc,max);
+		hashInsertFunction(HashFunc,min);
+		hashInsertFunction(HashFunc,_main);
+
+		strcpy(atrib,"\0");
+		strcpy(num_float,"\0");
+		strcpy(num_inteiro,"\0");
+		strcpy(num_char,"\0");
+		strcpy(num_boolean,"\0");
+		strcpy(num_string,"\0");
+
+		find_ok = -1;
 }

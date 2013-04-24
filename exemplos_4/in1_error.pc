@@ -1,0 +1,16 @@
+int main(){
+
+    int resultado;
+    
+    printf("Digite o Limite: ",0);
+    scanf("%d",limite);
+    
+    int i;
+    for(i=2; i<limite;i++){
+	
+	printf("%d\n",i);
+	
+    }
+
+    return 0;
+}

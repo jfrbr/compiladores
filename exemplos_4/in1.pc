@@ -1,0 +1,13 @@
+
+int main() {
+	int i,limite;
+	printf("Digite o Limite: ",0);
+	scanf("%d",limite);
+	for(i = 0; i < limite; i++) {
+		if(i % 3 == 0)
+		  printf("%d é múltiplo de 3\n",i);
+		else
+		  printf("%d nao é múltiplo de 3\n",i);
+	}
+	printf("AQUI É O COMANDÃO!\n",0);
+}

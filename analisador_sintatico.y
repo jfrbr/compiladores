@@ -20,8 +20,8 @@ int eval;
 int in_for;
 int tipoVar;
 int find_ok;
-extern list HashVar[MAX_HASH_SIZE];
-extern list HashFunc[MAX_HASH_SIZE];
+extern list *HashVar;
+extern list *HashFunc;
 char _num_inteiro[50];
 char _num_char[50];
 
@@ -29,6 +29,7 @@ list _size;
 list exprList;
 list testList;
 list parList;
+list programList;
 
 int *sizeBlock;
 
@@ -224,7 +225,7 @@ DECFUNC : TIPO token_ident token_abrep {
 			}
 			else {
 				printf("Erro semantico na linha %d: Funcao %s sendo redeclarada\n",lines,function->nome);
-				exit(2);
+				return 1;
 			}
 			strcpy(atrib,"\0");
 			strcpy(ident,"\0");
@@ -252,12 +253,12 @@ DECFUNC : TIPO token_ident token_abrep {
 		}
 		else {
 			printf("Erro semantico na linha %d: Funcao %s sendo redeclarada\n",lines,function->nome);
-			exit(2);
+			return 1;
 		}
 			
 		strcpy(atrib,"\0");
 	} token_abrec BLOCO token_fechac {
-		printf("cmdList size: %d\n",cmdList->nElem);
+		
 		setFunctionCmdList(function,cmdList);
 		cmdList = initList();
 		fatorList = initList();
@@ -282,7 +283,7 @@ DEC_VAR_GLOBAL: TIPO VAR DEC_VAR_GLOBAL2 token_ptevirgula {
 		}
 		else {
 			printf("Erro semantico na linha %d: Variavel %s sendo redeclarada\n",lines,v->nome);
-			exit(2);
+			return 1;
 		}
 		var = strtok (NULL, " ,;");
 	  }
@@ -328,7 +329,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		}
 		else {
 			printf("Erro semantico na linha %d: Variavel %s sendo redeclarada\n",lines,v->nome);
-			exit(2);
+			return 2;
 		}
 		var = strtok (NULL, " ,;");
 	  }
@@ -367,7 +368,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {				
 				printf("Erro na linha %d: Expressao incompativel---\n",lines);
-				exit(2);
+				return 2;
 			}
 			
 		}
@@ -411,7 +412,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		eval = returnTypeExprList(concatList);	
 		if(eval < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
-				exit(2);
+				return 2;
 		}
 		s_funcao *_fcalled;
 		_fcalled = hashSearchFunction(HashFunc,currentFunction);
@@ -429,7 +430,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		for(j=0;j<exprList->nElem;j++) {
 			if(returnTypeExprList(getNode(exprList,j)) < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
-				exit(2);
+				return 2;
 			}
 			
 		}
@@ -439,7 +440,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		eval = returnTypeExprList(_last);
 		if(eval < 0) {
 				printf("Erro na linha %d: Expressao incompativel\n",lines);
-				exit(2);
+				return 2;
 		}
 		s_funcao *_fcalled;
 		_fcalled = hashSearchFunction(HashFunc,currentFunction);
@@ -603,7 +604,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  removeWithoutFreeFromList(exList,exList->nElem-1);
 		  _toList(cmdList,_cond);
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-3);			
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);			
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_abrec BLOCO token_fechac token_else COMANDAO  {
@@ -661,7 +662,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  removeWithoutFreeFromList(exList,exList->nElem-1);
 		  _toList(cmdList,_cond);
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap COMANDAO token_else token_abrec BLOCO token_fechac  {		
@@ -721,7 +722,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  _toList(cmdList,_cond);
 
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		cleanExprList(exprList);
 	}
 	| token_if token_abrep IF_EXP token_fechap token_else token_abrec BLOCO token_fechac {
@@ -764,7 +765,7 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		  removeWithoutFreeFromList(exList,exList->nElem-1);
 		  _toList(cmdList,_cond);
 		// Popping the value of sizeBlock
-		*sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		*sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		cleanExprList(exprList);
 	}
 	| SWITCH  {
@@ -1379,7 +1380,7 @@ FATOR: token_num_float {
 		// Check if var exists
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) {
@@ -1415,7 +1416,7 @@ FATOR: token_num_float {
 		*eval_aux = eval;
 		if(eval < 0) {
 			printf("Erro na linha %d: Tipos incompativeis numa expressao\n",lines);
-			exit(2);
+			return 2;
 		}
 		// Check if it needs appending
 		list _previous = getNode(exprList,exprList->nElem-2);
@@ -1435,6 +1436,7 @@ FATOR: token_num_float {
 		    *letra = num_char[1];
 		}else{
 		    printf("token_letra # Erro no tamanho\n");
+		    exit(1);
 		}
 		setFator(fteste,T_CHAR,letra,NULL);
 		nodeTree = allocateTreeNode();
@@ -1454,7 +1456,7 @@ FATOR: token_num_float {
 		// Check if var exists
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) 
@@ -1463,7 +1465,7 @@ FATOR: token_num_float {
 		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");		
@@ -1484,7 +1486,7 @@ FATOR: token_num_float {
 		// Check if var exists		
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) 
@@ -1493,7 +1495,7 @@ FATOR: token_num_float {
 		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber ++\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");	  
@@ -1514,7 +1516,7 @@ FATOR: token_num_float {
 	  | token_menosmenos VAR {
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) 
@@ -1523,7 +1525,7 @@ FATOR: token_num_float {
 		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;		
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");
@@ -1543,7 +1545,7 @@ FATOR: token_num_float {
 	  | VAR token_menosmenos {
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}		
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) 
@@ -1552,7 +1554,7 @@ FATOR: token_num_float {
 		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		_toList(testList,tipo);
 		strcpy(atrib,"\0");
@@ -1585,7 +1587,7 @@ FATOR: token_num_float {
 	  | token_menos VAR {
 		if(!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")) {
 		  printf("Erro na linha %d: Variavel %s nao declarada\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}		
 		int *tipo = malloc(sizeof(int));
 		if(varExists(HashVar,ident,currentFunction)) 
@@ -1594,7 +1596,7 @@ FATOR: token_num_float {
 		  *tipo = ((s_variavel*)(hashSearchVar(HashVar,ident,"global")))->tipo;
 		if(*tipo == T_VOID || *tipo == T_STRING || *tipo == T_BOOLEAN) {
 		  printf("Erro na linha %d: Variavel %s nao pode receber --\n",lines,ident);
-		  exit(2);
+		  return 2;
 		}
 		_toList(testList,tipo);
 		fteste = allocateFator();
@@ -1629,7 +1631,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 			char *varname = strtok(ident," ");
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return 1;
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,lident,currentFunction,USING);
@@ -1653,7 +1655,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 				}
 				else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-					exit(2);
+					return 2;
 				}
 				eval = 0;
 		atribTree=allocateTreeNode();
@@ -1668,7 +1670,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 			char *varname = strtok(atrib," ");
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return 1;
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
@@ -1687,7 +1689,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					//printf("Ok! Tipo permitido!\n");
 	  }else{
 			printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-			exit(2);
+			return 2;
 		}
 	    atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
@@ -1701,7 +1703,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		char *varname = strtok(atrib," ");
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return 1;
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
@@ -1722,7 +1724,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-					exit(2);
+					return 2;
 				}
 		atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
@@ -1736,7 +1738,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		char *varname = strtok(atrib," ");
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return 1;
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
@@ -1756,7 +1758,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-					exit(2);
+					return 2;
 				}
 		atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
@@ -1770,7 +1772,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 		char *varname = strtok(atrib," ");
 			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return 1;
 			}
 			hashVarUpdateUse(HashVar,varname,currentFunction,USING);
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
@@ -1790,7 +1792,7 @@ ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB
 					//printf("Ok! Tipo permitido!\n");
 				}else{
 					printf("Erro semantico na linha %d: Atribuicao nao permitida\n",lines);
-					exit(2);
+					return 2;
 				}
 		atribTree=allocateTreeNode();
 		atribTeste=allocateAtrib();
@@ -1827,7 +1829,7 @@ TO_ATRIB:  U_EXP_LIST {
 		  eval = returnTypeExprList(concatList);    
 		  if(returnTypeExprList(concatList) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
-				  exit(2);
+				  return 2;
 			  }
 		  destroyList(concatList);
 	    }
@@ -1839,7 +1841,7 @@ TO_ATRIB:  U_EXP_LIST {
 		  for(j=0;j<exprList->nElem;j++) {
 			  if(returnTypeExprList(getNode(exprList,j)) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
-				  exit(2);
+				  return 2;
 			  }
 		  }
 	    }
@@ -1847,7 +1849,7 @@ TO_ATRIB:  U_EXP_LIST {
 	  else {
 		  if(returnTypeExprList(_last) < 0) {
 				  printf("Erro na linha %d: Expressao incompativel\n",lines);
-				  exit(2);
+				  return 2;
 			  }
 		eval = returnTypeExprList(_last);
 	  
@@ -1871,13 +1873,13 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			// Verifica existencia e aridade da funcao
 			if(!funcExists(HashFunc,funcCalled)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
-				exit(2);
+				return 2;
 			}
 			else {
 				s_funcao *aux = hashSearchFunction(HashFunc,funcCalled);
 				if(checkArity(aux,nParam) != 1) {
 					printf("Erro na linha %d: Funcao sendo chamada com numero incorreto de parametros\n",lines);
-					exit(2);
+					return 2;
 				}
 				// Verifica se a lista de parametros esta com os tipos corretos
 				else {
@@ -1895,25 +1897,25 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 							case T_INT:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
 									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
-									exit(2);
+									  return 2;
 								}
 								break;
 							case T_CHAR:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
 									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
-									exit(2);
+									return(2);
 								}
 								break;
 							case T_FLOAT:
 								if(piPassado != T_CHAR && piPassado != T_INT && piPassado != T_FLOAT) {
 									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
-									exit(2);
+									return(2);
 								}
 								break;
 							case T_BOOLEAN:
 								if(piPassado != T_BOOLEAN) {
 									printf("Erro semantico na linha %d: Tipo de parametro incorreto!\n",lines);
-									exit(2);
+									return(2);
 								}
 						}
 						
@@ -1934,13 +1936,13 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			strcpy(funcCalled,ident);						
 			if(!funcExists(HashFunc,funcCalled)) {
 				printf("Erro na linha %d: Funcao nao definida\n",lines);
-				exit(2);
+				return(2);
 			}
 			else {
 				s_funcao *aux = hashSearchFunction(HashFunc,funcCalled);
 				if(checkArity(aux,0) != 1) {
 					printf("Erro na linha %d: Funcao com parametros sendo chamada sem parametros\n",lines);
-					exit(2);
+					return(2);
 				}
 			}
 			strcpy(atrib,"\0");
@@ -2129,7 +2131,7 @@ SWITCH: token_switch token_abrep VAR {
 			s_variavel *v = hashSearchVar(HashVar,ident,currentFunction);
 			if (v == NULL){
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
-				exit(1);
+				return(1);
 			}
 			hashVarUpdateUse(HashVar,ident,currentFunction,USING);
             sw = allocateSwitch();
@@ -2540,8 +2542,12 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		  sizeBlockList = initList();
 		}
 		else {
-		  sizeBlockList->head = sizeBlockList->head->next;
-		  sizeBlockList->nElem -= 1;
+		  NODELISTPTR _tmp = sizeBlockList->head;
+			int i=0;
+			for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+			_tmp->next = NULL;
+			sizeBlockList->tail = _tmp;
+			sizeBlockList->nElem -= 1;
 		}
 		NODELISTPTR _tracker = cmdList->head;
 		// If
@@ -2569,7 +2575,7 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 		  setTreeNode(_loop,loop,F_LOOP);
 		  removeWithoutFreeFromList(exList,exList->nElem-1);
 		  // Popping the value of sizeBlock
-		  *sizeBlock = *(int*)getNode(_size,_size->nElem-2);
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
 		}
 ;
 
@@ -2703,17 +2709,23 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
+	          
 	   }
 	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 	   {
 		    int forsize;
-		    forsize = *(int*)sizeBlockList->head->element;
+		    forsize = *(int*)sizeBlockList->tail->element;
 		    if(sizeBlockList->nElem <= 1) {
 		      sizeBlockList = initList();
 		    }
 		    else {
-		      sizeBlockList->head = sizeBlockList->head->next;
-		      sizeBlockList->nElem -= 1;
+		      		NODELISTPTR _tmp = sizeBlockList->head;
+			int i=0;
+			for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+			_tmp->next = NULL;
+			sizeBlockList->tail = _tmp;
+			sizeBlockList->nElem -= 1;			  
+	
 		    }
 		    NODELISTPTR _tracker;
 		    if(forsize == 0) {			    
@@ -2750,7 +2762,9 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	          setLoop(loop,NULL,auxlist,atribList,incList,FOR);
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
-	   
+	          				          
+	          // Popping the value of sizeBlock
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-1);	   
 	   }
 ;
 
@@ -2789,65 +2803,119 @@ nodeTree = allocateTreeNode();
 #include "lex.yy.c"
 
 main(){
-	bigTree = initTree();
-
-	initHash(HashVar,MAX_HASH_SIZE);
-	initHash(HashFunc,MAX_HASH_SIZE);
-	
-	cmdList = initList();
-	exprList = initList();
-	testList = initList();
-	fatorList = initList();
-	termoList = initList();
-	auxlist = initList();
-	exList = initList();
-	sizeBlockList = initList();
-	_size = initList();
-	
-	functionStack = initList();
-	_toList(functionStack,"main");
-	
-	parnames = initList();
-	atribTeste = allocateAtrib();
-	  
-	atribTree = allocateTreeNode();
-
-	s_funcao* print = allocateFunction();
-	setFunction(print,"printf",2,T_VOID,NULL,NULL);
-
-	s_funcao* scan = allocateFunction();
-	setFunction(scan,"scanf",2,T_INT,NULL,NULL);
-
-	s_funcao* max = allocateFunction();
-	setFunction(max,"max",2,T_INT,NULL,NULL);
-
-	s_funcao* min = allocateFunction();
-	setFunction(min,"min",2,T_INT,NULL,NULL);
-
-	s_funcao* _main = allocateFunction();
-	setFunction(_main,"main",0,T_INT,NULL,NULL);
-
-	hashInsertFunction(HashFunc,print);
-	hashInsertFunction(HashFunc,scan);
-	hashInsertFunction(HashFunc,max);
-	hashInsertFunction(HashFunc,min);
-	hashInsertFunction(HashFunc,_main);
-	
-	strcpy(atrib,"\0");
-	strcpy(num_float,"\0");
-	strcpy(num_inteiro,"\0");
-	strcpy(num_char,"\0");
-	strcpy(num_boolean,"\0");
-	strcpy(num_string,"\0");
-
-	in_for = 0;
-	find_ok = -1;
-	
+	programList = initList();
+	char dump;
+	//scanf("%c",&dump);
 	/* AQUI VAI TER QUE ENTRAR O MENU! */
-	yyparse();
-
- 	checkVariables(HashVar);		
-	executeTreeList(cmdList);	
+		/*printf("------------------------------\n");
+		printf("-------------MENU-------------\n");
+		printf("------------------------------\n");
+		
+		printf("1 - Compilar Programa\n");
+		printf("2 - Imprimir Arvore de Execucao\n");
+		printf("3 - Executar Programa\n");
+		printf("4 - Listar Programas Compilados\n");
+		printf("5 - Listar programas no diretório corrente (que podem ser compilados)\n");
+		printf("6 - Sair\n");*/
+	
+	while(1) {
+		printf("------------------------------\n");
+		printf("-------------MENU-------------\n");
+		printf("------------------------------\n");
+		
+		printf("1 - Compilar Programa\n");
+		printf("2 - Imprimir Arvore de Execucao\n");
+		printf("3 - Executar Programa\n");
+		printf("4 - Listar Programas Compilados\n");
+		printf("5 - Listar programas no diretório corrente (que podem ser compilados)\n");
+		printf("6 - Sair\n");
+	
+		int option,optionChosen,error=0;
+		scanf("%d",&option);
+		scanf("%c",&dump);
+		printf("Option %d\n",option);
+		switch(option) {
+		    case 1:
+			// COMPILANDO
+			HashVar = calloc(MAX_HASH_SIZE,sizeof(list));
+			initHash(HashVar,MAX_HASH_SIZE);
+			
+			HashFunc = calloc(MAX_HASH_SIZE,sizeof(list));
+			initHash(HashFunc,MAX_HASH_SIZE);	
+			
+			initStdFunctions();
+			
+			char pName[50];
+			strcpy(pName,"\0");
+			scanf("%[^\n]",pName);
+			
+			yyin = fopen(pName, "r");
+			if (yyin == NULL) {
+			  printf("Arquivo Nao Encontrado\n");
+			  break;
+			};		
+			
+			error = yyparse();
+			fclose(yyin);
+			
+			if(error == 0 && checkVariables(HashVar) == 1) {		
+			    s_programa *prog = allocateProgram();
+			    setPrograma(prog,pName,HashVar,HashFunc,cmdList);
+			    // Incluir o prog na lista
+			    _toList(programList,prog);
+			}
+			
+			YY_FLUSH_BUFFER;
+	
+			break;
+		    case 2:
+		    case 3:
+			{
+			//HashVar = 
+			char programName[50];
+			strcpy(programName,"\0");
+			printf("Insira o nome do programa a ser executado: ");
+			scanf("%s",programName);
+			printf("\n");
+			printf("Executando o Programa %s\n",programName);
+			NODELISTPTR _tracker = programList->head;
+			s_programa *p;
+			int progFound = 0;
+			int i;
+			for(i=0; i<programList->nElem; i++) {
+				
+				p = _tracker->element;
+				if(strcmp(p->progNome,programName) == 0) {
+				  
+				  HashVar = p->HashVar;
+				  HashFunc = p->HashFunc;
+				  executaPrograma(p);
+				  progFound = 1;
+				  
+				  break;
+				}
+				_tracker = _tracker->next;
+				
+			}
+			if(!progFound) {
+			  printf("Programa Nao Encontrado\n");
+			}
+			break;
+			}
+		    case 6:
+		      exit(0);
+		    default:
+		      break;
+		}
+ 	}
+ 	// EXECUTAR UM PROGRAMA
+ 	//executaPrograma(prog);
+ 	// Compilando o programa
+ 	
+ 	// Quando eu for executar
+ 	// HashVar 
+ 	
+	//executeTreeList(cmdList);	
 }
 
 /* rotina chamada por yyparse quando encontra erro */

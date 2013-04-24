@@ -14,6 +14,7 @@
 #include "conditional.h"
 #include "loop.h"
 #include "switch.h"
+#include "program.h"
 
 extern char currentFunction[50];
 extern int find_ok;
@@ -69,8 +70,25 @@ extern list functionStack;
 
 #define MAX_HASH_SIZE 997
 
-list HashVar[MAX_HASH_SIZE];
-list HashFunc[MAX_HASH_SIZE];
+list *HashVar;
+list *HashFunc;
+
+extern list cmdList;
+extern list exprList;
+extern list testList;
+extern list fatorList;
+extern list termoList;
+extern list auxlist;
+extern list exList;
+extern list sizeBlockList;
+extern list _size;
+
+extern s_atrib *atribTeste;
+extern NODETREEPTR atribTree;
+
+
+extern char atrib[200];
+
 
 void initHash(list *hash,int hashSize);
 void destroyHash(list *hash,int hashSize);
@@ -90,3 +108,4 @@ int functionExists(list *hash,char *nome);
 
 int checkVariables(list* hash);
 
+void initStdFunctions();
