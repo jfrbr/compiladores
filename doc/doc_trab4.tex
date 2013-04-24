@@ -46,12 +46,205 @@
 \maketitle
 
 \begin{abstract}
-Documentação referente à quarta parte do trabalho de compiladores, que consiste em um interpretator.
+Documentação referente à quarta parte do trabalho de compiladores, que consiste em um interpretador.
 \end{abstract}
 
 \section{Introdução}
-\section{Objetivos}
-\section{Como funciona?}
+O objetivo deste trabalho é estabelecer um interpretador para a linguagem PC (Poor C). Para construir esta parte, utiliza-se os três analisadores previamente construídos, ou seja,
+os trabalhos anteriores foram incorporados nesta parte de tal forma que executar um programa checando erros sintáticos e semânticos da linguagem PC, exatamente como um interpretador faz.
+
+\section{Menu}
+
+Para facilitar a execução do código é criado um menu contendo as seguintes opções:
+
+\begin{enumerate}
+ \item Compilar um programa: construir a árvore de execução, referenciada no código por cmdList.
+ \item Imprimir Árvore de Execução: basta imprimir cada nó da cmdList vasculhando também as árvores internas do nó
+ \item Executar Programa: basta executar a cmdList. 
+ \item Listar programas compilados
+ \item Listar programas no diretório corrente(que podem ser compilados)
+ \item Sair
+\end{enumerate}
+
+\section{Principais Estruturas}
+
+Para criar e executar a árvore de execução é necessária a utilização de diversas estruturas. Cada estrutura segue a sua respectiva regra construída no segundo trabalho.
+Cada estrutura possui a sua função de executar, normalmente, nomeada de \textbf{execute<estrutura>}. Por exemplo, para o fator, temos executeFator.
+
+Segue abaixo a explicação sobre cada uma delas:
+
+\subsection{Fator}
+Esta é a mais baixa ordem da árvore. Pode ser inteiro, float, char, variável ou uma chamada de função. Sua estrutura é a seguinte:
+
+\begin{lstlisting}
+struct {
+	int tipo;
+	void *valor;
+	list parametros;
+} typedef s_fator;
+\end{lstlisting}
+
+A lista de parâmetros na chamada de função guarda os parâmetros passados pela função. É utilizada também para as atribuições ++/-- a variáveis. Um outro caso em que é utilizada,
+é para explicitar que uma variável está com o valor negativo. 
+O \textbf{tipo} serve para identificar qual typecast deve ser feito para capturar o valor correspondente a variável.\\
+Esta manipulação é feita na função de execução. O caso de inteiro, char e float basta retornar o s_fator correspondente. Porém, para a chamada de função e variável existem
+considerações.
+\subsection{Termo}
+
+O termo fica um nível acima na árvore do Fator. É composta apenas por um sinal de operação que pode ser '*','/' e '\%'. Realiza operações sobre os fatores que estão abaixo dele na árvore.
+
+\begin{lstlisting}
+ struct {
+	char op;
+} typedef s_termo
+\end{lstlisting}
+
+\subsection{EXP}
+Basicamente, igual ao termo, porém os operadores são outros: '+','-'. Isto é feito para resolver o caso da precedência de operadores. Como a árvore é executada de baixo para cima as operações de multiplicação, divisão e mod serão executadas primeiro do que as de soma e subtração.
+
+\begin{lstlisting}
+struct {
+	char op;
+} typedef s_exp;
+\end{lstlisting}
+
+\subsection{U\_EXP}
+
+Este é o caso em que os operadores: '>', '<', '>=' e '<=' foram inseridos. Assim pode-se comparar duas expressões e avaliar o valor.
+
+\begin{lstlisting}
+struct {
+	char op[3];
+} typedef s_u_exp;
+\end{lstlisting}
+
+\subsection{U\_Exp\_List}
+
+É o conjunto de u\_exp e contém os operadores: '||', '\&\&' e '!=' para avaliar as u\_exp.
+
+\begin{lstlisting}
+struct {
+	char op[2];
+} typedef s_u_exp_list;
+\end{lstlisting}
+
+\subsection{Variable}
+
+Estrutura reutilizada do terceiro trabalho para tratar as variáveis presentes no código. A sua estrutura é a seguinte:
+
+\begin{lstlisting}
+struct  {
+  char nome[30];
+  void *valor;
+  int tipo;
+  char escopo[30];
+  int lineDeclared;
+  int used;
+} typedef s_variavel;
+\end{lstlisting}
+
+\subsection{Function}
+
+Estrutura reutilizada do terceiro trabalho para tratar as funções presentes no código. A sua estrutura é a seguinte:
+
+\begin{lstlisting}
+struct  {
+  char nome[30];
+  int aridade;
+  int tipo_retorno;
+  list parametros;
+  list parNames;
+  list cmdList;
+} typedef s_funcao;
+\end{lstlisting}
+\subsection{Atrib}
+
+Referente as atribuições da linguagem C. 
+
+\begin{lstlisting}
+struct {
+	char op[3];
+	char varname[50];
+	NODETREEPTR toatrib;
+	char *stringToAtrib;
+} typedef s_atrib;
+\end{lstlisting}
+
+Composta por um operador que pode ser '=','+=','-=','*=' e '/='. O nome da variável que receberá o valor do resultado da avaliação do nó toatrib. Foi criado o
+stringToAtrib o tipo string de dados. 
+
+\subsection{Conditional}
+
+Correspondente aos comandos de seleção: if e else. A sua estrutura é a seguinte:
+
+\begin{lstlisting}
+struct {
+	NODETREEPTR condition;
+	list commandList;
+	list elseCommandList;
+} typedef s_conditional;
+\end{lstlisting}
+
+Composta pelo nó da condição e duas listas: execução do if e execução do else. 
+
+\subsection{Loop}
+
+Correspondente aos loops permitidos na linguagem PC: for, while e do-while. A sua estrutura é a seguinte:
+
+\begin{lstlisting}
+struct {
+	NODETREEPTR condition;
+	list commandList;
+	list atribList;
+	list incrementList;
+	int tipo;
+} typedef s_loop;
+\end{lstlisting}
+
+Os comandos de repetição tem a condição e três listas: a de comandos, a de atribuição e a de incremento. O comando FOR por exemplo seria da forma:
+
+\begin{lstlisting}
+for ( atribList; condition; incrementList){
+  commandList
+}
+\end{lstlisting}
+
+\subsection{Switch}
+
+Para o switch utiliza-se a estrutura switch block que consiste em cada case referente ao respectivo switch. A lista de comandos é formada pelos ssb que possivelmente serão executados.
+Cada switch possui o valor de check que será verificado com o valor do check do ssb. Como estabelicido no segundo trabalho, o switch deve obrigatoriamente ter um default para funcionar.
+
+\begin{lstlisting}
+struct switch_block{
+
+    void* condition;
+    list commands;
+} typedef ssb;
+
+struct {
+
+	list commandList;
+	char* check_value;
+    char* check_value_s;
+
+} typedef s_switch;
+\end{lstlisting}
+
+\subsection{Tree}
+Corresponde a árvore genérica utilizada para . Cada nó corresponde a uma das estruturas acima mencionadas.
+\begin{lstlisting}
+struct nodeTree {
+	void* element;
+	struct nodeTree* next;
+	list children;
+	int tipoNodeTree;
+};
+\end{lstlisting}
+
+\section{cmdList}
+
+Esta é a lista principal do programa. É composta por nós de árvore genéricos.
+
 \section{Exemplos}
 Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
 situações erradas.
