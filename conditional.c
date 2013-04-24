@@ -5,8 +5,6 @@ s_conditional *allocateConditional() {
 		aux = (s_conditional*)malloc(sizeof(s_conditional));
 		aux->commandList = initList();
 		aux->elseCommandList = initList();
-		//aux->condition = initTree();
-		//aux->parametros = initList();
 		if (aux) return aux;
 		else return NULL;
 }
@@ -24,12 +22,10 @@ int checkCondition(s_conditional *cond) {
 
 void executeConditional(s_conditional* cond) {
 	if(checkCondition(cond) != 0) {
-
 		if(cond->commandList && cond->commandList->head)
 			executeTreeList(cond->commandList);
 	}
 	else {
-		debug();
 		if(cond->elseCommandList && cond->elseCommandList->head)
 			executeTreeList(cond->elseCommandList);
 	}

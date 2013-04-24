@@ -1,5 +1,3 @@
-
-
 #include "function.h"
 
 s_funcao* allocateFunction() {
@@ -11,7 +9,7 @@ s_funcao* allocateFunction() {
 
 void setFunction(s_funcao *function,char *nome,int aridade,int tipo_retorno,list parametros, list cmdList) {
 	if(!function) {
-		printf("Ponteiro pra Var nulo\n");
+		printf("Ponteiro pra FUNCTION nulo\n");
 		exit(1);
 	}
 	strcpy(function->nome,nome);

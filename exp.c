@@ -3,41 +3,25 @@
 s_exp *allocateExp() {
 	s_exp *aux;
 		aux = (s_exp*)malloc(sizeof(s_exp));
-		//aux->parametros = initList();
 		if (aux) return aux;
 		else return NULL;
 }
 
 void *executeExp(s_exp *toExecute, list operands) {
-	//printf("Operands Exp size: %d\n",operands->nElem);
 	if(operands->nElem == 1) {
-		//if((NODETREEPTR)(getNode((list)(operands),0))) printf("passei %d\n", ((NODETREEPTR)(getNode((list)(operands),0)))->tipoNodeTree);
 		return executeNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
 	}
 	else {
-
 		NODETREEPTR a,b;
 		a = ((NODETREEPTR)(getNode((list)(operands),0)));
-	
-
 		b = ((NODETREEPTR)(getNode((list)(operands),1)));
-	
-
 		s_fator *a_v,*b_v,*r = malloc(sizeof(s_fator));
-
 		int *res,*aint,*bint;
 		float *resf,*afloat,*bfloat;
 		res = malloc(sizeof(int));
 		resf = malloc(sizeof(float));
-
 		a_v = executeNodeTree(a);
-//		printf("Executou A\n");
-        
-
 		b_v = executeNodeTree(b);
-	//	printf("Executou B\n");
-
-
 		switch(toExecute->op) {
 
 			case '+':
@@ -135,20 +119,13 @@ void *executeExp(s_exp *toExecute, list operands) {
 					r->valor = res;
 				}
 				break;
-
-
 			default:
 				break;
 		}
 		return r;
 	}
-
 }
 
 void setExp(s_exp *t, char op) {
 	t->op = op;
-
 }
-
-
-
