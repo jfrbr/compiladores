@@ -422,3 +422,26 @@ void setFator(s_fator *f, int tipo,void *valor,list parList) {
 	f->valor = valor;
 	f->parametros = parList;
 }
+void imprimeFator(s_fator *f){
+
+	if (!f){
+		printf("Fator nulo\n");
+	}
+	switch (f->tipo){
+	case T_INT:
+		printf("%d",*(int*)f->valor);
+		break;
+	case T_FLOAT:
+		printf("%f",*(float*)f->valor);
+		break;
+	case T_CHAR:
+		printf("%c",*(char*)f->valor);
+		break;
+	case T_VAR:
+		printf("%s",(char*)f->valor);
+		break;
+	case F_FUNCAO:
+		printf("%s",(char*)f->valor);
+		break;
+	}
+}
