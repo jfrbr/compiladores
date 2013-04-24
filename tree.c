@@ -20,7 +20,6 @@ NODETREEPTR allocateTreeNode() {
 }
 
 s_fator *executeNodeTree(NODETREEPTR node) {
-	//debug();
 	s_fator *f,*r;
 	s_variavel *v;
 	switch(node->tipoNodeTree) {

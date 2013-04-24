@@ -1861,7 +1861,6 @@ CHAMADA_FUNCAO : token_ident token_abrep {
 			strcpy(funcCalled,funcname);
 			}
 			PARAMETROS token_fechap {
-				debug();
 				char *funcname,*parlist,*tmpparlist;
 				int nParam=1;
 				int i=0;
@@ -2804,7 +2803,7 @@ main(){
 	yyparse();
 
  	checkVariables(HashVar);		
-	result = executeTreeList(cmdList);	
+	executeTreeList(cmdList);	
 }
 
 /* rotina chamada por yyparse quando encontra erro */

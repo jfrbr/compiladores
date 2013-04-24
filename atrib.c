@@ -153,7 +153,6 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
 
 void setAtrib(s_atrib *t, char *op, char *varname, NODETREEPTR toatrib, char *stringToAtrib) {
 	strcpy(t->op,op);
-	debug();
 	strcpy(t->varname,varname);
 	t->toatrib = toatrib;
 }
