@@ -2866,6 +2866,7 @@ main(){
 			}
 			
 			YY_FLUSH_BUFFER;
+			lines=0;
 	
 			break;
 		    case 2:
@@ -2902,20 +2903,28 @@ main(){
 			}
 			break;
 			}
+		    case 4:{
+			NODELISTPTR _tracker = programList->head;
+			s_programa *p;
+			int i;
+			printf("Existem %d programas compilados\n",programList->nElem);
+			
+			for(i=0; i<programList->nElem; i++) {
+				
+				p = _tracker->element;
+				printf("%s\n",p->progNome);
+				_tracker = _tracker->next;
+			}
+		      break;
+		      }
+		    case 5:
+		      break;
 		    case 6:
 		      exit(0);
 		    default:
 		      break;
 		}
  	}
- 	// EXECUTAR UM PROGRAMA
- 	//executaPrograma(prog);
- 	// Compilando o programa
- 	
- 	// Quando eu for executar
- 	// HashVar 
- 	
-	//executeTreeList(cmdList);	
 }
 
 /* rotina chamada por yyparse quando encontra erro */
