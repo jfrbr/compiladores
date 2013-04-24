@@ -1,0 +1,13 @@
+int main(){
+	
+
+	int a;
+	
+
+	scanf("%d\n",&a); // da erro pois nao eh igual em C, para utilizar em scanf deve-se retirar o '&'
+
+
+
+	
+	return 0;
+	}

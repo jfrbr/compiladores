@@ -1,0 +1,17 @@
+int main(){
+	
+	int a;
+	int b;
+	float c;
+
+
+	a = 1;
+	c = 1.1;
+
+	b = max(a,c);  // nao funciona pois os tipos sao diferentes
+
+
+    printf("%d\n",b);	// segmentation fault pois nao foi atribuido valor a b
+
+	return 0;
+	}
