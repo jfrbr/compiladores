@@ -129,3 +129,17 @@ void *executeExp(s_exp *toExecute, list operands) {
 void setExp(s_exp *t, char op) {
 	t->op = op;
 }
+void imprimeExp(s_exp *toExecute, list operands) {
+	if(operands->nElem == 1) {
+		printNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
+	}
+	else {
+		NODETREEPTR a,b;
+		a = ((NODETREEPTR)(getNode((list)(operands),0)));
+		b = ((NODETREEPTR)(getNode((list)(operands),1)));
+
+		printNodeTree(a);
+		printf(" %c ",toExecute->op);
+		printNodeTree(b);
+    }
+}

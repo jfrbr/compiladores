@@ -22,6 +22,8 @@ void setTreeNode(NODETREEPTR node,void* toSet,int tipo);
 void appendToTreeNode(NODETREEPTR node,void* toAppend);
 s_fator* executeTreeList(list l);
 s_fator *executeNodeTree(NODETREEPTR node);
+void printNodeTree(NODETREEPTR node);
+void printTreeList(list l,int flag);
 
 
 

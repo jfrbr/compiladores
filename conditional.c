@@ -30,3 +30,13 @@ void executeConditional(s_conditional* cond) {
 			executeTreeList(cond->elseCommandList);
 	}
 }
+void imprimeConditional(s_conditional* cond){
+
+    printf("If: ");
+    printNodeTree(cond->condition);
+    printf("| Then:");
+    printTreeList(cond->commandList,0);
+    printf("| Else:");
+    printTreeList(cond->elseCommandList,0);
+    
+}

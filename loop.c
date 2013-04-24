@@ -56,3 +56,39 @@ void executeLoop(s_loop* l) {
 	}
 	hasBreak = 0;
 }
+void imprimeLoop(s_loop* l){
+
+    if (!l){
+        printf("Loop nulo. Abortando...\n");
+        exit(1);
+    }    
+
+    switch (l->tipo){
+
+        case FOR:
+            printf("FOR: ");
+            break;
+        case WHILE:
+            printf("WHILE: ");
+            break;
+        case DO_WHILE:
+            printf("DO WHILE: ");
+            break;
+         default:
+            break;   
+    }
+
+    printTreeList(l->atribList, 0);
+    printf(" ");
+    printf("enquanto: ");
+    printNodeTree(l->condition);
+    printf(" ");
+    printf("incremento: ");
+    printTreeList(l->incrementList, 0);
+    printf(" ");
+    printf("executado dentro do loop: ");
+    printTreeList(l->commandList, 0);
+
+    printf(" | ");
+
+}

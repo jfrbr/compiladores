@@ -36,7 +36,6 @@ void executeSwitch(s_switch* sw) {
                     if (v->tipo == T_INT){
 
                         if (*(int*) condition  == *(int*) s->condition){
-                            printf("\n\n\n\n\nMATCH CASE\n\n\n\n");
                             executeTreeList(s->commands);
                         }    
                     }else if (v->tipo == T_CHAR){
@@ -54,4 +53,35 @@ void executeSwitch(s_switch* sw) {
         printf("SWITCH # S_SWITCH NULO\n");
 	}
 	hasBreak = 0;
+}
+
+void imprimeSwitch(s_switch* sw){
+
+    NODELISTPTR _tracker = sw->commandList->head;
+
+    printf("Switch: ");
+	if (sw){
+	    printf("Verificacao: %c |",*(sw->check_value));
+        int i;
+        for (i=0; i < sw->commandList->nElem;i++){
+            ssb* s = (ssb*) _tracker->element;
+            printf("Bloco %d: ",i);
+            imprimeSwitchBlock(s);
+        }
+	}else{
+        printf("SWITCH # S_SWITCH NULO\n");
+	}
+
+}
+
+void imprimeSwitchBlock(ssb* s){
+
+    if(!s){
+        printf("Switch block vazio. Abortando...\n");
+        exit(1);
+    }
+
+    printTreeList(s->commands,0);
+    printf("| ");
+
 }

@@ -134,3 +134,25 @@ void *executeU_Exp_List(s_u_exp_list *toExecute, list operands) {
 void setU_Exp_List(s_u_exp_list *t, char *op) {
 	strcpy(t->op,op);
 }
+
+void imprimeU_Exp_List(s_u_exp_list *t, list operands){
+    if (!t){
+        printf("U Exp List nula. Abortando...");
+        exit(1);
+    }
+    
+    if(operands->nElem == 1) {
+		return printNodeTree((NODETREEPTR)(getNode((list)(operands),0)));
+	}else{
+	    NODETREEPTR a,b;
+		a = ((NODETREEPTR)(getNode((list)(operands),0)));
+		b = ((NODETREEPTR)(getNode((list)(operands),1)));
+
+		printNodeTree(a);
+		printf(" %s ",t->op);
+		printNodeTree(b);
+       
+	}
+
+    printf("%s",t->op);
+}

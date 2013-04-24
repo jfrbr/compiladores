@@ -2633,8 +2633,7 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	   {
 		    int forsize;
 		    forsize = *(int*)sizeBlockList->tail->element;
-		    printf("Forsize: %d\n",forsize);
-		    printf("CMD List: %d\n",cmdList->nElem);
+
 		    if(sizeBlockList->nElem <= 1) {
 		      sizeBlockList = initList();
 		    }
@@ -2845,7 +2844,7 @@ main(){
 		printf("5 - Listar programas no diretório corrente (que podem ser compilados)\n");
 		printf("6 - Sair\n");
 	
-		int option,optionChosen,error=0;
+		int option,optionChosen,error=0, program_in_list;
 		scanf("%d",&option);
 		scanf("%c",&dump);
 		switch(option) {
@@ -2862,9 +2861,31 @@ main(){
 			parnames = initList();
 			
 			char pName[50];
-			strcpy(pName,"\0");
-			scanf("%[^\n]",pName);
 			
+			program_in_list = 0;
+			
+			strcpy(pName,"\0");
+			printf("Digite o nome do programa que deseja compilar: ");
+			scanf("%[^\n]",pName);
+			printf("\n");
+
+		    NODELISTPTR _tracker = programList->head;
+			s_programa *p;
+			int progFound = 0;
+			int i;
+			for(i=0; i<programList->nElem; i++) {
+		        p = _tracker->element;
+				if(strcmp(p->progNome,pName) == 0) {
+				          program_in_list = 1;
+				          break;
+				}
+		        _tracker = _tracker->next;
+			 }
+            if(program_in_list){
+                printf("Ja existe um programa com esse nome na lista. Por favor, escolha outro nome.\n");
+                break;
+            }
+            
 			yyin = fopen(pName, "r");
 			if (yyin == NULL) {
 			  printf("Arquivo Nao Encontrado\n");
@@ -2886,6 +2907,39 @@ main(){
 	
 			break;
 		    case 2:
+		    {
+		            char programName[50];
+			        strcpy(programName,"\0");
+			        printf("Insira o nome do programa: ");
+			        scanf("%s",programName);
+			        printf("\n");
+
+			        NODELISTPTR _tracker = programList->head;
+			        s_programa *p;
+			        int progFound = 0;
+			        int i;
+			        for(i=0; i<programList->nElem; i++) {
+				
+				        p = _tracker->element;
+				        if(strcmp(p->progNome,programName) == 0) {
+				          printf("Imprimindo a arvore do programa %s\n",programName);
+				          
+				          HashVar = p->HashVar;
+				          HashFunc = p->HashFunc;
+				          imprimePrograma(p);
+				          progFound = 1;
+				          
+				          break;
+				        }
+				        _tracker = _tracker->next;
+				
+			        }
+			        if(!progFound) {
+			          printf("Programa Nao Encontrado\n");
+			        }
+			        printf("\n");
+			        break;
+			        }
 		    case 3:
 			{
 			//HashVar = 
@@ -2923,7 +2977,7 @@ main(){
 			NODELISTPTR _tracker = programList->head;
 			s_programa *p;
 			int i;
-			printf("Existem %d programas compilados\n",programList->nElem);
+			printf("Existe(m) %d programa(s) compilado(s).\n",programList->nElem);
 			
 			for(i=0; i<programList->nElem; i++) {
 				
@@ -2931,6 +2985,7 @@ main(){
 				printf("%s\n",p->progNome);
 				_tracker = _tracker->next;
 			}
+			 
 		      break;
 		      }
 		    case 5:

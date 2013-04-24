@@ -20,5 +20,6 @@ struct {
 s_fator *allocateFator();
 s_fator *executaFator(s_fator *toExecute);
 void setFator(s_fator *f, int tipo,void *valor,list parList);
+void imprimeFator(s_fator *f);
 
 #endif /* FATOR_H_ */
