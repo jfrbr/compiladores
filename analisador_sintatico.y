@@ -907,7 +907,8 @@ U_EXP: EXP token_igualigual {
 		strcpy(op,">");
 		_toList(testList,op);
       } EXP {
-      nodeTree = allocateTreeNode();
+	
+	nodeTree = allocateTreeNode();
 	s_u_exp *u_exp = allocateU_Exp();
 	setU_Exp(u_exp,">");	
 	setTreeNode(nodeTree,u_exp,F_U_EXP);
@@ -2574,6 +2575,7 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
 
 FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap {cleanExprList(exprList);} COMANDAO {
               strcpy(atrib,"\0");
+              
               NODELISTPTR _tracker = cmdList->head;
 	          int u;
 	          for(u=0; u < cmdList->nElem-3; u++) {
@@ -2609,14 +2611,21 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	   | token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevirgula COMMAND_LIST token_fechap token_abrec {strcpy(atrib,"\0"); cleanExprList(exprList);} BLOCO token_fechac
 	   {
 		    int forsize;
-		    forsize = *(int*)sizeBlockList->head->element;
+		    forsize = *(int*)sizeBlockList->tail->element;
+		    printf("Forsize: %d\n",forsize);
+		    printf("CMD List: %d\n",cmdList->nElem);
 		    if(sizeBlockList->nElem <= 1) {
 		      sizeBlockList = initList();
 		    }
 		    else {
-		      sizeBlockList->head = sizeBlockList->head->next;
-		      sizeBlockList->nElem -= 1;
+			NODELISTPTR _tmp = sizeBlockList->head;
+			int i=0;
+			for(i=0; i<sizeBlockList->nElem-2; i++) _tmp = _tmp->next;
+			_tmp->next = NULL;
+			sizeBlockList->tail = _tmp;
+			sizeBlockList->nElem -= 1;			  
 		    }
+		    
 		    NODELISTPTR _tracker;
 		    if(forsize == 0) {
 			    auxlist = NULL;
@@ -2631,17 +2640,23 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 		        atribList = initList();
 		        atribList->head = _tracker;
 		        atribList->nElem = 1;
+		        
 
                 _tracker = _tracker->next;
+                atribList->head->next = NULL;
+                
 		        // Incremento
 		        incList = initList();
 		        incList->head = _tracker;
                 incList->nElem = 1;
-		        // Comandos a serem executados
+		       
+		       // Comandos a serem executados
 		        auxlist = initList();
 		        auxlist->head = _tracker->next;
+		        incList->head->next = NULL;
 		        auxlist->nElem = forsize;
-    	        _tracker = cmdList->head;
+    	        
+		    _tracker = cmdList->head;
 	            for (u=0; u < cmdList->nElem-forsize-3; u++){
 	                _tracker = _tracker->next;
 	            }
@@ -2654,6 +2669,8 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	          _loop = allocateTreeNode();
 	          setTreeNode(_loop,loop,F_LOOP);
 	          removeWithoutFreeFromList(exList,exList->nElem-1);				          
+	          // Popping the value of sizeBlock
+		  *sizeBlock = *(int*)getNode(_size,_size->nElem-1);
         }
 	   | token_for token_abrep ATRIBUICAO token_ptevirgula token_ptevirgula COMMAND_LIST token_fechap {strcpy(atrib,"\0"); cleanExprList(exprList);} COMANDAO {
               NODELISTPTR _tracker = cmdList->head;
@@ -2737,7 +2754,34 @@ FOR_LOOP : token_for token_abrep ATRIBUICAO token_ptevirgula IF_EXP token_ptevir
 	   }
 ;
 
-COMMAND_LIST : | ATRIBUICAO | EXP
+COMMAND_LIST : | ATRIBUICAO | EXP {
+nodeTree = allocateTreeNode();
+	s_u_exp *u_exp = allocateU_Exp();
+	setU_Exp(u_exp,"(");	
+	setTreeNode(nodeTree,u_exp,F_U_EXP);
+	int i=0;
+	if(fatorList->nElem > 2) {
+	  int u=0;
+	  NODELISTPTR _tracker = fatorList->head;
+	  for(u=0; u < fatorList->nElem-3; u++) {
+	    _tracker = _tracker->next;	    
+	  }
+	  auxlist = initList();
+	  auxlist->head = _tracker->next;
+	  auxlist->nElem = 2;
+	  
+	  _tracker->next = NULL;
+	  fatorList->tail = _tracker;
+	  fatorList->nElem = fatorList->nElem-2;
+	  appendToTreeNode(nodeTree,auxlist);
+	}
+	else {
+	  appendToTreeNode(nodeTree,fatorList);
+	  fatorList = initList();	
+	}
+	//_toList(fatorList,nodeTree);
+	_toList(cmdList,nodeTree);
+}
 ;
 
 %%

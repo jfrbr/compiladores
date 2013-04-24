@@ -9,6 +9,7 @@ s_atrib *allocateAtrib() {
 }
 
 void executeAtrib(s_atrib *toExecute,list *hashVar) {
+	//printf("Execute Atrib!\n");
 	char op_value[3];
     if (toExecute){
         strcpy(op_value, toExecute->op);
@@ -16,7 +17,9 @@ void executeAtrib(s_atrib *toExecute,list *hashVar) {
         printf("ATRIB # S_ATRIB NULO\n");
         exit(1);
     }
-	s_fator *executeResult = executeNodeTree(toExecute->toatrib);
+	s_fator *executeResult = allocateFator();
+	executeResult = executeNodeTree(toExecute->toatrib);
+
 	if (executeResult){
         if ( !strcmp(op_value,"=") ){
 	        hashVarUpdateValue(hashVar,toExecute->varname,currentFunction,executeResult->valor);

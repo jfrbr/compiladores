@@ -36,10 +36,12 @@ void executeLoop(s_loop* l) {
 		        executeTreeList(l->commandList);
 	        }
 	    }else if (l->tipo == FOR){
-            executeTreeList(l->atribList);
+	    	//printf("Executando for\n");
+            executeNodeTree(l->atribList->head->element);
             while(checkConditionLoop(l) != 0 && l->commandList->head && !hasBreak && !hasReturn) {
 		        executeTreeList(l->commandList);
-		        executeTreeList(l->incrementList);
+		        executeNodeTree(l->incrementList->head->element);
+		        //executeTreeList(l->incrementList);
 	        }
 	        
 	    }else if (l->tipo == DO_WHILE){
