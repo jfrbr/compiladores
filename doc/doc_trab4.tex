@@ -87,7 +87,7 @@ struct {
 A lista de parâmetros na chamada de função guarda os parâmetros passados pela função. É utilizada também para as atribuições ++/-- a variáveis. Um outro caso em que é utilizada,
 é para explicitar que uma variável está com o valor negativo. 
 O \textbf{tipo} serve para identificar qual typecast deve ser feito para capturar o valor correspondente a variável.\\
-Esta manipulação é feita na função de execução. O caso de inteiro, char e float basta retornar o s_fator correspondente. Porém, para a chamada de função e variável existem
+Esta manipulação é feita na função de execução. O caso de inteiro, char e float basta retornar o s\_fator correspondente. Porém, para a chamada de função e variável existem
 considerações.
 \subsection{Termo}
 
@@ -99,7 +99,7 @@ O termo fica um nível acima na árvore do Fator. É composta apenas por um sina
 } typedef s_termo
 \end{lstlisting}
 
-A função de execução do termo opera sobre os dois Termos abaixo 
+A função de execução do termo opera sobre os dois Termos abaixo dele na árvore. O operador aplicado sobre eles está na própria estrutura.
 
 \subsection{EXP}
 Basicamente, igual ao termo, porém os operadores são outros: '+','-'. Isto é feito para resolver o caso da precedência de operadores. Como a árvore é executada de baixo para cima as operações de multiplicação, divisão e mod serão executadas primeiro do que as de soma e subtração.
@@ -159,6 +159,8 @@ struct  {
   list cmdList;
 } typedef s_funcao;
 \end{lstlisting}
+
+Neste caso, foi inserido a lista cmdList que corresponde a uma lista de nós de árvore. Esta lista é utilizada para construção e execução da função.
 \subsection{Atrib}
 
 Referente as atribuições da linguagem C. 
@@ -172,7 +174,7 @@ struct {
 } typedef s_atrib;
 \end{lstlisting}
 
-Composta por um operador que pode ser '=','+=','-=','*=' e '/='. O nome da variável que receberá o valor do resultado da avaliação do nó toatrib. Foi criado o
+Composta por um operador que pode ser '=','+=','-=','*=' e '/='. O nome da variável que receberá o valor do resultado da avaliação(feito pela função \textbf{executeNodeTree}) do nó toatrib. Foi criado o
 stringToAtrib o tipo string de dados. 
 
 \subsection{Conditional}
@@ -211,6 +213,8 @@ for ( atribList; condition; incrementList){
 }
 \end{lstlisting}
 
+Na função de execução do comando de loop for basta executar primeiro a lista de atribuição e depois ficar executando a de comandos e a de incremente, nesta ordem. No caso do while e do while, tem-se apenas que checar a condição de término do loop.
+
 \subsection{Switch}
 
 Para o switch utiliza-se a estrutura switch block que consiste em cada case referente ao respectivo switch. A lista de comandos é formada pelos ssb que possivelmente serão executados.
@@ -243,10 +247,110 @@ struct nodeTree {
 };
 \end{lstlisting}
 
+Possui duas funções bem importantes: \textbf{executeNodeTree} e a \textbf{executeTreeList}. A primeira está exemplificada abaixo para demonstrar a recursividade. A segunda é simplesmente percorrer a lista executando a primeira função.
+
+\begin{lstlisting}
+s_fator *executeNodeTree(NODETREEPTR node) {
+	s_fator *f,*r;
+	s_variavel *v;
+	switch(node->tipoNodeTree) {
+		case F_FATOR:
+			// Daqui pra baixo nao garanto nada
+			f = (s_fator*)node->element;
+			r = executaFator(f);
+
+			if(f->tipo == T_VAR) {
+				v = hashSearchVar(HashVar,(char*)f->valor,currentFunction);
+				if(!v) {
+					v = hashSearchVar(HashVar,(char*)f->valor,(char*)getNode(functionStack,functionStack->nElem-2));
+				}
+
+				if(f->parametros && f->parametros->head) {
+					int *_t = getNode(f->parametros,0);
+					if(*(int*)_t == P_MAISMAISAFT) {
+						if(r->tipo == T_INT) {
+							int _tmp = *(int*)r->valor + 1;
+							*(int*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_CHAR) {
+							char _tmp = *(char*)r->valor + 1;
+							*(char*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_FLOAT) {
+							float _tmp = *(float*)r->valor + 1;
+							*(float*)r->valor = _tmp;
+						}
+					} else if(*(int*)_t == P_MENOSMENOSAFT) {
+						if(r->tipo == T_INT) {
+							int _tmp = *(int*)r->valor - 1;
+							*(int*)r->valor = _tmp;
+						}
+						else if(v->tipo == T_CHAR) {
+							char _tmp = *(char*)r->valor - 1;
+							*(char*)r->valor = _tmp;
+						}
+						else if(r->tipo == T_FLOAT) {
+							float _tmp = *(float*)r->valor - 1;
+							*(float*)r->valor = _tmp;
+						}
+					}
+				}
+			}
+			return r;
+			break;
+		case F_TERMO:
+			return executeTermo((s_termo*)node->element,(list)(node->children->head->element));
+			break;
+		case F_EXP:
+			return executeExp((s_exp*)node->element,(list)(node->children->head->element));
+			break;
+		case F_U_EXP:
+			return executeU_Exp((s_u_exp*)node->element,(list)(node->children->head->element));
+			break;
+		case F_U_EXP_LIST:
+			return executeU_Exp_List((s_u_exp_list*)node->element,(list)(node->children->head->element));
+			break;
+		case F_ATRIB:
+			executeAtrib((s_atrib*)node->element,HashVar);
+			return NULL;
+			break;
+		case F_CONDITIONAL:
+			executeConditional((s_conditional*)node->element);
+			return NULL;
+			break;
+		case F_LOOP:
+		    executeLoop((s_loop*)node->element);
+		    break;
+		case F_RETURN:
+			{
+			break;} // LOL {} break :)
+		case F_SWITCH:
+		    executeSwitch((s_switch*)node->element);
+		    break;
+		default:
+			break;
+
+	}
+	return NULL;
+}
+\end{lstlisting}
+
 \section{cmdList}
 
-Esta é a lista principal do programa. É composta por nós de árvore genéricos.
+Esta é a lista principal do programa. É composta por nós de árvore genéricos. Toda vez que um programa é executa a lista é percorrida executando todos as árvores.
 
+\section{Funções}
+Existem algumas funções pré-definidas na linguagem. Estas podem ser usadas para melhor codificação na linguagem PC.
+\subsection{printf}
+Assim como em C, na PC existe uma função para imprimir dados na tela. Esta função possui aridade 2 e aceita a dados inteiros(\%d), float(\%f) e char (\%c). Nos exemplos,
+pode ter vários exemplos de uso.
+\subsection{scanf}
+Assim como em C, também é necessário uma função para entrada de dados. Porém, na PC existe uma diferença. Para indicar a variável em que será inserido o valor não é preciso 
+utilizar o \&, basta inserir o nome da variável normalmente.
+\subsection{max}
+Essa função retorna o maior valor entre dois inteiros, dois float ou dois chars. Existe a restrição de tipos, ou seja, não pode passar como parâmetro um inteiro e um float. Apenas inteiro com inteiro, e assim respectivamente.
+\subsection{min}
+Análoga a função acima só que o retorno é o valor mínimo entre as variáveis.
 \section{Exemplos}
 Nos exemplos, exploramos diversas situações para os diversos tipos de usuários. Foram criadas 10 situações, 5 situações corretas e 5 
 situações erradas.
