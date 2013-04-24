@@ -1,8 +1,13 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h> 
 #include "hash.h"
 #include "parser.h"
+
+
 
 extern char ident[256];
 char lident[256];
@@ -782,11 +787,20 @@ COMANDAO:   DEC_VAR token_ptevirgula {
 		NODETREEPTR dummy = allocateTreeNode();
 		setTreeNode(dummy,NULL,F_BREAK);
 		_toList(cmdList,dummy);
+		
+		strcpy(atrib,"\0");
+		cleanExprList(exprList);
+		strcpy(num_float,"\0");
+		strcpy(num_inteiro,"\0");	
 	}
 	| token_continue token_ptevirgula {
 	      NODETREEPTR dummy = allocateTreeNode();
 		setTreeNode(dummy,NULL,F_CONTINUE);
-		_toList(cmdList,dummy);
+		_toList(cmdList,dummy);		
+		strcpy(atrib,"\0");
+		cleanExprList(exprList);
+		strcpy(num_float,"\0");
+		strcpy(num_inteiro,"\0");	
 	}
 	| LOOP	 {
 
@@ -1629,7 +1643,8 @@ FATOR: token_num_float {
 /* ATRIBUICAO */
 ATRIBUICAO: VAR token_igual {strcpy(atrib,"\0"); strcpy(lident,ident);} TO_ATRIB {
 			char *varname = strtok(ident," ");
-			if (!varExists(HashVar,ident,currentFunction) && !varExists(HashVar,ident,"global")){
+			if (!varExists(HashVar,lident,currentFunction) && !varExists(HashVar,lident,"global")){
+				
 				printf("Erro semantico na linha %d. Variavel nao declarada.\n",lines);
 				return 1;
 			}
@@ -2537,7 +2552,7 @@ DO_WHILE_LOOP : token_do COMANDAO token_while {strcpy(atrib,"\0"); cleanExprList
         }
 		| token_do token_abrec BLOCO token_fechac {strcpy(atrib,"\0"); cleanExprList(exprList);} token_while token_abrep IF_EXP token_fechap token_ptevirgula{
 		int whilesize;
-		whilesize = *(int*)sizeBlockList->head->element;
+		whilesize = *(int*)sizeBlockList->tail->element;
 		if(sizeBlockList->nElem <= 1) {
 		  sizeBlockList = initList();
 		}
@@ -2833,9 +2848,9 @@ main(){
 		int option,optionChosen,error=0;
 		scanf("%d",&option);
 		scanf("%c",&dump);
-		printf("Option %d\n",option);
 		switch(option) {
 		    case 1:
+			printf("Insira o caminho do programa a ser executado: ");
 			// COMPILANDO
 			HashVar = calloc(MAX_HASH_SIZE,sizeof(list));
 			initHash(HashVar,MAX_HASH_SIZE);
@@ -2844,6 +2859,7 @@ main(){
 			initHash(HashFunc,MAX_HASH_SIZE);	
 			
 			initStdFunctions();
+			parnames = initList();
 			
 			char pName[50];
 			strcpy(pName,"\0");
@@ -2918,7 +2934,22 @@ main(){
 		      break;
 		      }
 		    case 5:
+		      {pid_t childPID;
+		      childPID = fork();
+		      if(childPID >= 0) // fork was successful
+		      {
+			  if(childPID == 0) // child process
+			  {
+			      printf("Programas que podem ser compilados: \n");
+			      execlp("find",".","-iname","*.pc");
+			  }
+			  else //Parent process
+			  {
+			      wait(NULL);
+			  }
+		      }
 		      break;
+		      }
 		    case 6:
 		      exit(0);
 		    default:

@@ -1,16 +1,47 @@
+char confirmaVoto(int cand) {
+  printf("Confirma Voto em %d?\n",cand);
+  char c;
+  scanf("%c",c);
+  return c;
+}
+
 int main(){
-
-    int resultado;
-    
-    printf("Digite o Limite: ",0);
-    scanf("%d",limite);
-    
-    int i;
-    for(i=2; i<limite;i++){
-	
-	printf("%d\n",i);
-	
+  int nEleitores;
+  printf("Informe o numero de Eleitores: ",0);
+  scanf("%d",nEleitores);
+  
+  int candA,candB;
+  candA = 0;
+  candB = 0;
+  int voto;
+  char conf;
+  
+  while((candA + candB) < nEleitores) {
+    conf = '0';
+    voto = 0;
+    printf("Digite o numero do seu candidato\n",0);
+    scanf("%d",voto);
+    if(voto == 1) {
+      conf = confirmaVoto(1);
+      if(conf == 's') {
+	  candA++;
+	  printf("Obrigado, voce votou em %d\n",1);
+	 }
+  }
+    else if(voto == 2) {
+      conf = confirmaVoto(2);
+      if(conf == 's') {
+	  candA++;
+	  printf("Obrigado, voce votou em %d\n",2);
+	  
+	 }
     }
-
-    return 0;
+  }
+  int maxx;
+  maxx = max(candA,candB);
+  if(maxx == candA)
+    printf("O Candidato 1 venceu com %d votos\n",candA);
+  else
+    printf("O Candidato 2 venceu com %d votos\n",candB);
+  //printf("Resultado: %d
 }
